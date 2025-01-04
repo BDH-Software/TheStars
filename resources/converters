@@ -1,0 +1,25 @@
+Regular expressions to fix up hipparcos catalogs
+
+#1.
+
+(\[)(\d+),
+
+to
+
+$2 => [
+
+    #2.
+
+    ,(-?\d+\.\d+)\],
+    to
+    ], \n
+
+
+    #3.
+    (\d{2})\d{6}
+
+    to 
+
+    $1
+
+    (to eliminate unecessary digits/from double to float values)
