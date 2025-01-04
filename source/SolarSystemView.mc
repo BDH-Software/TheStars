@@ -3678,22 +3678,39 @@ class SolarSystemBaseView extends WatchUi.View {
     }
     */
 
-    public function drawStar(dc, ra,dec,mag, sizex,sizey,addx,addy, jd_ut){
-            var res = raDecToAltAz_deg(ra,dec,lastLoc[0],lastLoc[1],jd_ut);
-            ra = normalize(ra + addy) * screenWidth /sizey;
-            dec = normalize(dec + addx) * screenHeight /sizey;
-            dc.fillCircle(ra,dec,mag);
+    public function drawStar(dc, ra,dec,mag, sizex,sizey,addx,addy, gmst_deg){
+            var res = raDecToAltAz_deg(ra,dec,lastLoc[0],lastLoc[1],gmst_deg);
+            var az = res[0];
+            var alt = res[1];
+            alt =screenHeight - normalize(alt + addy) * screenHeight /sizey;
+            az =screenWidth - normalize(az + addx) * screenWidth /sizex;
+
+            dc.fillCircle(az,alt,mag);
     }
 
-    public function drawConstLine(dc, ra,dec,ra2,dec2,sizex,sizey,addx,addy){
-            ra = normalize(ra + addy) * screenWidth /sizey;
-            dec = normalize(dec + addx) * screenHeight /sizey;
-            ra2 = normalize(ra2 + addy) * screenWidth /sizey;
-            dec2 = normalize(dec2 + addx) * screenHeight /sizey;
-            if ((ra-ra2).abs()>xc) {return;}
-            if ((dec-dec2).abs()>yc) {return;}
+    public function drawConstLine(dc, s1,s2,jughead){
+            var sizex = jughead[0];
+            var sizey = jughead[1];
+            var addx = jughead[2];
+            var addy = jughead[3];
+            var gmst_deg = jughead[4];
+            var res = raDecToAltAz_deg(s1[1],s1[2],lastLoc[0],lastLoc[1],gmst_deg);
+            var az = res[0];
+            var alt = res[1];
+            alt =screenHeight - normalize(alt + addy) * screenHeight /sizey;
+            az =screenWidth - normalize(az + addx) * screenWidth /sizex;
             
-            dc.drawLine(ra,dec,ra2,dec2);
+            res = raDecToAltAz_deg(s2[1],s2[2],lastLoc[0],lastLoc[1],gmst_deg);
+            var az2 = res[0];
+            var alt2 = res[1];
+            alt2 =screenHeight - normalize(alt2 + addy) * screenHeight /sizey;
+            az2 =screenWidth - normalize(az2 + addx) * screenWidth /sizex;
+            if ((alt-alt2).abs()>yc) {return;}
+            if ((az-az2).abs()>xc) {return;}
+            
+            dc.drawLine(az,alt,az2,alt2);
+            dc.fillCircle(az,alt,s1[0]*1.5);
+            dc.fillCircle(az2,alt2,s2[0]*1.5);
             //dc.fillCircle(ra,dec,mag);
     }
 
@@ -3703,15 +3720,27 @@ class SolarSystemBaseView extends WatchUi.View {
 
     }
 
-    public function putText (dc,text,font, justify, ra,dec,sizex,sizey,addx,addy){
+    public function putText (dc,text,font, justify, jughead){
+            var ra = jughead[0];
+            var dec = jughead[1];
+            var sizex = jughead[2];
+            var sizey = jughead[3];
+            var addx = jughead[4];
+            var addy = jughead[5];
+            var gmst_deg = jughead[6];
 
-            ra = normalize(ra + addy) * screenWidth /sizey;
-            dec = normalize(dec + addx) * screenHeight /sizey;
+            var res = raDecToAltAz_deg(ra,dec,lastLoc[0],lastLoc[1],gmst_deg);
+            var az = res[0];
+            var alt = res[1];
+            alt =screenHeight - normalize(alt + addy) * screenHeight /sizey;
+            az =screenWidth - normalize(az + addx) * screenWidth /sizex;
             
 
-        dc.drawText(ra,dec,font,text,justify);
+        dc.drawText(az,alt,font,text,justify);
 
     }
+
+    var tally = 10000000;
 
 
     public function starField(dc) {
@@ -3732,17 +3761,19 @@ class SolarSystemBaseView extends WatchUi.View {
         */
 
         //note that we must SUBTRACT the TZ & DST factors from our current local time to get the correct JD - the julianDate routine in functions.mc does this
-        var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour + time_add_hrs, now_info.min, timeZoneOffset_sec/3600f, dst);
+        var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour + time_add_hrs, now_info.min, $.now.timeZoneOffset/3600f, $.now.dst);
+
+        var gmst_deg = Math.toDegrees(greenwichMeanSiderealTime(jd_ut));
         
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
-        dc.clear();
+        
         var sizex =  90f;
         var sizey = 90f;
         var addy = 45 + moveY;
         var addx = 0 + moveX;
         var kys = pp.keys();
         deBug("SF", [sizex,sizey,addx,addy]);
-        for (var i = 0; i < pp.size(); i++) {
+        /*for (var i = 0; i < pp.size(); i++) {
             var key = kys[i];
             var pt = pp[key];
             var ra = pt[1];
@@ -3753,11 +3784,22 @@ class SolarSystemBaseView extends WatchUi.View {
                 //deBug("drop", key);
                  //continue;}
 
-            drawStar(dc, ra,dec,mag,sizex,sizey,addx,addy,jd_ut) ;         
+            drawStar(dc, ra,dec,mag,sizex,sizey,addx,addy,gmst_deg) ;         
 
-        }
+        } */
         var cckys = cc.keys();
-        for (var i = 0; i < cc.size(); i++) {
+
+        if (tally>cckys.size()) {
+            tally = 0;
+            dc.clear();
+        }
+        var first = tally;
+        var last = tally + 10;
+        if (last > cckys.size()) {last = cckys.size();}
+        tally += 10;
+
+        
+        for (var i = first; i < last; i++) {
             var key = cckys[i];
             var c = cc[key];
             var p_save = null;
@@ -3767,16 +3809,15 @@ class SolarSystemBaseView extends WatchUi.View {
                 
                 if (pp.hasKey(p1) && pp.hasKey(p2)) {
                     p_save = p2;
-                    drawConstLine(dc, pp[p1][1], pp[p1][2],
-                                      pp[p2][1], pp[p2][2],
-                                sizex, sizey, addx, addy, jd_ut);
+                    drawConstLine(dc, pp[p1],pp[p2],
+                                [sizex, sizey, addx, addy, gmst_deg]);
 
                 } else {
                     //deBug("dropped", [p1,p2]);
                 }
             }
             if (p_save != null) {
-                putText(dc,key,1,  Graphics.TEXT_JUSTIFY_CENTER, [pp[p_save][1] +4, pp[p_save][2]+4, sizex, sizey,addx,addy, jd_ut]);
+                putText(dc,key,1,  Graphics.TEXT_JUSTIFY_CENTER, [pp[p_save][1] +4, pp[p_save][2]+4, sizex, sizey,addx,addy, gmst_deg]);
             
             }
 
