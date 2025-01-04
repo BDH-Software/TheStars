@@ -3685,7 +3685,7 @@ class SolarSystemBaseView extends WatchUi.View {
             alt =screenHeight - normalize(alt + addy) * screenHeight /sizey;
             az =screenWidth - normalize(az + addx) * screenWidth /sizex;
 
-            dc.fillCircle(az,alt,mag);
+            dc.fillCircle(az,alt,mag*mag/3);
     }
 
     public function drawConstLine(dc, s1,s2,jughead){
@@ -3709,8 +3709,8 @@ class SolarSystemBaseView extends WatchUi.View {
             if ((az-az2).abs()>xc) {return;}
             
             dc.drawLine(az,alt,az2,alt2);
-            dc.fillCircle(az,alt,s1[0]*1.5);
-            dc.fillCircle(az2,alt2,s2[0]*1.5);
+            //dc.fillCircle(az,alt,s1[0]*1.5);
+            //dc.fillCircle(az2,alt2,s2[0]*1.5);
             //dc.fillCircle(ra,dec,mag);
     }
 
@@ -3741,6 +3741,8 @@ class SolarSystemBaseView extends WatchUi.View {
     }
 
     var tally = 10000000;
+    var tally2 = 10000000;
+    var save_keys=[];
 
 
     public function starField(dc) {
@@ -3761,7 +3763,7 @@ class SolarSystemBaseView extends WatchUi.View {
         */
 
         //note that we must SUBTRACT the TZ & DST factors from our current local time to get the correct JD - the julianDate routine in functions.mc does this
-        var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour + time_add_hrs, now_info.min, $.now.timeZoneOffset/3600f, $.now.dst);
+        var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour, now_info.min, $.now.timeZoneOffset/3600f, $.now.dst);
 
         var gmst_deg = Math.toDegrees(greenwichMeanSiderealTime(jd_ut));
         
@@ -3772,8 +3774,21 @@ class SolarSystemBaseView extends WatchUi.View {
         var addy = 45 + moveY;
         var addx = 0 + moveX;
         var kys = pp.keys();
-        deBug("SF", [sizex,sizey,addx,addy]);
-        /*for (var i = 0; i < pp.size(); i++) {
+
+
+        if (tally2>kys.size()) {
+            tally2 = 0;
+            //save_keys = insertionSort(save_keys );
+            //deBug("stars", save_keys);
+            //save_keys = [];
+            dc.clear();
+        }
+        var first2 = tally2;
+        var last2 = tally2 + 20;
+        if (last2 > kys.size()) {last2 = kys.size();}
+        tally2 += 20;
+        deBug("SF", [sizex,sizey,addx,addy, jd_ut, gmst_deg, lastLoc]);
+        for (var i = first2; i < last2; i++) {
             var key = kys[i];
             var pt = pp[key];
             var ra = pt[1];
@@ -3786,17 +3801,20 @@ class SolarSystemBaseView extends WatchUi.View {
 
             drawStar(dc, ra,dec,mag,sizex,sizey,addx,addy,gmst_deg) ;         
 
-        } */
+        } 
         var cckys = cc.keys();
 
         if (tally>cckys.size()) {
             tally = 0;
-            dc.clear();
+            //save_keys = insertionSort(save_keys );
+            //deBug("stars", save_keys);
+            //save_keys = [];
+            //dc.clear();
         }
         var first = tally;
-        var last = tally + 10;
+        var last = tally + 5;
         if (last > cckys.size()) {last = cckys.size();}
-        tally += 10;
+        tally += 5;
 
         
         for (var i = first; i < last; i++) {
@@ -3808,6 +3826,8 @@ class SolarSystemBaseView extends WatchUi.View {
                 var p2 = c[2*j+2].toString();
                 
                 if (pp.hasKey(p1) && pp.hasKey(p2)) {
+                    //save_keys.add(p1);
+                    //save_keys.add(p2);
                     p_save = p2;
                     drawConstLine(dc, pp[p1],pp[p2],
                                 [sizex, sizey, addx, addy, gmst_deg]);
@@ -3823,6 +3843,8 @@ class SolarSystemBaseView extends WatchUi.View {
 
 
         }
+
+        
         return;
 
 

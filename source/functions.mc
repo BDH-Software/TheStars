@@ -404,22 +404,24 @@ function earthRotationAngle(jd){
 
 //}
 
-/*
+
 ////insertionSort works fine but we're not using it right now. Quicksort is (maybe) a tad quickers.
 //given a dict with keys =kyss & values an array [1,2,3,4,5...]
 //and separate send the keys kys (or perhaps they are a separate array...)
 //will return an array with the keys sorted ascending on the nth value of the array
-function insertionSort(kys, dict, n) {
+//function insertionSort(kys, dict, n) {
+function insertionSort(kys) {
     //var kys = dict.getKeys();
     for (var i = 1; i < kys.size(); i++) {
         var kkey = kys[i];
-        var sorton = dict[kkey][n];
+        //var sorton = dict[kkey][n];
         
         var j = i - 1;
 
         // Move elements of dict[0..i-1], that are greater than key,
         // to one position ahead of their current position
-        while (j >= 0 && dict[kys[j]][n] > sorton) {
+        //while (j >= 0 && dict[kys[j]][n] > sorton) {
+        while (j >= 0 && kys[j].compareTo( kkey) > 0) {
             kys[j + 1] = kys[j];
             j = j - 1;
         }
@@ -429,7 +431,7 @@ function insertionSort(kys, dict, n) {
 
     return kys;
 }
-*/
+
 
 /*
 // Given a dict with keys = kys & values an array [1,2,3,4,5...]
