@@ -30,6 +30,8 @@ var save_local_animation_count;
 var ssbv_init_count_global = 0;
 
 var small_whh, /*full_whh,*/ zoomy_whh, whh0, whh1;
+var moveX = 0;
+var moveY = 0;
 
 //! This view displays the position information
 class SolarSystemBaseView extends WatchUi.View {
@@ -419,7 +421,8 @@ class SolarSystemBaseView extends WatchUi.View {
                 break;*/
             case (1):  //slow-moving animated ecliptic
                 stopOffScreenBuffer();
-                largeEcliptic(dc, 0);
+                starField(dc);
+                //largeEcliptic(dc, 0);
                 $.timeWasAdded = false;
                 if (buttonPresses<1){started = false;}
                 //if ($.started) {WatchUi.requestUpdate();}
@@ -3674,6 +3677,331 @@ class SolarSystemBaseView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
     */
+
+    public function drawStar(dc, ra,dec,mag, sizex,sizey,addx,addy, jd_ut){
+            var res = raDecToAltAz_deg(ra,dec,lastLoc[0],lastLoc[1],jd_ut);
+            ra = normalize(ra + addy) * screenWidth /sizey;
+            dec = normalize(dec + addx) * screenHeight /sizey;
+            dc.fillCircle(ra,dec,mag);
+    }
+
+    public function drawConstLine(dc, ra,dec,ra2,dec2,sizex,sizey,addx,addy){
+            ra = normalize(ra + addy) * screenWidth /sizey;
+            dec = normalize(dec + addx) * screenHeight /sizey;
+            ra2 = normalize(ra2 + addy) * screenWidth /sizey;
+            dec2 = normalize(dec2 + addx) * screenHeight /sizey;
+            if ((ra-ra2).abs()>xc) {return;}
+            if ((dec-dec2).abs()>yc) {return;}
+            
+            dc.drawLine(ra,dec,ra2,dec2);
+            //dc.fillCircle(ra,dec,mag);
+    }
+
+    public function drawConstLine_num (key1, key2, sizex, sizey, addx, addy){
+
+        //drawConstLine()
+
+    }
+
+    public function putText (dc,text,font, justify, ra,dec,sizex,sizey,addx,addy){
+
+            ra = normalize(ra + addy) * screenWidth /sizey;
+            dec = normalize(dec + addx) * screenHeight /sizey;
+            
+
+        dc.drawText(ra,dec,font,text,justify);
+
+    }
+
+
+    public function starField(dc) {
+         //deBug("RDSWC2: ", allPlanets);
+         var zoom_whh, whh;
+         
+        pp= WatchUi.loadResource( $.Rez.JsonData.hipparcos4) as Dictionary;
+
+        var cc = WatchUi.loadResource( $.Rez.JsonData.constellations_stellarium) as Dictionary;
+
+        /*
+        
+        for (var i = 0; i < pp.size(); i++) {
+            var key = kys[i];
+            deBug(key, pp[key]);
+        }
+        return;
+        */
+
+        //note that we must SUBTRACT the TZ & DST factors from our current local time to get the correct JD - the julianDate routine in functions.mc does this
+        var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour + time_add_hrs, now_info.min, timeZoneOffset_sec/3600f, dst);
+        
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
+        dc.clear();
+        var sizex =  90f;
+        var sizey = 90f;
+        var addy = 45 + moveY;
+        var addx = 0 + moveX;
+        var kys = pp.keys();
+        deBug("SF", [sizex,sizey,addx,addy]);
+        for (var i = 0; i < pp.size(); i++) {
+            var key = kys[i];
+            var pt = pp[key];
+            var ra = pt[1];
+            var dec = pt[2];
+            var mag = pt[0];
+
+            //if (ra<0 || ra > sizex || dec + addy < 0 || dec +addy > sizey) {
+                //deBug("drop", key);
+                 //continue;}
+
+            drawStar(dc, ra,dec,mag,sizex,sizey,addx,addy,jd_ut) ;         
+
+        }
+        var cckys = cc.keys();
+        for (var i = 0; i < cc.size(); i++) {
+            var key = cckys[i];
+            var c = cc[key];
+            var p_save = null;
+            for (var j= 0; j<c[0]; j++) {
+                var p1 = c[2*j +1].toString();
+                var p2 = c[2*j+2].toString();
+                
+                if (pp.hasKey(p1) && pp.hasKey(p2)) {
+                    p_save = p2;
+                    drawConstLine(dc, pp[p1][1], pp[p1][2],
+                                      pp[p2][1], pp[p2][2],
+                                sizex, sizey, addx, addy, jd_ut);
+
+                } else {
+                    //deBug("dropped", [p1,p2]);
+                }
+            }
+            if (p_save != null) {
+                putText(dc,key,1,  Graphics.TEXT_JUSTIFY_CENTER, [pp[p_save][1] +4, pp[p_save][2]+4, sizex, sizey,addx,addy, jd_ut]);
+            
+            }
+
+
+        }
+        return;
+
+
+        //dc.setColor(Graphics.COLOR_TRANSPARENT, Graphics.COLOR_BLACK);
+        //dc.clear();
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        //getMessage();
+
+        
+        //setPosition(Position.getInfo());
+        //xc = dc.getWidth() / 2;
+        //yc = dc.getHeight() / 2;
+   
+        r = (xc < yc) ? xc : yc;
+        r = .9 * r;
+
+        //deBug("RDSWC3: ", allPlanets);
+
+        font = Graphics.FONT_TINY;
+        textHeight = dc.getFontHeight(font);
+    
+
+
+
+
+        //*********** SET SCALE/ZOOM LEVEL****************
+        var max =0.00001;        
+        
+        for (var i = 0; i<zoom_whh.size(); i++) {
+            key = zoom_whh[i];
+            if (whh.indexOf(key)<0) {continue;} //in case dwarf planet/asteroids eliminated by ***planetsOption***
+            //System.println("KEY whh: " + key);
+            if (pp[key] == null) {continue;}
+            var rd = pp[key][0]*pp[key][0]+pp[key][1]*pp[key][1]
+               + pp[key][2]*pp[key][2];
+            if (rd> max) {max = rd;}
+            //System.println("MM: " + key + " " + pp[key][0] + " " + pp[key][1] + " " + rd);
+            //if ((pp[key][0]).abs() > maxX) { maxX = (pp[key][0]).abs();}
+            //if ((pp[key][1]).abs() > maxY) { maxY = (pp[key][1]).abs();}
+        }
+
+     
+            //var oldscale = scale;
+                //System.println("RDSWC - new scale & targetDc: "  + $.speedWasChanged + " " + $.newModeOrZoom );
+                orrZoomOption_values =  toArray(WatchUi.loadResource($.Rez.Strings.orrzoom_values) as String,  "|", 1);
+            
+                scale = (min_c*0.85*eclipticSizeFactor)/Math.sqrt(max) * $.orrZoomOption_values[$.Options_Dict[orrZoomOption_enum]] ;  
+                asteroidsRendered = false;
+                orrZoomOption_values = null;
+
+            //must clear screen if scale has changed, otherwise clear it per resetDots setting
+            
+
+                if (null != _offscreenBuffer) {
+                    targetDc = _offscreenBuffer.getDc();                      
+                    targetDc.setColor(Graphics.COLOR_TRANSPARENT, Graphics.COLOR_BLACK);
+                    targetDc.clear();        
+                    targetDc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+                    targetDc = null;
+                    //System.println ("Using offscreenBUFFER");
+
+                } else {
+                    targetDc = dc;
+                    //System.println ("NOTTTTT Using offscreenBUFFER");
+                }
+            
+            $.newModeOrZoom = false;
+            $.speedWasChanged = false;
+        
+
+
+        
+        if (ga_rad.abs()>.001 || the_rad.abs() > 0.001) {
+
+            //var oblecl=  obliquityEcliptic_rad ($.now_info.year, $.now_info.month, $.now_info.day, $.now_info.hour + time_add_hrs, 0, 0, 0);
+
+            var oblecl = Math.toRadians(calc_obliq_deg ($.now_info, $.now));
+            
+            mcob = Math.cos(oblecl);
+            msob = Math.sin(oblecl);
+            mcgr = Math.cos(ga_rad);
+            msgr = Math.sin(ga_rad);
+            mctr = Math.cos(the_rad);
+            mstr = Math.sin(the_rad);
+
+            //var min_z = 10000000.0f;
+            //var max_z = -10000000.0f;
+            //var sorter = new [1001];
+
+            for (var i = 0; i<kys.size(); i++) {
+                key = kys[i];
+
+                var aster = false;
+                if (key.equals("AsteroidA") || key.equals("AsteroidB")) { aster = true;}
+                //System.println("ga th: " + ga_rad + " " + the_rad) ;
+                //System.println("XYZ PERS: " + key + pp[key]);
+
+                //First we have t ocorrect for the obliquity of the ecliptic
+                //which makes the plan of the solar system at a "tilt" to
+                //the equatorial coordinates.
+
+                if (aster) {  //asteroid belt, our points represent two points, which we DON'T want to correct for ecliptic (bec. it is already on that plane) and we DON'T want to rotate around Z axis (bec. we want points on the X & Y axis in the final result, for ease of ellipse drawing).
+                    y0 = pp[key][1];
+                    z0 = pp[key][2];
+                    x1 = pp[key][0];
+                    y1 = y0;
+
+                }
+                else {
+                    z0 = pp[key][2] * mcob - pp[key][1] * msob;
+                    y0 = pp[key][1] * mcob + pp[key][2] * msob;
+                    
+                    x1 = pp[key][0] * mcgr - y0 *msgr;
+                    y1 = y0 *mcgr + pp[key][0] * msgr;
+                    
+                }
+                //x1 = x;
+
+                y2 = y1 * mctr - z0* mstr;
+                var z2 = y1 *mstr + pp[key][2] * mctr;
+                //y2 = y1;
+                //var pers_fact = (5*mx + (z2+ mx)/2)/6.0/mx;
+                pp[key][0] = (x1).toFloat();// *pers_fact;
+                pp[key][1] = (y2).toFloat();// * pers_fact; // * pers_fact;
+                pp[key][2] = (z2).toFloat();  
+                //var z_sort = (Math.floor(z2 * 50).toNumber()) + 500;
+                //if (z_sort>1000) {z_sort=1000;}
+                //if (z_sort<0) {z_sort=0;}
+                
+                //if (sorter[z_sort] == null) {sorter[z_sort] = [key];}
+                //else {sorter[z_sort].add(key);}
+                //if (z2<min_z) {min_z = z2;}
+                //if (z2> max_z) {max_z = z2;}
+                
+                //System.println("XYZ' PERS: " + x2 + " " + y1 + " " );
+            }
+            kys = null; 
+            //System.println("whhbefore: " + whh);
+            //deBug("RDSWC11A: ", allPlanets);
+            //deBug("RDSWC11Awhh: ", whh);
+
+            //We need to sort by Z values but if the_rad is close to 0 deg or 180 deg we can skip it
+            var trmpi = mod(the_rad, Math.PI);
+            if (trmpi > Math.PI/4.0 && trmpi < 3* Math.PI/4.0) {
+                //zoom_whh = insertionSort(zoom_whh, pp, 2);
+                zoom_whh = quickSort(zoom_whh, pp, 2); //was slower than insertion sort.  But on a second try, faster.  Both are probably about the same, sometimes one is better, sometimes the other.
+                
+                /*zoom_whh = [];
+                for (var j = 0; j < sorter.size(); j++) {
+                    if (sorter[j]!= null) {
+                        zoom_whh.addAll(sorter[j]);
+                    }
+                }*/
+            }
+            
+
+
+            if (_offscreenBuffer == null) {
+                //for SOME REASON just setting targetDc = dc DOESN"T WORK !!!!??!?!?!?!??!
+                //drawOrbits3(dc, pp, scale, xc, yc, big_small, zoom_whh, Graphics.COLOR_WHITE); 
+            } else {      
+                targetDc = _offscreenBuffer.getDc();      
+                //drawOrbits3(targetDc, pp, scale, xc, yc, big_small, zoom_whh, Graphics.COLOR_WHITE);
+
+                //DRAW THE ASTEROID BELT
+                if (!asteroidsRendered) {
+                                        
+                    //targetDc.setPenWidth(1);
+                    //targetDc.drawEllipse (xc,yc, pp["AsteroidA"][0].abs() * scale, pp["AsteroidB"][1].abs() * scale );        
+                    drawFuzzyEllipse (targetDc,screenWidth, screenHeight, xc,yc, pp["AsteroidA"][0].abs() * scale, pp["AsteroidB"][1].abs() * scale); // ,:high 
+                    asteroidsRendered = true;
+                } 
+
+
+                    dc.drawBitmap(0, 0, _offscreenBuffer);
+                
+ 
+
+                targetDc = null;
+                
+            }
+        
+
+        init_findSpotRect();
+        LORR_horizon_line_drawn = false;
+        //System.println("kys whh " + kys + " \n" + whh);
+        for (var i = 0; i<zoom_whh.size(); i++) {
+        //for (var i = 0; i<kys.size(); i++) {
+
+            //key1 = kys[i];
+            key = zoom_whh[i];
+            //System.println ("kys: " + key + " " + key1);
+            //if ( ["Ceres", "Uranus", "Neptune", "Pluto", "Eris", "Chiron"].indexOf(key)> -1) {continue;}
+            if (key == null || pp[key] == null) {continue;} //not much else to do...
+            //if (key1 == null || pp[key1] == null) {continue;} //not much else to do...
+
+
+
+            x = scale * pp[key][0] + xc;
+            
+            y = scale * pp[key][1] + yc;
+
+            var z = scale * pp[key][2];
+
+
+
+
+   
+            
+            
+            
+
+        }
+
+
+
+
+
+    }
+    }
 
     function setPositionFromManual() as Boolean {
         //deBug("SIP 2", null);

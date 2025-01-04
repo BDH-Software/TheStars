@@ -227,6 +227,9 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         $.run_oneTime = true; //in case we're stopped, it will run just once
         if (buttonPresses == 1) {return;} //1st buttonpress just gets out of intro titles
 
+        if (type ==:next) {moveX +=10;}
+        else {moveY +=10;}
+
         var in = $.view_mode;
         var od = $.Options_Dict[thetaOption_enum]; //od 0 change time intv, 1 = altitude (theta), 2 = direction (gamma)
 
@@ -238,7 +241,9 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
             //WatchUi.requestUpdate();
         } else if (in == 1 || in ==2 || (in > 2 && od ==0)){
             $.LORR_show_horizon_line = false;
-            //deBug("HI MOM!", []);
+            deBug("HI MOM!", []);
+            
+            deBug("HI MOM!", [moveX]);
             if (started)  {
                 $.speeds_index +=  mult;
                 //$.speedWasChanged = true; //skipping reset on speed change, for now

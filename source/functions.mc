@@ -342,6 +342,64 @@ import Toybox.Lang;
     }
 */
 
+//3 functions below per:
+//Greg Miller (gmiller@gregmiller.net) 2021
+//Released as public domain
+//http://www.celestialprogramming.com/
+//https://www.celestialprogramming.com/convert_ra_dec_to_alt_az.html
+
+//all inputs in degrees & all outputs in degrees
+function raDecToAltAz_deg(ra_deg,dec_deg,lat_deg,lon_deg,jd_ut){
+    var ret = raDecToAltAz(Math.toRadians(ra_deg),Math.toRadians(dec_deg),Math.toRadians(lat_deg),Math.toRadians(lon_deg),Math.toRadians(jd_ut));
+
+    return [Math.toDegrees(ret[0]),Math.toDegrees(ret[1], Math.toDegrees(ret[2]), Math.toDegrees(ret[3]))];
+
+}
+
+//All input and output angles are in radians, jd is Julian Date in UTC
+function raDecToAltAz_rad(ra,dec,lat,lon,jd_ut){
+    //Meeus 13.5 and 13.6, modified so West longitudes are negative and 0 is North
+    const gmst=greenwichMeanSiderealTime(jd_ut);
+    var localSiderealTime=mod((gmst+lon),(2*Math.PI));    
+        
+    var H=(localSiderealTime - ra);
+    if(H<0){H+=2*Math.PI;}
+    if(H>Math.PI){H=H-2*Math.PI;}
+
+    var az = (Math.atan2(Math.sin(H), Math.cos(H)*Math.sin(lat) - Math.tan(dec)*Math.cos(lat)));
+    var a = (Math.asin(Math.sin(lat)*Math.sin(dec) + Math.cos(lat)*Math.cos(dec)*Math.cos(H)));
+    az-=Math.PI;
+
+    if(az<0){az+=2*Math.PI;}
+    return [az,a, localSiderealTime,H];
+    //az = azimuth, a = altitude, H = hour angle, localSiderealTime = local sidereal time
+}
+    
+function greenwichMeanSiderealTime(jd){
+    //"Expressions for IAU 2000 precession quantities" N. Capitaine1,P.T.Wallace2, and J. Chapront
+    const t = ((jd - 2451545.0)) / 36525.0;
+
+    var gmst=earthRotationAngle(jd)+(0.014506 + 4612.156534*t + 1.3915817*t*t - 0.00000044 *t*t*t - 0.000029956*t*t*t*t - 0.0000000368*t*t*t*t*t)/60.0/60.0*Math.PI/180.0;  //eq 42
+    gmst=mod(gmst,2*Math.PI);
+    if(gmst<0) { gmst+=2*Math.PI;}
+
+    return gmst;
+}
+
+function earthRotationAngle(jd){
+    //IERS Technical Note No. 32
+
+    const t = jd- 2451545.0;
+    const f = constrain(jd);
+
+    var theta = 2*Math.PI * (f + 0.7790572732640 + 0.00273781191135448 * t); //eq 14
+    theta=mod(theta,2*Math.PI);
+    if(theta<0) {theta+=2*Math.PI;}
+
+    return theta;
+
+}
+
 
 //}
 

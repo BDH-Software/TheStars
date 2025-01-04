@@ -6,7 +6,7 @@ Regular expressions to fix up hipparcos catalogs
 
 to
 
-$2 => [
+\n"$2" : [
 
     #2.
 
