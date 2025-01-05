@@ -7,50 +7,102 @@ import Toybox.System;
 import Toybox.Math;
 
 
-var pp_orig = {};
+
 var pp = {};
 var cc = {};
 var ret as Lang.ByteArray = [3]b;
 
 function processStars(){
+    var pp_orig = {};
+
+    var pprez = [$.Rez.JsonData.hipparcos4_1,
+    $.Rez.JsonData.hipparcos4_2,
+    $.Rez.JsonData.hipparcos4_3,
+    $.Rez.JsonData.hipparcos4_4,
+    $.Rez.JsonData.hipparcos4_5,
+    $.Rez.JsonData.hipparcos4_6,
+    $.Rez.JsonData.hipparcos4_7,
+    $.Rez.JsonData.hipparcos4_8,
+    $.Rez.JsonData.hipparcos4_9,
+    $.Rez.JsonData.hipparcos4_10,
+    $.Rez.JsonData.hipparcos4_11,
+    $.Rez.JsonData.hipparcos4_12,
+    
+    ];
 
 
-    pp_orig= WatchUi.loadResource( $.Rez.JsonData.hipparcos4) as Dictionary;
+    for (var j = 0; j < pprez.size(); j++) {
+            pp_orig= WatchUi.loadResource( pprez[j]) as Dictionary;
 
             //get rid of any stars that cannot be seen from this latitude (sloppy filter >85 instead aof >90 to reduce size a bit more)
             var kys = pp_orig.keys();
             deBug("pppor",[pp_orig,kys]);
             for (var i =0; i<kys.size(); i++) {
                 var star = pp_orig[kys[i]];
-                if (normalize(lastLoc[0] - star[2])>85) {
-                    pp_orig.remove(kys[i]);
-                    deBug("remove", [kys[i], star]);
+                if (normalize(lastLoc[0] - star[2])>85 && 1==0) {
+                    //pp_orig.remove(kys[i]);
+                    deBug("omit", [kys[i], star]);
                 } else {
                     //var ret as Lang.ByteArray = [];
-                    deBug("256",[star[1]*256/360, (star[1]*256/360).toChar(), (star[1]*256/360 ) & 256]);
-                    ret = [3]b;
+                    deBug("256b",[star[1]*256/360, (star[1]*256/360).toChar(), (star[1]*256/360 ) & 256]);
+                    ret = []b;
                     ret.add(star[0]) as Lang.ByteArray;
                     ret.add((star[1]*256/360)) as Lang.ByteArray;
                     ret.add(star[2]) as Lang.ByteArray;
                     //pp.put((kys[i]).toNumber(), ret);
-                    pp.put((kys[i].toNumber()), ret);
-                    deBug("PPPP",[kys[i].toNumber(), ret]);
+                    $.pp.put((kys[i].toNumber()), ret);
+                    deBug("PPPPQ",[kys[i].toNumber(), ret, star]);
                 }   
             }
             kys = null;
             pp_orig = null;
+    }
+    pprez = [$.Rez.JsonData.constellations_stellarium_1,
+    $.Rez.JsonData.constellations_stellarium_2,
+    $.Rez.JsonData.constellations_stellarium_3,
+    $.Rez.JsonData.constellations_stellarium_4,
+    $.Rez.JsonData.constellations_stellarium_5,
+    $.Rez.JsonData.constellations_stellarium_6,
+    $.Rez.JsonData.constellations_stellarium_7,
+    
+    
+    ];
 
             var myStats = System.getSystemStats();
             System.println("Memory2: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
             myStats = null;
 
-
-            cc = WatchUi.loadResource( $.Rez.JsonData.constellations_stellarium) as Dictionary;
+            for (var j = 0; j < pprez.size(); j++) { 
+                pp_orig = WatchUi.loadResource( pprez[j]) as Dictionary;
+                var kys = pp_orig.keys();
+                for (var i = 0; i<kys.size(); i++) {
+                    var key = kys[i];
+                    var cnst = pp_orig[key];
+                    var tal = 0;
+                    var himag = 10000000;
+                    for (var k = 0; k<cnst.size();k++) {
+                        var star = cnst[k];
+                        if ($.pp.hasKey(star)) {
+                            tal++;
+                            var mag = pp[star][0];
+                            if (mag < himag) { himag = mag;}
+                            
+                        }                        
+                    }
+                    if (tal*100/cnst.size()>50 && himag < 45) {
+                        deBug("adding", [key, tal, himag, cnst.size()]);
+                        $.cc.put(key,cnst);
+                        deBug("adding", [key, tal, himag, cnst.size()]);
+                    } else {
+                        deBug("omitting", [key, tal, himag, cnst.size()]);
+                    }
+                }
+            }
 
             myStats = System.getSystemStats();
             System.println("Memory3: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
             myStats = null;
 
-            deBug("pp", pp);
-            deBug("cc", cc);
+            deBug("pp", $.pp);
+            deBug("cc", $.cc);
 }

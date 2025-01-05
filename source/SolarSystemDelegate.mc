@@ -51,8 +51,8 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         $.run_oneTime = true; //in case we're stopped, it will run just once
         if (buttonPresses == 1) {return;} //1st buttonpress just gets out of intro titles
 
-        if (type ==:next) {moveX +=10;}
-        else {moveX -=10;}
+        if (type ==:next) {moveX +=40;}
+        else {moveX -=40;}
 
       
 
