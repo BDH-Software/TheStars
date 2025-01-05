@@ -2735,7 +2735,8 @@ class SolarSystemBaseView extends WatchUi.View {
         col = Graphics.COLOR_WHITE;
         fillcol = Graphics.COLOR_BLACK;
         b_size = base_size/def_size*min_c;
-        min_size = 2.0/def_size*min_c;
+        min_size = 3.0/def_size*min_c;
+        var max_size = 1.7*min_size;
         size = b_size;
 
         
@@ -2856,9 +2857,10 @@ class SolarSystemBaseView extends WatchUi.View {
         */
 
         if (size < min_size) { size = min_size; }
+        if (size > max_size) { size = max_size; }
 
-        if (type == :orrery && big_small == 1 && key.equals("Sun")) {size = size/2.0;}
-        if (type == :orrery && big_small == 2 && key.equals("Sun")) {size = size/4.0;}
+        //if (type == :orrery && big_small == 1 && key.equals("Sun")) {size = size/2.0;}
+        //if (type == :orrery && big_small == 2 && key.equals("Sun")) {size = size/4.0;}
         
         /* {
             if (key.equals("Moon"))
@@ -2867,6 +2869,7 @@ class SolarSystemBaseView extends WatchUi.View {
             else 
         }*/
         //System.println("size " + key + " " + size);
+        /*
         if (type == :orrery && (key.equals("Moon"))) {
             if (big_small == 0)  {
                 //we set moon's size equal to earth above
@@ -2878,8 +2881,9 @@ class SolarSystemBaseView extends WatchUi.View {
                 size = size/3.2; //a little less exact for modes 2,3
                 
             }
-            if (size<0.5) {size=0.5;} //keep it from comppletely disappearing no matter what
+            if (size<0.5) {size=0.5;} //keep it from completely disappearing no matter what
         }
+        */
         //System.println("size2 " + key + " " + size + " " + min_size);
 
         /*
@@ -3025,7 +3029,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 break;
            
             case "Moon" :  
-
+                    if (size<8) {size = 8;}
 
                     if (moon_age_deg >= 94 && moon_age_deg < 175) {
                          dc.setColor(0xf0f9ff, Graphics.COLOR_TRANSPARENT);                //0x171f25
@@ -3705,6 +3709,37 @@ class SolarSystemBaseView extends WatchUi.View {
             //deBug("PPPPQ3", [key, az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
     }
 
+    public function plotPlanet(dc, ra,dec, name, jughead){
+            var sizex = jughead[0];
+            var sizey = jughead[1];
+            var addx = jughead[2];
+            var addy = jughead[3];
+            var gmst_deg = jughead[4];
+            var res = raDecToAltAz_deg(ra,dec,lastLoc[0],lastLoc[1],gmst_deg);
+            var az = res[0];
+            var alt = res[1];
+            
+            //deBug("alt", [az, alt]);
+            if (alt<5) {return;}
+            var x = Math.cos(Math.toRadians(az+addx)) * (90.0 - alt); 
+            var y = Math.sin (Math.toRadians(az+addx)) * (90.0 - alt);
+
+            y = y * screenHeight / sizey;
+            x =xc - x * screenWidth /sizex;
+
+            //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
+
+
+            //mag = (40 - proc(mag))/10; //ranges from about 52 to 0
+            //mag = mag*mag/700;
+            //if (mag<1) {mag =1;}
+            //mag += 3;
+            //dc.fillCircle(x,y,mag);
+            drawPlanet(dc, name, [x,y,0,0], 2, 0, :orrery, null, null);
+            //deBug("PPPPQ3", [key, az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
+            dc.drawText(x + xc/8.0 , y + yc/8.0,1,name.substring(0,2),Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+    }
+
     public function drawConstLine(dc, s1,s2,jughead){
             var sizex = jughead[0];
             var sizey = jughead[1];
@@ -3766,7 +3801,7 @@ class SolarSystemBaseView extends WatchUi.View {
             var offsetX = jughead[7];
             var offsetY = jughead[8];
 
-            var res = raDecToAltAz_deg(ra,dec,lastLoc[0],lastLoc[1],gmst_deg);
+            var res = raDecToAltAz_deg(ra,dec,lastLoc[0],lastLoc[1],gmst_deg); //rad & dec processing done above....
             var az = res[0];
             var alt = res[1];
             if (alt<5) {return;}
@@ -3829,8 +3864,10 @@ class SolarSystemBaseView extends WatchUi.View {
     var save_keys=[];
     var tally_finished = false;
     var tally2_finished = false;
+    var tally3_finished = false;
     var last_started = false;
     var save_moveX;
+    var planets;
 
     //var cc;
     public function starField(dc) {
@@ -3855,6 +3892,7 @@ class SolarSystemBaseView extends WatchUi.View {
         if (!last_started && !addLabels)      {
             tally_finished = false;
             tally2_finished = false;
+            tally3_finished = false;
             tally = 0;
             tally2 = 0;
             deBug("restarting", null);
@@ -3886,10 +3924,14 @@ class SolarSystemBaseView extends WatchUi.View {
         if (save_moveX != moveX) {
             tally2 = 0;
             tally = 0;
+            
             tally2_finished = false;
             tally_finished = false;
+            tally3_finished = false;
             save_moveX = moveX;
         }
+
+
         
 
         if (!tally2_finished) {
@@ -3931,6 +3973,29 @@ class SolarSystemBaseView extends WatchUi.View {
                 drawStar(dc, ra,dec,mag, key, [sizex,sizey,addx,addy,gmst_deg]) ;         
 
             } 
+        }
+
+        if (!tally3_finished ) {
+
+            var whh = toArray(WatchUi.loadResource($.Rez.Strings.planets_Options2) as String,  "|", 0);
+
+            planets = planetCoord($.now_info, $.now.timeZoneOffset, $.now.dst,0, :ecliptic_latlon, whh);
+
+            moon_info3 = eclipticPos_moon_best ($.now_info, $.now.timeZoneOffset, $.now.dst, 0);
+
+            planets.put("Moon",[moon_info3[0], moon_info3[1]]); 
+            moon_age_deg = normalize ((planets["Moon"][0]) - (planets["Sun"][0])); //0-360 with 0 being new moon, 90 1st q, 180 full, 270 last q
+            
+
+
+            var kys = planets.keys();
+            for (var i = 0; i < kys.size(); i++) {
+                var key = kys[i];
+                deBug(key, planets[key]);
+                plotPlanet(dc, planets[key][0], planets[key][1], key, [sizex,sizey,addx,addy,gmst_deg] );
+;
+            }
+            tally3_finished = true;
         }
 
         if (!tally_finished) {

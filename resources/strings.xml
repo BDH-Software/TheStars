@@ -11,7 +11,8 @@
     <string id="whh1">Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Ceres|Chiron|Eris|Gonggong</string> -->
 
     <!-- OPTIONS-->
-    <string id="planets_Options1">Sun|Mercury|Venus|Earth|Moon|Mars|AsteroidA|AsteroidB|Jupiter|Saturn|Uranus|Neptune|Pluto|Ceres|Chiron|Eris|Gonggong|Quaoar|Makemake|Haumea</string>
+    <!-- <string id="planets_Options1">Sun|Mercury|Venus|Earth|Moon|Mars|AsteroidA|AsteroidB|Jupiter|Saturn|Uranus|Neptune|Pluto|Ceres|Chiron|Eris|Gonggong|Quaoar|Makemake|Haumea</string> -->
+    <string id="planets_Options2">Sun|Mercury|Venus|Earth|Moon|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto</string>
     <!-- NOTE if updating this array, adjust MENU line 340 "%20" to correspond to teh # of elements -->
 
     <!-- <string id="planets_Options2">Sun|Mercury|Venus|Earth|Moon|Mars|AsteroidA|AsteroidB|Jupiter|Saturn|Uranus|Neptune|Pluto</string>
