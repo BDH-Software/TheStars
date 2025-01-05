@@ -150,7 +150,9 @@ class SolarSystemBaseView extends WatchUi.View {
             }*/
 
             if (!hippconst_finished ) {
+                started = false;
                 processStars();
+                WatchUi.requestUpdate();
             } else {
 
                 WatchUi.requestUpdate();
@@ -489,6 +491,20 @@ class SolarSystemBaseView extends WatchUi.View {
         }
     }
 
+    function titlePage(dc as Dc) {
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
+        dc.clear();
+        //dc.setPenColor(0, 0, 0);
+        var font = Graphics.FONT_LARGE;
+        var textHeight = dc.getFontHeight(font);
+        dc.drawText(xc, yc - textHeight,font,"THE",Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(xc, yc,font,"STARS",Graphics.TEXT_JUSTIFY_CENTER);
+        //dc.drawText(0, 0, "THE");
+        //dc.drawText(0, 0, "STARS");
+
+
+    }
+
     //! Update the view
     //! @param dc Device context    
     var save_count =-10;
@@ -510,6 +526,10 @@ class SolarSystemBaseView extends WatchUi.View {
         
 
         $.now = System.getClockTime(); //for testing
+
+        if (!hippconst_finished) {
+            titlePage(dc);
+        }
        
        /* if (!started) {
             tally=0;
@@ -3671,7 +3691,7 @@ class SolarSystemBaseView extends WatchUi.View {
             var x = Math.cos(Math.toRadians(az+addx)) * (90.0 - alt); 
             var y = Math.sin (Math.toRadians(az+addx)) * (90.0 - alt);
 
-            y =screenHeight - y * screenHeight /sizey;
+            y = y * screenHeight / sizey;
             x =xc - x * screenWidth /sizex;
 
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
@@ -3700,7 +3720,7 @@ class SolarSystemBaseView extends WatchUi.View {
             
             if (alt<-2) {return;}
         
-            y =screenHeight - y * screenHeight /sizey;
+            y = y * screenHeight / sizey;
             x =xc - x * screenWidth /sizex;
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
             
@@ -3710,14 +3730,14 @@ class SolarSystemBaseView extends WatchUi.View {
             //if (alt2 > 127) {alt2 = alt2 - 256;}
             if (alt2<-2) {return;}
 
-            if (normalize180(alt2-alt) > 90 || normalize180(az2-az) > 90) {return;}
+            //if (normalize180(alt2-alt) > 90 || normalize180(az2-az) > 90) {return;}
 
             var x2 = Math.cos(Math.toRadians(az2 + addx)) * (90.0 - alt2); 
             var y2 = Math.sin (Math.toRadians(az2 + addx)) * (90.0 - alt2);
 
-            if ((x-x2).abs()>xc || (y-y2).abs()>yc) {return;}
+            if ((x-x2).abs()> screenWidth || (y-y2).abs()>screenHeight) {return;}
 
-            y2 =screenHeight - y2 * screenHeight /sizey;
+            y2 = y2 * screenHeight / sizey;
             x2 =xc - x2 * screenWidth /sizex;
             //az2 =xc + (az2-xc) *alt2 /screenHeight; //poor man's spherical projection
    
@@ -3755,8 +3775,8 @@ class SolarSystemBaseView extends WatchUi.View {
             var y = Math.sin (Math.toRadians(az +addx)) * (90.0 - alt);
 
             
-            y =screenHeight - y * screenHeight /sizey;
-            x =xc -  x * screenWidth /sizex;
+            y = y * screenHeight / sizey;
+            x = xc -  x * screenWidth /sizex;
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
             y += offsetY;
             x += offsetX;
@@ -3770,12 +3790,47 @@ class SolarSystemBaseView extends WatchUi.View {
         return  x.toNumber();
     }
 
+    function placeDirections(dc, jughead){
+        var dirs = ["N",
+                    "NE",
+                    "E",
+                    "SE",
+                    "S", 
+                    "SW",
+                     "W",
+                     "NW",
+        ];
+
+        var sizex = jughead[0];
+        var sizey = jughead[1];
+        var addx = jughead[2];
+        var addy = jughead[3];
+        //var gmst_deg = jughead[4];                    
+
+        for (var i = 0; i < 360; i += 45) {
+            var dir = dirs[i/45];
+
+            var x = Math.cos(Math.toRadians(i + addx)) * (90.0 - 10); 
+            var y = Math.sin (Math.toRadians(i +addx)) * (90.0 - 10);
+
+            
+            y = y * screenHeight / sizey;
+            x = xc -  x * screenWidth /sizex;
+            //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
+            
+
+            dc.drawText(x, y,1,dir,Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            //putText(dc,dir,1,  Graphics.TEXT_JUSTIFY_CENTER, [pp[p_save][1], pp[p_save][2], sizex, sizey,addx,addy, gmst_deg, 4, 4]);
+        }
+    }
+
     var tally = 10000000;
     var tally2 = 10000000;
     var save_keys=[];
     var tally_finished = false;
     var tally2_finished = false;
     var last_started = false;
+    var save_moveX;
 
     //var cc;
     public function starField(dc) {
@@ -3825,8 +3880,16 @@ class SolarSystemBaseView extends WatchUi.View {
         var sizex =  90f;
         var sizey = 90f;
         var addy =0f;
+        //moveX 0 == east, 90 = south, 180 = west, 270 = north
         var addx = 0 + moveX;
         kys = pp.keys();
+        if (save_moveX != moveX) {
+            tally2 = 0;
+            tally = 0;
+            tally2_finished = false;
+            tally_finished = false;
+            save_moveX = moveX;
+        }
         
 
         if (!tally2_finished) {
@@ -3838,6 +3901,8 @@ class SolarSystemBaseView extends WatchUi.View {
                 //deBug("stars", save_keys);
                 //save_keys = [];
                 dc.clear();
+                placeDirections(dc, [sizex,sizey,addx,addy]);
+                save_moveX = moveX;
                 
             }
             //deBug("kys", [kys.size(),tally, tally2, kys]);

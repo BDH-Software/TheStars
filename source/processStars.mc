@@ -130,10 +130,7 @@ function processStars(){
     
     
     if (const_proc >= pprez.size()) { const_finished = true;}
-    if (hipp_finished && const_finished) {hippconst_finished = true;}
+    if (hipp_finished && const_finished) {hippconst_finished = true;
+    started = true;}
 }
-
-function starsTimer() {
-
-} 
 
