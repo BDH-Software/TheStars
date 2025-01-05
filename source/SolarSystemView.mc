@@ -3668,15 +3668,20 @@ class SolarSystemBaseView extends WatchUi.View {
             
             deBug("alt", [az, alt]);
             if (alt<5) {return;}
-            alt =screenHeight - normalize(alt + addy) * screenHeight /sizey;
-            az =-normalize180(addx-az) * screenWidth /sizex + screenWidth;
+            var x = Math.cos(Math.toRadians(az)) * (90.0 - alt); 
+            var y = Math.sin (Math.toRadians(az)) * (90.0 - alt);
 
-            az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
-            mag = 40 - proc(mag); //ranges from about 52 to 0
-            mag = mag*mag/500;
+            y =screenHeight - normalize(y + addy) * screenHeight /sizey;
+            x =-normalize180(addx-x) * screenWidth /sizex + screenWidth;
+
+            //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
+
+
+            mag = (40 - proc(mag))/10; //ranges from about 52 to 0
+            //mag = mag*mag/700;
             if (mag<1) {mag =1;}
             //mag += 3;
-            dc.fillCircle(az,alt,mag);
+            dc.fillCircle(x,y,mag);
             deBug("PPPPQ3", [key, az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
     }
 
@@ -3689,24 +3694,31 @@ class SolarSystemBaseView extends WatchUi.View {
             var res = raDecToAltAz_deg(s1[1] * byteDeg,proc(s1[2]),lastLoc[0],lastLoc[1],gmst_deg);
             var az = res[0];
             var alt = res[1];
+
+            var x = Math.cos(Math.toRadians(az)) * (90.0 - alt); 
+            var y = Math.sin (Math.toRadians(az)) * (90.0 - alt);
             
-            if (alt<5) {return;}
-            alt =screenHeight - normalize(alt + addy) * screenHeight /sizey;
-            az =screenWidth - normalize(addx -az) * screenWidth /sizex;
-            az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
+            if (alt<-2) {return;}
+        
+            y =screenHeight - normalize(y + addy) * screenHeight /sizey;
+            x =screenWidth - normalize(addx - x) * screenWidth /sizex;
+            //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
             
             res = raDecToAltAz_deg(s2[1] * byteDeg,proc(s2[2]),lastLoc[0],lastLoc[1],gmst_deg);
             var az2 = res[0];
             var alt2 = res[1];
             //if (alt2 > 127) {alt2 = alt2 - 256;}
-            if (alt2<5) {return;}
-            alt2 =screenHeight - normalize(alt2 + addy) * screenHeight /sizey;
-            az2 =screenWidth - normalize(addx - az2) * screenWidth /sizex;
-            az2 =xc + (az2-xc) *alt2 /screenHeight; //poor man's spherical projection
-            if ((alt-alt2).abs()>yc) {return;}
-            if ((az-az2).abs()>xc) {return;}
+            if (alt2<-2) {return;}
+
+            var x2 = Math.cos(Math.toRadians(az)) * (90.0 - alt); 
+            var y2 = Math.sin (Math.toRadians(az)) * (90.0 - alt);
+
+            y2 =screenHeight - normalize(y2 + addy) * screenHeight /sizey;
+            x2 =screenWidth - normalize(addx - x2) * screenWidth /sizex;
+            //az2 =xc + (az2-xc) *alt2 /screenHeight; //poor man's spherical projection
+   
             
-            dc.drawLine(az,alt,az2,alt2);
+            dc.drawLine(x,y,x2,y2);
             //dc.fillCircle(az,alt,s1[0]*1.5);
             //dc.fillCircle(az2,alt2,s2[0]*1.5);
             //dc.fillCircle(ra,dec,mag);
@@ -3734,13 +3746,18 @@ class SolarSystemBaseView extends WatchUi.View {
             var az = res[0];
             var alt = res[1];
             if (alt<5) {return;}
-            alt =screenHeight - normalize(alt + addy) * screenHeight /sizey;
-            az =screenWidth - normalize(addx - az) * screenWidth /sizex;
-            az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
-            alt += offsetY;
-            az += offsetX;
 
-        dc.drawText(az,alt,font,text,justify);
+            var x = Math.cos(Math.toRadians(az)) * (90.0 - alt); 
+            var y = Math.sin (Math.toRadians(az)) * (90.0 - alt);
+
+            
+            y =screenHeight - normalize(y + addy) * screenHeight /sizey;
+            x =screenWidth - normalize(addx - x) * screenWidth /sizex;
+            //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
+            y += offsetY;
+            x += offsetX;
+
+        dc.drawText(x, y,font,text,justify);
 
     }
 
