@@ -1,6 +1,6 @@
 <jsonDataResources>
 
-   <jsonData id="hipparcos4" filename="hipparcos4.json"/>
+   <!-- <jsonData id="hipparcos4" filename="hipparcos4.json"/> -->
 
 <!--
     <jsonData id="LongitudeRadius_res">

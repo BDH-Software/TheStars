@@ -149,7 +149,12 @@ class SolarSystemBaseView extends WatchUi.View {
               
             }*/
 
-           WatchUi.requestUpdate();
+            if (!hippconst_finished ) {
+                processStars();
+            } else {
+
+                WatchUi.requestUpdate();
+            }
            
             //WatchUi.requestUpdate();
             // } else if ($.view_modes[$.view_mode] == 0) { //view_mode==0, we always request the update & let it figure it out
@@ -505,11 +510,12 @@ class SolarSystemBaseView extends WatchUi.View {
         
 
         $.now = System.getClockTime(); //for testing
-        if (!started) {
+       
+       /* if (!started) {
             tally=0;
             tally2=0;
             return;
-            }
+            } */
         starField(dc);
         return;
 
@@ -3650,21 +3656,28 @@ class SolarSystemBaseView extends WatchUi.View {
 
     const byteDeg = 360f/256f;
 
-    public function drawStar(dc, ra,dec,mag, sizex,sizey,addx,addy, gmst_deg){
-            var res = raDecToAltAz_deg(ra,proc(dec),lastLoc[0],lastLoc[1],gmst_deg);
-            var az = res[0] * byteDeg;
+    public function drawStar(dc, ra,dec,mag, key, jughead){
+            var sizex = jughead[0];
+            var sizey = jughead[1];
+            var addx = jughead[2];
+            var addy = jughead[3];
+            var gmst_deg = jughead[4];
+            var res = raDecToAltAz_deg(ra * byteDeg,proc(dec),lastLoc[0],lastLoc[1],gmst_deg);
+            var az = res[0];
             var alt = res[1];
             
             deBug("alt", [az, alt]);
             if (alt<5) {return;}
             alt =screenHeight - normalize(alt + addy) * screenHeight /sizey;
-            az =-normalize(addx-az) * screenWidth /sizex + screenWidth;
+            az =-normalize180(addx-az) * screenWidth /sizex + screenWidth;
 
-            az =xc + (az-xc) *alt /screenHeight;
-            mag = 40 - mag; //ranges from about 52 to 0
+            az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
+            mag = 40 - proc(mag); //ranges from about 52 to 0
             mag = mag*mag/500;
             if (mag<1) {mag =1;}
+            //mag += 3;
             dc.fillCircle(az,alt,mag);
+            deBug("PPPPQ3", [key, az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
     }
 
     public function drawConstLine(dc, s1,s2,jughead){
@@ -3673,23 +3686,23 @@ class SolarSystemBaseView extends WatchUi.View {
             var addx = jughead[2];
             var addy = jughead[3];
             var gmst_deg = jughead[4];
-            var res = raDecToAltAz_deg(s1[1],proc(s1[2]),lastLoc[0],lastLoc[1],gmst_deg);
-            var az = res[0] * byteDeg;
+            var res = raDecToAltAz_deg(s1[1] * byteDeg,proc(s1[2]),lastLoc[0],lastLoc[1],gmst_deg);
+            var az = res[0];
             var alt = res[1];
             
             if (alt<5) {return;}
             alt =screenHeight - normalize(alt + addy) * screenHeight /sizey;
             az =screenWidth - normalize(addx -az) * screenWidth /sizex;
-            az =xc + (az-xc) *alt /screenHeight;
+            az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
             
-            res = raDecToAltAz_deg(s2[1],proc(s2[2]),lastLoc[0],lastLoc[1],gmst_deg);
-            var az2 = res[0] * byteDeg;
+            res = raDecToAltAz_deg(s2[1] * byteDeg,proc(s2[2]),lastLoc[0],lastLoc[1],gmst_deg);
+            var az2 = res[0];
             var alt2 = res[1];
             //if (alt2 > 127) {alt2 = alt2 - 256;}
             if (alt2<5) {return;}
             alt2 =screenHeight - normalize(alt2 + addy) * screenHeight /sizey;
             az2 =screenWidth - normalize(addx - az2) * screenWidth /sizex;
-            az2 =xc + (az2-xc) *alt2 /screenHeight;
+            az2 =xc + (az2-xc) *alt2 /screenHeight; //poor man's spherical projection
             if ((alt-alt2).abs()>yc) {return;}
             if ((az-az2).abs()>xc) {return;}
             
@@ -3707,7 +3720,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
     public function putText (dc,text,font, justify, jughead){
         if (Math.rand()%3!=0) {return;}
-            var ra = jughead[0];
+            var ra = jughead[0]  * byteDeg;
             var dec = proc(jughead[1]);
             var sizex = jughead[2];
             var sizey = jughead[3];
@@ -3718,12 +3731,12 @@ class SolarSystemBaseView extends WatchUi.View {
             var offsetY = jughead[8];
 
             var res = raDecToAltAz_deg(ra,dec,lastLoc[0],lastLoc[1],gmst_deg);
-            var az = res[0] * byteDeg;
+            var az = res[0];
             var alt = res[1];
             if (alt<5) {return;}
             alt =screenHeight - normalize(alt + addy) * screenHeight /sizey;
             az =screenWidth - normalize(addx - az) * screenWidth /sizex;
-            az =xc + (az-xc) *alt /screenHeight;
+            az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
             alt += offsetY;
             az += offsetX;
 
@@ -3739,6 +3752,9 @@ class SolarSystemBaseView extends WatchUi.View {
     var tally = 10000000;
     var tally2 = 10000000;
     var save_keys=[];
+    var tally_finished = false;
+    var tally2_finished = false;
+    var last_started = false;
 
     //var cc;
     public function starField(dc) {
@@ -3750,9 +3766,24 @@ class SolarSystemBaseView extends WatchUi.View {
         System.println("Memory1: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
         //deBug("pp", [$.pp]);
 
+        if (!started) {
+            last_started = false;
+            return;
+        }
+
         if ($.pp == null) {
             deBug("return",null);
-            return;} 
+            return;}
+
+        //set up starting or re-starting for the first time
+        if (!last_started)      {
+            tally_finished = false;
+            tally2_finished = false;
+            tally = 0;
+            tally2 = 0;
+            deBug("restarting", null);
+        }
+        last_started = true;
 
         /*
         
@@ -3777,77 +3808,102 @@ class SolarSystemBaseView extends WatchUi.View {
         kys = pp.keys();
         
 
+        if (!tally2_finished) {
 
-        if (tally2>kys.size() || tally2 == 0) {
-            tally2 = 0;
-            //save_keys = insertionSort(save_keys );
-            //deBug("stars", save_keys);
-            //save_keys = [];
-            dc.clear();
+            if (tally2>kys.size() || tally2 == 0) {
+                tally2 = 0;
+                //tally2_finished = false;
+                //save_keys = insertionSort(save_keys );
+                //deBug("stars", save_keys);
+                //save_keys = [];
+                dc.clear();
+                
+            }
+            //deBug("kys", [kys.size(),tally, tally2, kys]);
+            var first2 = tally2;
+            var last2 = tally2 + 20;
+            if (last2 >= kys.size()) {
+                last2 = kys.size();
+                tally2_finished = true;
+            }
+            deBug("starsc1", [kys.size(),tally2, first2, last2]);
+
+            tally2 += 20;
+            deBug("SF", [sizex,sizey,addx,addy, jd_ut, gmst_deg, lastLoc]);
+            for (var i = first2; i < last2; i++) {
+                var key = kys[i];
+                var pt = pp[key];
+                var ra = pt[1];
+                var dec = pt[2];
+                var mag = pt[0];
+
+                //if (ra<0 || ra > sizex || dec + addy < 0 || dec +addy > sizey) {
+                    //deBug("drop", key);
+                    //continue;}
+                    deBug("PPPPQ2:", [key, ra,dec,mag]);
+
+                drawStar(dc, ra,dec,mag, key, [sizex,sizey,addx,addy,gmst_deg]) ;         
+
+            } 
         }
-        deBug("kys", [kys.size(),tally, tally2, kys]);
-        var first2 = tally2;
-        var last2 = tally2 + 20;
-        if (last2 > kys.size()) {last2 = kys.size();}
-        tally2 += 20;
-        deBug("SF", [sizex,sizey,addx,addy, jd_ut, gmst_deg, lastLoc]);
-        for (var i = first2; i < last2; i++) {
-            var key = kys[i];
-            var pt = pp[key];
-            var ra = pt[1];
-            var dec = pt[2];
-            var mag = pt[0];
 
-            //if (ra<0 || ra > sizex || dec + addy < 0 || dec +addy > sizey) {
-                //deBug("drop", key);
-                 //continue;}
-                 deBug("ds:", [ra,dec,mag]);
+        if (!tally_finished) {
+            var cckys = $.cc.keys();
 
-            drawStar(dc, ra,dec,mag,sizex,sizey,addx,addy,gmst_deg) ;         
+            if (tally>cckys.size()) {
+                tally = 0;
+                //save_keys = insertionSort(save_keys );
+                
+                tally_finished = false;
+                //save_keys = [];
+                //dc.clear();
+                //started = false;
+            }
 
-        } 
-        var cckys = $.cc.keys();
+            var first = tally;
+            var last = tally + 5;
+            if (last >= cckys.size()) {
+                last = cckys.size();
+                tally_finished = true;
+            }
 
-        if (tally>cckys.size()) {
-            tally = 0;
-            //save_keys = insertionSort(save_keys );
-            deBug("starsc", [cckys.size(),cckys]);
-            //save_keys = [];
-            //dc.clear();
+            deBug("starsc", [cckys.size(),tally, first, last]);
+            tally += 5;
+
+            
+            for (var i = first; i < last; i++) {
+                var key = cckys[i];
+                var c = $.cc[key];
+                var p_save = null;
+                for (var j= 0; j<c.size()/2; j++) {
+                    var p1 = c[2*j];
+                    var p2 = c[2*j+1];
+                    
+                    if (pp.hasKey(p1) && pp.hasKey(p2)) {
+                        //save_keys.add(p1);
+                        //save_keys.add(p2);
+                        p_save = p2;
+                        drawConstLine(dc, pp[p1],pp[p2],
+                                    [sizex, sizey, addx, addy, gmst_deg]);
+                        deBug("drawn", [key,p1,p2]);
+
+                    } else {
+                        deBug("dropped", [key,p1,p2]);
+                    }
+                }
+                if (p_save != null) {
+                    putText(dc,key,1,  Graphics.TEXT_JUSTIFY_CENTER, [pp[p_save][1], pp[p_save][2], sizex, sizey,addx,addy, gmst_deg, 4, 4]);
+                
+                }
+
+
+            }
+        }
+
+        if (tally2_finished && tally_finished) {
             started = false;
         }
-        var first = tally;
-        var last = tally + 5;
-        if (last > cckys.size()) {last = cckys.size();}
-        tally += 5;
 
-        
-        for (var i = first; i < last; i++) {
-            var key = cckys[i];
-            var c = $.cc[key];
-            var p_save = null;
-            for (var j= 0; j<c.size()/2; j++) {
-                var p1 = c[2*j];
-                var p2 = c[2*j+1];
-                
-                if (pp.hasKey(p1) && pp.hasKey(p2)) {
-                    //save_keys.add(p1);
-                    //save_keys.add(p2);
-                    p_save = p2;
-                    drawConstLine(dc, pp[p1],pp[p2],
-                                [sizex, sizey, addx, addy, gmst_deg]);
-
-                } else {
-                    deBug("dropped", [key,p1,p2]);
-                }
-            }
-            if (p_save != null) {
-                putText(dc,key,1,  Graphics.TEXT_JUSTIFY_CENTER, [pp[p_save][1], pp[p_save][2], sizex, sizey,addx,addy, gmst_deg, 4, 4]);
-            
-            }
-
-
-        }
         
         return;
     }
