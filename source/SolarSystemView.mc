@@ -3668,11 +3668,11 @@ class SolarSystemBaseView extends WatchUi.View {
             
             deBug("alt", [az, alt]);
             if (alt<5) {return;}
-            var x = Math.cos(Math.toRadians(az)) * (90.0 - alt); 
-            var y = Math.sin (Math.toRadians(az)) * (90.0 - alt);
+            var x = Math.cos(Math.toRadians(az+addx)) * (90.0 - alt); 
+            var y = Math.sin (Math.toRadians(az+addx)) * (90.0 - alt);
 
-            y =screenHeight - normalize(y + addy) * screenHeight /sizey;
-            x =-normalize180(addx-x) * screenWidth /sizex + screenWidth;
+            y =screenHeight - y * screenHeight /sizey;
+            x =xc - x * screenWidth /sizex;
 
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
 
@@ -3695,13 +3695,13 @@ class SolarSystemBaseView extends WatchUi.View {
             var az = res[0];
             var alt = res[1];
 
-            var x = Math.cos(Math.toRadians(az)) * (90.0 - alt); 
-            var y = Math.sin (Math.toRadians(az)) * (90.0 - alt);
+            var x = Math.cos(Math.toRadians(az + addx)) * (90.0 - alt); 
+            var y = Math.sin (Math.toRadians(az + addx)) * (90.0 - alt);
             
             if (alt<-2) {return;}
         
-            y =screenHeight - normalize(y + addy) * screenHeight /sizey;
-            x =screenWidth - normalize(addx - x) * screenWidth /sizex;
+            y =screenHeight - y * screenHeight /sizey;
+            x =xc - x * screenWidth /sizex;
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
             
             res = raDecToAltAz_deg(s2[1] * byteDeg,proc(s2[2]),lastLoc[0],lastLoc[1],gmst_deg);
@@ -3710,11 +3710,15 @@ class SolarSystemBaseView extends WatchUi.View {
             //if (alt2 > 127) {alt2 = alt2 - 256;}
             if (alt2<-2) {return;}
 
-            var x2 = Math.cos(Math.toRadians(az)) * (90.0 - alt); 
-            var y2 = Math.sin (Math.toRadians(az)) * (90.0 - alt);
+            if (normalize180(alt2-alt) > 90 || normalize180(az2-az) > 90) {return;}
 
-            y2 =screenHeight - normalize(y2 + addy) * screenHeight /sizey;
-            x2 =screenWidth - normalize(addx - x2) * screenWidth /sizex;
+            var x2 = Math.cos(Math.toRadians(az2 + addx)) * (90.0 - alt2); 
+            var y2 = Math.sin (Math.toRadians(az2 + addx)) * (90.0 - alt2);
+
+            if ((x-x2).abs()>xc || (y-y2).abs()>yc) {return;}
+
+            y2 =screenHeight - y2 * screenHeight /sizey;
+            x2 =xc - x2 * screenWidth /sizex;
             //az2 =xc + (az2-xc) *alt2 /screenHeight; //poor man's spherical projection
    
             
@@ -3747,12 +3751,12 @@ class SolarSystemBaseView extends WatchUi.View {
             var alt = res[1];
             if (alt<5) {return;}
 
-            var x = Math.cos(Math.toRadians(az)) * (90.0 - alt); 
-            var y = Math.sin (Math.toRadians(az)) * (90.0 - alt);
+            var x = Math.cos(Math.toRadians(az + addx)) * (90.0 - alt); 
+            var y = Math.sin (Math.toRadians(az +addx)) * (90.0 - alt);
 
             
-            y =screenHeight - normalize(y + addy) * screenHeight /sizey;
-            x =screenWidth - normalize(addx - x) * screenWidth /sizex;
+            y =screenHeight - y * screenHeight /sizey;
+            x =xc -  x * screenWidth /sizex;
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
             y += offsetY;
             x += offsetX;
