@@ -59,7 +59,7 @@ function processStars(){
                     ret.add(star[2]) as Lang.ByteArray;
                     //pp.put((kys[i]).toNumber(), ret);
                     $.pp.put((kys[i].toNumber()), ret);
-                    deBug("PPPPQ1",[kys[i].toNumber(), ret, star]);
+                    //deBug("PPPPQ1",[kys[i].toNumber(), ret, star]);
                 }   
             }
             kys = null;
@@ -83,9 +83,9 @@ function processStars(){
     ];
 
 
-            var myStats = System.getSystemStats();
-            System.println("Memory2: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
-            myStats = null;
+            //var myStats = System.getSystemStats();
+            //System.println("Memory2: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
+            //myStats = null;
 
     j = const_proc;
     if (hipp_finished && j < pprez.size()) {
@@ -110,16 +110,16 @@ function processStars(){
                     if (tal*100/cnst.size()>5) {
                         //deBug("adding", [key, tal, himag, cnst.size()]);
                         $.cc.put(key,cnst);
-                        deBug("adding", [key, tal, himag, cnst.size()]);
+                        //deBug("adding", [key, tal, himag, cnst.size()]);
                     } else {
-                        deBug("omitting", [key, tal, himag, cnst.size()]);
+                        //deBug("omitting", [key, tal, himag, cnst.size()]);
                     }
                 }
             //}
 
-            myStats = System.getSystemStats();
-            System.println("Memory3: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
-            myStats = null;
+            //myStats = System.getSystemStats();
+            //System.println("Memory3: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
+            //myStats = null;
             
 
             //deBug("pp", $.pp);

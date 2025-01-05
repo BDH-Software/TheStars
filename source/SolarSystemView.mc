@@ -3686,7 +3686,7 @@ class SolarSystemBaseView extends WatchUi.View {
             var az = res[0];
             var alt = res[1];
             
-            deBug("alt", [az, alt]);
+            //deBug("alt", [az, alt]);
             if (alt<5) {return;}
             var x = Math.cos(Math.toRadians(az+addx)) * (90.0 - alt); 
             var y = Math.sin (Math.toRadians(az+addx)) * (90.0 - alt);
@@ -3702,7 +3702,7 @@ class SolarSystemBaseView extends WatchUi.View {
             if (mag<1) {mag =1;}
             //mag += 3;
             dc.fillCircle(x,y,mag);
-            deBug("PPPPQ3", [key, az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
+            //deBug("PPPPQ3", [key, az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
     }
 
     public function drawConstLine(dc, s1,s2,jughead){
@@ -3842,7 +3842,7 @@ class SolarSystemBaseView extends WatchUi.View {
         System.println("Memory1: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
         //deBug("pp", [$.pp]);
 
-        if (!started) {
+        if (!started&&!addLabels) {
             last_started = false;
             return;
         }
@@ -3852,7 +3852,7 @@ class SolarSystemBaseView extends WatchUi.View {
             return;}
 
         //set up starting or re-starting for the first time
-        if (!last_started)      {
+        if (!last_started && !addLabels)      {
             tally_finished = false;
             tally2_finished = false;
             tally = 0;
@@ -3926,7 +3926,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 //if (ra<0 || ra > sizex || dec + addy < 0 || dec +addy > sizey) {
                     //deBug("drop", key);
                     //continue;}
-                    deBug("PPPPQ2:", [key, ra,dec,mag]);
+                    //deBug("PPPPQ2:", [key, ra,dec,mag]);
 
                 drawStar(dc, ra,dec,mag, key, [sizex,sizey,addx,addy,gmst_deg]) ;         
 
@@ -3953,7 +3953,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 tally_finished = true;
             }
 
-            deBug("starsc", [cckys.size(),tally, first, last]);
+            //deBug("starsc", [cckys.size(),tally, first, last]);
             tally += 5;
 
             
@@ -3971,10 +3971,10 @@ class SolarSystemBaseView extends WatchUi.View {
                         p_save = p2;
                         drawConstLine(dc, pp[p1],pp[p2],
                                     [sizex, sizey, addx, addy, gmst_deg]);
-                        deBug("drawn", [key,p1,p2]);
+                        //deBug("drawn", [key,p1,p2]);
 
                     } else {
-                        deBug("dropped", [key,p1,p2]);
+                        //deBug("dropped", [key,p1,p2]);
                     }
                 }
                 if (p_save != null) {
@@ -3985,6 +3985,47 @@ class SolarSystemBaseView extends WatchUi.View {
 
             }
         }
+
+        if (addLabels) {
+            addLabels = false;
+            //deBug("adding labels..",null);
+
+            var cckys = $.cc.keys();
+
+
+
+            var first = 0;
+            var last = cckys.size();
+            
+
+            for (var i = first; i < last; i++) {
+                if (Math.rand()%2 != 0) {continue;} //add labels to 1/2 of the consts.
+                var key = cckys[i];
+                var c = $.cc[key];
+                var p_save = null;
+                for (var j= 0; j<c.size()/2; j++) {
+                    var p1 = c[2*j];
+                    var p2 = c[2*j+1];
+                    
+                    if (pp.hasKey(p1) && pp.hasKey(p2)) {
+                        //save_keys.add(p1);
+                        //save_keys.add(p2);
+                        p_save = p2;
+                        break;
+
+
+                    } 
+                }
+                if (p_save != null) {
+                    putText(dc,key,1,  Graphics.TEXT_JUSTIFY_CENTER, [pp[p_save][1], pp[p_save][2], sizex, sizey,addx,addy, gmst_deg, 4, 4]);
+                
+                }
+
+
+            }
+            //deBug("adding labels, done..",null);
+        }
+        
 
         if (tally2_finished && tally_finished) {
             started = false;

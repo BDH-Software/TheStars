@@ -150,7 +150,7 @@ class SolarSystemBaseApp extends Application.AppBase {
         $.timeWasAdded = true;
         $.buttonPresses = 0;
         $.animation_count = 0;
-        $.countWhenMode0Started = 0;
+        //$.countWhenMode0Started = 0;
         $.now = System.getClockTime(); //before ANY routines or functions run, so all can have access if necessary        
         $.time_now = Time.now();
         $.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);

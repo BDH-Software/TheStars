@@ -3,6 +3,7 @@ import Toybox.WatchUi;
 import Toybox.Lang;
 import Toybox.System;
 
+var addLabels = false;
 
 //! Handle input on initial view
 class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
@@ -22,12 +23,13 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //System.println("select button pressed");
         $.buttonPresses++;
         $.timeWasAdded=true;
-        $.LORR_show_horizon_line = false;
+        //$.LORR_show_horizon_line = false;
         $.last_button_time_sec = $.time_now.value();
         //$.exiting_back_button_firstpress=false;
         if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
 
-        $.started = !$.started;   
+        //$.started = !$.started;   
+        addLabels = true;
         return true;
     }
 
