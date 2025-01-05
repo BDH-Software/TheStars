@@ -11,19 +11,26 @@ import Toybox.WatchUi;
 import Toybox.Application.Storage;
 import Toybox.System;
 import Toybox.Math;
+import Toybox.Application.Storage;
+import Toybox.Activity;
 
-var page = 0;
-var pages_total = 25;
+var view_mode;
+var lastLoc;
+var hz = 10f;
+
+
+//var page = 0;
+//var pages_total = 25;
 //var geo_cache;
 //var sunrise_cache;
 //var moon;
 
-var vspo87a;
-var vsop_cache;
-var allOrbitParms = null;
+//var vspo87a;
+//var vsop_cache;
+//var allOrbitParms = null;
     //var view_mode = [0, 1,2,3,4,5]; //manual move ecl, minuts ecl, day ecl, inner orr, mid orr, full orr
-    var view_mode = 1;
-    var num_view_modes = 9;
+    //var view_mode = 1;
+    //var num_view_modes = 9;
 
     //unit is HOUR
     //all are chosen to be WHOLE DAYS however, to make the sun stand still when moving forward on the eliptical screens
@@ -49,7 +56,7 @@ var start_time_sec = 0;
 var last_button_time_sec = 0;
 var save_started = null;
 var reset_date_stop = false; //set TRUE when reset date is called, which STOPS time.
-var hz = 5.0; //updates per second (Requested from OS)
+//var hz = 5.0; //updates per second (Requested from OS)
 var run_oneTime = true; //set to TRUE by anything that once the screeupdate to run ONCE when it is stopped
 
 var message = [];
@@ -110,22 +117,25 @@ class SolarSystemBaseApp extends Application.AppBase {
         $.start_time_sec = $.time_now.value(); //start time of app in unix seconds
 
         //do this AFTER getting time & reading init storage values
-        _solarSystemView = new $.SolarSystemBaseView();
-        solarSystemView_class = _solarSystemView;
-        _solarSystemDelegate = new $.SolarSystemBaseDelegate(_solarSystemView);
+        //_solarSystemView = new $.SolarSystemBaseView();
+        //solarSystemView_class = _solarSystemView;
+        //_solarSystemDelegate = new $.SolarSystemBaseDelegate(_solarSystemView);
         
 
         //These  2 must be done AFTER View class is inited
-        readStorageValues();
-        _solarSystemView.setInitPosition();
+        //readStorageValues();
+        Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));
+        setInitPosition();
 
         //sunrise_cache = new sunRiseSet_cache2();        //works fine but not using it now..
         //System.println("inited...");
-        view_mode=0;
-        $.changeModes(null); //inits speeds_index properly        
+        view_mode=1;
+        //$.changeModes(null); //inits speeds_index properly        
 
 
         //System.println("ARR" + toArray("HI|THERE FRED|M<SYUEIJFJ |FIEJKDF:LKJF|SKDJFF|SDLKJSDFLKJ|THIESNEK|FJIEKJF","|",0));
+
+        
         
         
 
@@ -148,9 +158,12 @@ class SolarSystemBaseApp extends Application.AppBase {
             +  $.now.hour.format("%02d") + ":" +
             $.now.min.format("%02d") + ":" +
             $.now.sec.format("%02d") + " " + now_info.year + "-" + now_info.month + "-" + now_info.day);
-        _solarSystemView.startAnimationTimer($.hz);
-        
 
+        if (_solarSystemView != null) {
+            _solarSystemView.startAnimationTimer($.hz);
+        }
+        
+        
         //readStorageValues();
         Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));
     }
@@ -167,16 +180,16 @@ class SolarSystemBaseApp extends Application.AppBase {
         Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:onPosition));
         _solarSystemView = null;
         _solarSystemDelegate = null;
-        settings_view = null;
-        settings_delegate = null;
+        //settings_view = null;
+        //settings_delegate = null;
 
     }
 
     //! Update the current position
     //! @param info Position information
-    public function onPosition(info as Info) as Void {
+    public function onPosition(info as Position.Info) as Void {
         //System.println("onPosition... count: " + $.count);
-        _solarSystemView.setPosition(info);
+        setPosition(info);
 
     }
 
@@ -187,6 +200,12 @@ class SolarSystemBaseApp extends Application.AppBase {
             +  now.hour.format("%02d") + ":" +
             now.min.format("%02d") + ":" +
             now.sec.format("%02d"));*/
+
+        processStars();
+
+        _solarSystemView = new $.SolarSystemBaseView();
+        //solarSystemView_class = _solarSystemView;
+        _solarSystemDelegate = new $.SolarSystemBaseDelegate(_solarSystemView);
         return [_solarSystemView, _solarSystemDelegate];
         _solarSystemDelegate = null;
         _solarSystemView = null;
@@ -199,6 +218,8 @@ class SolarSystemBaseApp extends Application.AppBase {
         return [new $.SolarSystemSettingsMenu(), new $.SolarSystemInputDelegate()];
     }
     */
+
+    /*
 
     public function readAStorageValue(name, defoolt, size  ) {
         if (!(Application has :Storage)) {
@@ -245,6 +266,7 @@ class SolarSystemBaseApp extends Application.AppBase {
 
         readAStorageValue("resetDots", resetDots_default, resetDots_size );
         */
+        /*
 
         readAStorageValue(planetsOption_enum, planetsOption_default, planetsOption_size );        
 
@@ -269,6 +291,7 @@ class SolarSystemBaseApp extends Application.AppBase {
         //#####SCREEN0 MOVE
         $.screen0Move_index = screen0MoveOption_values[$.Options_Dict["Screen0 Move Option"]];
         */
+        /*
 
         //###### REFRESH RATE
         $.hz = refreshOption_values[$.Options_Dict[refreshOption_enum]];                
@@ -293,6 +316,8 @@ class SolarSystemBaseApp extends Application.AppBase {
         eclipticSizeFactor = eclipticSizeOption_values[$.Options_Dict["Ecliptic Size Option"]];
         */
 
+        /*
+
         //##### Display all or only planets
         planetsOption_value = $.Options_Dict[planetsOption_enum]; //the number not the array (unusual) 
 
@@ -303,9 +328,9 @@ class SolarSystemBaseApp extends Application.AppBase {
         */
 
      
-        
+        /*
     }
-
+*/
 
 }
 
@@ -328,3 +353,186 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
 }
 
 */
+/*
+  function setPositionFromManual() as Boolean {
+        //deBug("SIP 2", null);
+        if ($.Options_Dict[gpsOption_enum]) { return false;}
+        if ($.latlonOption_value[0] < 0) {$.latlonOption_value[0] = 0;}
+        if ($.latlonOption_value[0] > 180) {$.latlonOption_value[0] = 180;}
+        if ($.latlonOption_value[1] < 0) {$.latlonOption_value[1] = 0;}
+        if ($.latlonOption_value[1] > 360) {$.latlonOption_value[1] = 360;}
+        //deBug("SIP 3", null);
+        lastLoc= [$.latlonOption_value[0]-90, $.latlonOption_value[1]-180];
+        //deBug("SIP 4", lastLoc);
+        return true;       
+    }
+    */
+
+    //Until setPosition gets a callback we will use SOME value for lastLoc
+    //We call setInitPosition immeidately upon startup & then setPosition will fill in
+    //later as correct data is available.
+    function setInitPosition () {        
+        //lastLoc = [-70.00894, -179.44008]; //for testing
+        //lastLoc = [-60.00894, 179.44008]; //for testing
+        //lastLoc = [39.00894, -94.44008]; //for testing
+        //lastLoc = [59.00894, -94.44008]; //for testing
+        //lastLoc = [0,0]; //for testing
+        //lastLoc = [51.5, 0]; //for testing - Greenwich
+        //deBug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TESTINGTESTINGTESTING LAT/LONG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", lastLoc);
+        //return;
+
+        //in case MANUAL POSITION set in settings
+        //deBug("SIP 1", null);
+        
+        setPosition(null);
+
+        /*
+
+        //this is pretty much redundant with setPosition now, could be removed??
+        if (lastLoc == null ) {
+            if (lastLoc == null) {self.lastLoc = new Position.Location(            
+                        { :latitude => 39.833333, :longitude => -94.583333, :format => :degrees }
+                        ).toDegrees(); }
+            if ($.Options_Dict.hasKey(lastLoc_enum)) {lastLoc = $.Options_Dict[lastLoc_enum];}
+            
+            var temp = Storage.getValue(lastLoc_enum);
+            if (temp!=null) {lastLoc = temp;}
+            Storage.setValue(lastLoc_enum, lastLoc);
+            $.Options_Dict.put(lastLoc_enum, lastLoc);
+        }
+        //System.println("setINITPosition at " + animation_count + " to: "  + lastLoc);
+        */
+    //}
+
+    }
+
+    //fills in the variable lastLoc with current location and/or
+    //several fallbacks
+    function setPosition (pinfo as Position.Info) {
+        System.println ("setPosition");
+
+        //We only need this ONCE, not continuously, so . . . 
+        //Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:setPosition));
+
+        //lastLoc = [0,0]; //for testing
+        //lastLoc = [51.5, 0]; //for testing - Greenwich
+        //lastLoc = [39.00894, -94.44008]; //for testing
+        //lastLoc = [-60.00894, 179.44008]; //for testing
+        //lastLoc = [-70.00894, -179.44008]; //for testing
+        //deBug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TESTINGTESTINGTESTING LAT/LONG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", lastLoc);        
+        //return;
+
+        //in case MANUAL POSITION set in settings
+        //var man_set = setPositionFromManual(); //will be TRUE if the position is set manually
+        //We still go ahead & try to determine the actual GPS position & save it in options_dict & storage
+        //for future use
+
+        //if (info == null || info.position == null) { pinfo = Position.getInfo(); }
+        //System.println ("sc1: Null? " + (pinfo==null));
+        //if (pinfo != null ) {deBug ("setPosition getting position from OS:",  pinfo.position.toDegrees());}
+
+        var curr_pos = null;
+        if (pinfo!= null && pinfo.position != null) { curr_pos = pinfo.position; }
+        else { //if there is nothing in the pinfo passed to us we just try to grab it now (ie, at init)
+            pinfo = Position.getInfo(); 
+            if (pinfo!= null && pinfo.position != null) { curr_pos = pinfo.position; }
+        }
+        
+        var temp = curr_pos.toDegrees()[0];
+        if ( (temp - 180).abs() < 0.1 || temp.abs() < 0.1 ) {curr_pos = null;} //bad data
+        
+
+        /*
+        //this is giving errors, IQ! screen on wathc???///???!!!!
+        //so just removing for now  2024/12/11
+        try {
+            if (curr_pos == null && Toybox has :Weather) {
+
+                if (Toybox has :Weather) {
+            		var currentConditions = Weather.getCurrentConditions();
+                    if (currentConditions != null && currentConditions.observationLocationPosition != null) {
+                    curr_pos = currentConditions.observationLocationPosition;
+                    }
+	            }
+                if (curr_pos != null && curr_pos has :toDegrees) {
+                    temp = curr_pos.toDegrees()[0];
+                    if ( temp == null || temp == 180 || temp == 0 ) {curr_pos = null;} //bad data
+                }
+            }
+        } catch (e instanceof Lang.Exception) {
+            System.println("This device does not have Toybox.Weather - skipping this method of obtaining position information. Error: " + e);
+        }
+
+        */
+
+        if (curr_pos == null) {
+            var a_info = Activity.getActivityInfo();
+            var a_pos = null;
+            //System.println ("sc1.2:Activity a_pos==Null3? " + (a_pos==null));
+            
+            if (a_info!=null && a_info has :position && a_info.position != null)
+            { a_pos = a_info.position;}
+            if (a_pos != null ) {
+                //System.println ("sc1.2: a_pos " + a_pos.toDegrees());
+                curr_pos = a_pos; 
+            }
+        }
+        
+
+        //System.println ("sc1a:");
+        //In case position info not available, we'll use either the previously obtained value OR the geog center of 48 US states as default.
+        //|| info.accuracy == Pos.QUALITY_NOT_AVAILABLE 
+
+        var new_lastLoc = null;
+        //if ($.Options_Dict.hasKey(lastLoc_enum)) {new_lastLoc = $.Options_Dict[lastLoc_enum];}
+
+        var rt = Storage.getValue(lastLoc_enum);
+        if (rt != null) {new_lastLoc = rt;}
+
+
+        if (curr_pos == null ){
+           if (new_lastLoc == null) { 
+                var long = -98.583333; 
+
+                //approximate longitude from time zone offset if no other option
+                $.now = System.getClockTime();
+                if ($.now != null && $.now.timeZoneOffset != null) { long = $.now.timeZoneOffset/3600*15;}
+
+                new_lastLoc = new Position.Location(            
+                    { :latitude => 39.833333, :longitude => long, :format => :degrees }
+                    ).toDegrees();
+                    //System.println ("sc1b: " + self.lastLoc);
+           }
+        } else {
+
+            var loc = curr_pos.toDegrees();
+            new_lastLoc = loc;
+            //System.println ("sc1c:"+ curr_pos.toDegrees());
+            //System.println ("sc1c");
+        }        
+
+
+        //System.println ("sc2");
+        
+        //$.Options_Dict["Location"] = [self.lastLoc, $.now.value()];
+        //Storage.setValue("Location",$.Options_Dict["Location"]);
+        //System.println ("sc3");
+        /* For testing
+           now = new Time.Moment(1483225200);
+           self.lastLoc = new Pos.Location(
+            { :latitude => 70.6632359, :longitude => 23.681726, :format => :degrees }
+            ).toRadians();
+        */
+        //System.println ("lastLoc: " + lastLoc );
+
+        if (new_lastLoc != null) {
+            //$.Options_Dict.put(lastLoc_enum, new_lastLoc);
+            Storage.setValue(lastLoc_enum, new_lastLoc);
+        }
+        
+        self.lastLoc = new_lastLoc; //if man_set is true, then we don't want to update self.lastLoc with the new value, we want to keep the value that was set by the user.
+
+        //System.println("setPosition (from GPS, final) at " + animation_count + " to: "  + new_lastLoc + " manual GPS mode?" + man_set + " final SET pos: " + self.lastLoc);
+        //return man_set;
+        return;
+    }

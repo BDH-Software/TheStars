@@ -67,17 +67,17 @@ import Toybox.WatchUi;
     // is FAR more accurate though 15X slower. It can but up to 10-15 degrees
     //different from the "low accuracy" version at this time distance, and more as
     //time distance increases.
-    public function eclipticPos_moon_best (now_info, timeZoneOffset_sec, dst,  addTime_hrs) {
-        if (addTime_hrs/24.0/365.0<5000.0) {
-            return eclipticPos_moon(now_info, timeZoneOffset_sec, dst, addTime_hrs);
-        } else {
-            return eclipticMoonELP82(now_info, timeZoneOffset_sec, dst, addTime_hrs);
-        }
+    //public function eclipticPos_moon_best (now_info, timeZoneOffset_sec, dst,  addTime_hrs) {
+        //if (addTime_hrs/24.0/365.0<5000.0) {
+    //        return eclipticPos_moon(now_info, timeZoneOffset_sec, dst, addTime_hrs);
+        //} else {
+        //    return eclipticMoonELP82(now_info, timeZoneOffset_sec, dst, addTime_hrs);
+        //}
 
         //return eclipticPos_moon(now_info, timeZoneOffset_sec, dst, addTime_hrs);
-    }
+    //}
 
-    public function eclipticPos_moon (now_info, timeZoneOffset_sec, dst,  addTime_hrs) {
+    public function eclipticPos_moon_best (now_info, timeZoneOffset_sec, dst,  addTime_hrs) {
 
         //deBug("moonret: ", [now_info, timeZoneOffset_sec, dst, addTime_hrs]);
         //var sml_days  = synodicMonthLength_days(now_info, timeZoneOffset_sec, dst );
@@ -124,7 +124,7 @@ import Toybox.WatchUi;
 
     //class ELP82 {
 
-    public function eclipticMoonELP82 (now_info, timeZoneOffset_sec, dst,addTime_hrs) {
+    /*public function eclipticMoonELP82 (now_info, timeZoneOffset_sec, dst,addTime_hrs) {
 
         //var sml_days  = synodicMonthLength_days(now_info, timeZoneOffset_sec, dst );
         //var base_JD = julianDate (2025, 1, 29 , 12, 36, 0, 0);
@@ -293,7 +293,7 @@ import Toybox.WatchUi;
 
         //];
 
-         
+        /* 
         var LongitudeRadius = WatchUi.loadResource( $.Rez.JsonData.LongitudeRadius_res) as Array;
         var Latitude = WatchUi.loadResource($.Rez.JsonData.Latitude_res) as Array;
 
@@ -343,10 +343,11 @@ import Toybox.WatchUi;
         return t;
     }
     */
-
+/*
     function JDEtoT(jde){
         return (jde-2451545)/36525.0;
     }
+    */
 //}
 
 //}
