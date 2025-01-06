@@ -1065,7 +1065,7 @@ class SolarSystemBaseView extends WatchUi.View {
             if (mag<1) {mag =1;}
             //mag += 3;
             dc.fillCircle(xy[0],xy[1],mag);
-            deBug("PPPPQ3", [az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
+            //deBug("PPPPQ3", [az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
             return [az, alt];
     }
 
@@ -1330,8 +1330,8 @@ class SolarSystemBaseView extends WatchUi.View {
          //var zoom_whh, whh;
 
          
-        var myStats = System.getSystemStats();
-        System.println("Memory1: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
+        //var myStats = System.getSystemStats();
+        //System.println("Memory1: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
         //deBug("pp", [$.pp]);
 
         if (!started&&!select_pressed&&!nextPrev_pressed) {
@@ -1488,9 +1488,9 @@ class SolarSystemBaseView extends WatchUi.View {
                     //deBug("drop", key);
                     //continue;}
                 
-                deBug("PPPPQ2:", [ra,dec,mag]);
+                //deBug("PPPPQ2:", [ra,dec,mag]);
                 var res = drawStar(dc, ra,dec,mag); 
-                deBug("ppppq3", [res, star]);
+                //deBug("ppppq3", [res, star]);
                 if (res[1] < -5) {pp[star[1]].remove(star[2]);}  //remove  stuff below the horizon for memory considerations & we won't ever need/use it      
 
 

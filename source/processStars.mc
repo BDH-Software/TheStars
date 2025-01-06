@@ -53,9 +53,9 @@ function processStars(){
             var ppsz = sz/5 + 1;
             for (var i =0; i<sz; i++) {
                 var star = pp_orig[kys[i]];
-                if (normalize180(lastLoc[0] - star[2]).abs()>80) {
+                if (normalize180(lastLoc[0] - star[2]).abs()>95) {
                     //pp_orig.remove(kys[i]);
-                    deBug("omit", [kys[i], star]);
+                    //deBug("omit", [kys[i], star]);
                 } else {
                     //var ret as Lang.ByteArray = [];
                     //deBug("256b",[star[1]*256/360, (star[1]*256/360).toChar(), (star[1]*256/360 ) & 256]);
@@ -188,10 +188,10 @@ function ppKeys(){
 
     var keys = pp[i].keys();
         for (var j=0;j<keys.size();j++) {
-            var myStats = System.getSystemStats();
-            System.println("Memory3: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
-            deBug("ppikeys", [i,j]);
-            myStats = null;
+            //var myStats = System.getSystemStats();
+            //System.println("Memory3: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
+            //deBug("ppikeys", [i,j]);
+            //myStats = null;
 
             ret.add([i.toNumber(),keys[j].toNumber()]);
             //ret.add(keys[j]);
