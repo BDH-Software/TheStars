@@ -146,8 +146,8 @@ class SolarSystemBaseApp extends Application.AppBase {
     public function onStart(state as Dictionary?) as Void {  
         //System.println("onStart...");
         $.started = false;
-        $.run_oneTime = true;
-        $.timeWasAdded = true;
+        //$.run_oneTime = true;
+        //$.timeWasAdded = true;
         $.buttonPresses = 0;
         $.animation_count = 0;
         //$.countWhenMode0Started = 0;

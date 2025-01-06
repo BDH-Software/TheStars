@@ -24,9 +24,9 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
 
         //System.println("select button pressed");
         $.buttonPresses++;
-        $.timeWasAdded=true;
+        //$.timeWasAdded=true;
         //$.LORR_show_horizon_line = false;
-        $.last_button_time_sec = $.time_now.value();
+        //$.last_button_time_sec = $.time_now.value();
         //$.exiting_back_button_firstpress=false;
         //if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
 

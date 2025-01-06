@@ -53,9 +53,9 @@ function processStars(){
             var ppsz = sz/5 + 1;
             for (var i =0; i<sz; i++) {
                 var star = pp_orig[kys[i]];
-                if (normalize180(lastLoc[0] - star[2])>85) {
+                if (normalize180(lastLoc[0] - star[2]).abs()>80) {
                     //pp_orig.remove(kys[i]);
-                    //deBug("omit", [kys[i], star]);
+                    deBug("omit", [kys[i], star]);
                 } else {
                     //var ret as Lang.ByteArray = [];
                     //deBug("256b",[star[1]*256/360, (star[1]*256/360).toChar(), (star[1]*256/360 ) & 256]);
@@ -131,9 +131,10 @@ function processStars(){
                     for (var k = 0; k<cnst.size();k++) {
                         var star = cnst[k].toNumber();
                         //if ($.pp.hasKey(star)) {
-                        if (ppHasKey(star)) {
+                        var starK = ppReturnKey(star);
+                        if (starK != null) {
                             tal++;
-                            var mag = pp[star][0];
+                            var mag = pp[starK[0]][starK[1]][0];
                             if (mag < himag) { himag = mag;}
                             
                         }                        
@@ -173,15 +174,58 @@ function ppHasKey(key) {
     return false;
 }
 
+//null if it doesn't exist
+function ppReturnKey(key) {
+    for (var i = 0; i<pp.size();i++) {
+        if (pp[i].hasKey(key)){ return [i,key];}
+    }
+    return null;
+}
+
 function ppKeys(){
     var ret = [];
     for (var i=0;i<pp.size();i++) {
 
     var keys = pp[i].keys();
         for (var j=0;j<keys.size();j++) {
-            ret.add([i,keys[j]]);
+            var myStats = System.getSystemStats();
+            System.println("Memory3: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
+            deBug("ppikeys", [i,j]);
+            myStats = null;
+
+            ret.add([i.toNumber(),keys[j].toNumber()]);
+            //ret.add(keys[j]);
         }
     }
     return ret;
+}
+
+var currPPKeys = [];
+var currDict = 0;
+var currItem = 0;
+
+function ppNextStar(restart) {
+    if (currDict >= pp.size() || restart) {
+        currPPKeys = [];
+        currDict = 0;
+        currItem = 0;
+        //deBug("PPNS RET", [currDict,currItem]);
+        return null;
+
+    }
+    if (currItem == 0 || currPPKeys == null) {
+        currPPKeys = pp[currDict].keys();
+    }
+    var ret = ([pp[currDict][currPPKeys[currItem]], currDict,currPPKeys[currItem]]);
+    //deBug("ppns", [currDict,currItem, currPPKeys[currItem], pp[currDict].size(), ret]);
+    currItem++;
+    if (currItem >= pp[currDict].size()) {
+        currDict++;
+        currItem = 0;
+        currPPKeys = [];
+    }
+    
+    return ret;
+
 }
 
