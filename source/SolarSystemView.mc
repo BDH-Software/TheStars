@@ -563,8 +563,8 @@ class SolarSystemBaseView extends WatchUi.View {
         //$.drawPlanetCount++;
         var x = xyr[0];
         var y = xyr[1];
-        var z = xyr[2];
-        var radius = xyr[3];
+        //var z = xyr[2];
+        //var radius = xyr[3];
 
         var col = Graphics.COLOR_WHITE;
         fillcol = Graphics.COLOR_BLACK;
@@ -1105,10 +1105,10 @@ class SolarSystemBaseView extends WatchUi.View {
     }
 
     public function drawConstLine(dc, s1,s2,jughead){
-            var sizex = jughead[0];
-            var sizey = jughead[1];
-            var addAz = jughead[2];
-            var addy = jughead[3];
+            //var sizex = jughead[0];
+            //var sizey = jughead[1];
+            //var addAz = jughead[2];
+            //var addy = jughead[3];
             var gmst_deg = jughead[4];
             var res = raDecToAltAz_deg(s1[1] * byteDeg,proc(s1[2]),lastLoc[0],lastLoc[1],gmst_deg);
             var az = res[0];
