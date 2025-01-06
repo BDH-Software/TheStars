@@ -4080,7 +4080,8 @@ class SolarSystemBaseView extends WatchUi.View {
         
         //moveAz 0 == east, 90 = south, 180 = west, 270 = north
         addAz = 0 + moveAz;
-        kys = pp.keys();
+        //kys = pp.keys();
+        kys = ppKeys();
         if (menu_pressed || nextPrev_pressed) {
             deBug("3",null);
             menu_pressed = false;
@@ -4126,7 +4127,7 @@ class SolarSystemBaseView extends WatchUi.View {
             deBug("SF", [sizex,sizey,addAz,addy, jd_ut, gmst_deg, lastLoc]);
             for (var i = first2; i < last2; i++) {
                 var key = kys[i];
-                var pt = pp[key];
+                var pt = pp[key[0]][key[1]];
                 var ra = pt[1];
                 var dec = pt[2];
                 var mag = pt[0];

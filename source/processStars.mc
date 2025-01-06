@@ -8,7 +8,10 @@ import Toybox.Math;
 
 
 
-var pp = {};
+var pp = [{},{},{},{},{}];
+//var pp1 = {};
+//var pp2 = {};
+//var pold = [{},{}];
 var cc = {};
 var ret as Lang.ByteArray = [3]b;
 var hipp_proc = 0;
@@ -32,6 +35,7 @@ function processStars(){
     $.Rez.JsonData.hipparcos4_10,
     $.Rez.JsonData.hipparcos4_11,
     $.Rez.JsonData.hipparcos4_12,
+    $.Rez.JsonData.hipparcos4_13,
     
     ];
 
@@ -45,9 +49,11 @@ function processStars(){
             //get rid of any stars that cannot be seen from this latitude (sloppy filter >85 instead aof >90 to reduce size a bit more)
             var kys = pp_orig.keys();
             //deBug("pppor",[pp_orig,kys]);
-            for (var i =0; i<kys.size(); i++) {
+            var sz = kys.size();
+            var ppsz = sz/5 + 1;
+            for (var i =0; i<sz; i++) {
                 var star = pp_orig[kys[i]];
-                if (normalize180(lastLoc[0] - star[2])>95) {
+                if (normalize180(lastLoc[0] - star[2])>85) {
                     //pp_orig.remove(kys[i]);
                     //deBug("omit", [kys[i], star]);
                 } else {
@@ -58,7 +64,9 @@ function processStars(){
                     ret.add((star[1]*256/360)) as Lang.ByteArray;
                     ret.add(star[2]) as Lang.ByteArray;
                     //pp.put((kys[i]).toNumber(), ret);
-                    $.pp.put((kys[i].toNumber()), ret);
+                    //deBug("PPPPQ0",[kys[i].toNumber(), ret, star, $.pp.size()]);
+                    var dict = i/ppsz;
+                    $.pp[dict].put((kys[i].toNumber()), ret);                    
                     //deBug("PPPPQ1",[kys[i].toNumber(), ret, star]);
                 }   
             }
@@ -67,9 +75,32 @@ function processStars(){
             hipp_proc++;
     }
 
-    
-    
-    if (hipp_proc >= pprez.size()) { hipp_finished = true;}
+        
+    if (hipp_proc >= pprez.size()) { 
+        hipp_finished = true;
+
+    }
+        /*
+        var keys = $.pp1.keys();
+        for (var i = 0; i < keys.size(); i++) {
+            var key = keys[i];
+            var myStats = System.getSystemStats();
+            System.println("Memory2: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
+            myStats = null;
+            deBug("PPPPQ2",[key]);
+            pp.put(key,pp1[key]);
+        }
+        pp1 = null;
+        keys = $.pp2.keys();
+        for (var i = 0; i < keys.size(); i++) {
+            var key = keys[i];
+            pp.put(key,pp2[key]);
+        }
+
+        pp2 = null;
+        keys = null;
+    }
+    */
     
     pprez = [$.Rez.JsonData.constellations_stellarium_1,
     $.Rez.JsonData.constellations_stellarium_2,
@@ -99,7 +130,8 @@ function processStars(){
                     var himag = 10000000;
                     for (var k = 0; k<cnst.size();k++) {
                         var star = cnst[k].toNumber();
-                        if ($.pp.hasKey(star)) {
+                        //if ($.pp.hasKey(star)) {
+                        if (ppHasKey(star)) {
                             tal++;
                             var mag = pp[star][0];
                             if (mag < himag) { himag = mag;}
@@ -132,5 +164,24 @@ function processStars(){
     if (const_proc >= pprez.size()) { const_finished = true;}
     if (hipp_finished && const_finished) {hippconst_finished = true;
     started = true;}
+}
+
+function ppHasKey(key) {
+    for (var i = 0; i<pp.size();i++) {
+        if (pp[i].hasKey(key)){ return true;}
+    }
+    return false;
+}
+
+function ppKeys(){
+    var ret = [];
+    for (var i=0;i<pp.size();i++) {
+
+    var keys = pp[i].keys();
+        for (var j=0;j<keys.size();j++) {
+            ret.add([i,keys[j]]);
+        }
+    }
+    return ret;
 }
 
