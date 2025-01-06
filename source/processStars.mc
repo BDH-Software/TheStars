@@ -47,7 +47,7 @@ function processStars(){
             //deBug("pppor",[pp_orig,kys]);
             for (var i =0; i<kys.size(); i++) {
                 var star = pp_orig[kys[i]];
-                if (normalize180(lastLoc[0] - star[2])>85) {
+                if (normalize180(lastLoc[0] - star[2])>95) {
                     //pp_orig.remove(kys[i]);
                     //deBug("omit", [kys[i], star]);
                 } else {

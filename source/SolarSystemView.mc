@@ -3702,8 +3702,9 @@ class SolarSystemBaseView extends WatchUi.View {
     public function drawHorizon(dc){
         var xy = XY(0, 90);
         var xy2 = XY(0, 0);
-        dc.setColor(0xe1a75c,starBackgroundColor);
-        dc.drawCircle(xy[0], xy[1],dist (xy, xy2));
+        //dc.setColor(0xe1a75c,starBackgroundColor);
+        //dc.drawCircle(xy[0], xy[1],dist (xy, xy2));
+        drawARC (dc, 0, 24.05, xy[0], xy[1],dist (xy, xy2) + 1, 3, 0xe1a75c);
 
     }
 
@@ -3885,14 +3886,15 @@ class SolarSystemBaseView extends WatchUi.View {
         var bottom = 0;
         var addtxt = "";
         var fakeZoom = zoom_level;
-        if (zoom_level>5) {fakeZoom = 10-zoom_level;}
+        if (zoom_level>4) {fakeZoom = 8-zoom_level;}
 
-        if (fakeZoom > 0 && fakeZoom <= 4) {
+        if (fakeZoom > 0 && fakeZoom < 4) {
             offset = 5;
-            bottom = (fakeZoom - 1) *; //make it like the opposite side, once we're over the top...
-            bottom = (zoom_level -1) * 65f/3.0 - 35f;
+            //bottom = (fakeZoom - 1) *; //make it like the opposite side, once we're over the top...
+            //bottom = (zoom_level -1) * 65f/3.0 - 35f;
+            bottom = (fakeZoom - 1) * 65f/3.0 - 5;
             
-        } else if (zoom_level == 5) {
+        } else if (zoom_level == 4) {
             offset = 5;
             //bottom = (5 - 1) * 18;
             bottom =  90 - 60/2.0; // center on zenith
@@ -3936,7 +3938,7 @@ class SolarSystemBaseView extends WatchUi.View {
         for (var i = 0; i <= 360; i += inc) {
             var dir = dirs[Math.round(i/inc).toNumber()];
 
-            if (zoom_level == 5 && mod(i,90).abs() >0.001) {continue;}
+            if (zoom_level == 4 && mod(i,90).abs() >0.001) {continue;}
             var x = Math.cos(Math.toRadians(i + addAz)) * (90.0 - offset - bottom); 
             var y = Math.sin (Math.toRadians(i +addAz)) * (90.0 - offset - bottom);
 
