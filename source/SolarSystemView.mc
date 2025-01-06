@@ -1241,7 +1241,7 @@ class SolarSystemBaseView extends WatchUi.View {
           //var sFontHeight = dc.getFontHeight(1);
           dirFont = 1; //smallest
           addtxt = " (Z" + zoom_level + ")";
-          dc.drawText(xc, 1,dirFont,addtxt,Graphics.TEXT_JUSTIFY_CENTER);
+          dc.drawText(xc - 2*sFontHeight, 0.5*sFontHeight,dirFont,addtxt,Graphics.TEXT_JUSTIFY_CENTER);
 
         }
         var inc = 45;
@@ -1340,12 +1340,12 @@ class SolarSystemBaseView extends WatchUi.View {
         }
 
         if ($.pp == null) {
-            deBug("return",null);
+            //deBug("return",null);
             return;}
 
         //set up starting or re-starting for the first time
         if ((!last_started && !select_pressed && !nextPrev_pressed) || $.menu_pressed)      {
-            deBug("1",null);
+            //deBug("1",null);
             $.started = true;
             $.menu_pressed = false;
             starFont = Graphics.FONT_SMALL;
@@ -1361,14 +1361,14 @@ class SolarSystemBaseView extends WatchUi.View {
                     
             addy = 0f;
             zoom_level = 0;
-            deBug("restarting", null);
+            //deBug("restarting", null);
         }
         last_started = true;
         
         
 
         if ($.select_pressed) {
-            deBug("2",null);
+            //deBug("2",null);
             $.started = true;
             $.nextPrev_pressed = false;
             $.select_pressed = false;
@@ -1422,7 +1422,7 @@ class SolarSystemBaseView extends WatchUi.View {
         //kys = pp.keys();
         //var kys = ppKeys();
         if (menu_pressed || nextPrev_pressed) {
-            deBug("3",null);
+            //deBug("3",null);
             menu_pressed = false;
             nextPrev_pressed = false;
             started = true;
@@ -1517,7 +1517,7 @@ class SolarSystemBaseView extends WatchUi.View {
             var kys = planets.keys();
             for (var i = 0; i < kys.size(); i++) {
                 var key = kys[i];
-                deBug(key, planets[key]);
+                //deBug(key, planets[key]);
                 plotPlanet(dc, planets[key][0], planets[key][1], key, [sizex,sizey,addAz,addy,gmst_deg] );
 ;
             }
