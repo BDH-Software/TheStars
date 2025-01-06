@@ -5,6 +5,7 @@ import Toybox.System;
 
 var select_pressed = false;
 var nextPrev_pressed = false;
+var menu_pressed = false;
 
 //! Handle input on initial view
 class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
@@ -30,6 +31,7 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
 
         //$.started = !$.started;   
+        $.started = true;
         select_pressed = true;
         return true;
     }
@@ -79,6 +81,23 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         handleNextPrevious (:previous);
        
         return true;
+        
+    }
+
+     function onKey(keyEvent) {
+        var keyvent =  keyEvent.getKey();
+        System.println("GOT KEEY!!!!!!!!!: " + keyvent);         // e.g. KEY_MENU = 7
+
+        if (keyvent == 7) {
+
+            menu_pressed = true;
+            $.started = true;
+
+
+            return true;
+        }
+        return false;
+        
         
     }
 

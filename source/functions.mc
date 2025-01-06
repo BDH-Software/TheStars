@@ -401,6 +401,11 @@ function earthRotationAngle(jd){
 
 }
 
+function dist (xy1, xy2){
+    return Math.sqrt((xy1[0]-xy2[0]) * (xy1[0]-xy2[0]) +
+    (xy1[1]-xy2[1]) * (xy1[1]-xy2[1]) );
+}
+
 
 //}
 

@@ -368,7 +368,7 @@ class SolarSystemBaseView extends WatchUi.View {
         //deBug("drawArc", [270.0 - hr1 * 15.0, 270.0 - hr2 *15.0, hr1, hr2]);
         return true;
     }
-    /*
+    
 
 
     //dashed line 
@@ -395,7 +395,7 @@ class SolarSystemBaseView extends WatchUi.View {
             }
         }
     }
-
+    /*
     //Triangle pointing in the direction  dir_x, dir_y to x1,y1, pointing outwards from x1,y1
     //coord = [dir_x, dir_y, x1, y1]
     public function drawTrianglePointer (myDc, coord, length, base_width, line_width, color, outline, pointer_line) {
@@ -3688,32 +3688,49 @@ class SolarSystemBaseView extends WatchUi.View {
 
     const byteDeg = 360f/256f;
 
-    public function drawStar(dc, ra,dec,mag, key, jughead){
-            var sizex = jughead[0];
-            var sizey = jughead[1];
-            var addAz = jughead[2];
-            var addy = jughead[3];
-            var gmst_deg = jughead[4];
+    public function XY (az, alt) {
+            var x = Math.cos(Math.toRadians(az+addAz)) * (90.0 - alt); 
+            var y = Math.sin (Math.toRadians(az+addAz)) * (90.0 - alt);
+
+            y = (y + addy) * screenHeight / sizey ;
+            x = xc - x * screenWidth /sizex;
+            return [x, y];
+
+    }
+
+
+    public function drawHorizon(dc){
+        var xy = XY(0, 90);
+        var xy2 = XY(0, 0);
+        dc.setColor(0xe1a75c,starBackgroundColor);
+        dc.drawCircle(xy[0], xy[1],dist (xy, xy2));
+
+    }
+
+    public function drawStar(dc, ra,dec,mag, key){
+
             var res = raDecToAltAz_deg(ra * byteDeg,proc(dec),lastLoc[0],lastLoc[1],gmst_deg);
             var az = res[0];
             var alt = res[1];
             
             //deBug("alt", [az, alt]);
             if (alt<5) {return;}
-            var x = Math.cos(Math.toRadians(az+addAz)) * (90.0 - alt); 
+            /*var x = Math.cos(Math.toRadians(az+addAz)) * (90.0 - alt); 
             var y = Math.sin (Math.toRadians(az+addAz)) * (90.0 - alt);
 
-            y = y * screenHeight / sizey + addy;
-            x =xc - x * screenWidth /sizex;
+            y = (y + addy) * screenHeight / sizey ;
+            x = xc - x * screenWidth /sizex; 
+            */
 
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
+            var xy = XY(az, alt);
 
 
             mag = (40 - proc(mag))/10; //ranges from about 52 to 0
             //mag = mag*mag/700;
             if (mag<1) {mag =1;}
             //mag += 3;
-            dc.fillCircle(x,y,mag);
+            dc.fillCircle(xy[0],xy[1],mag);
             //deBug("PPPPQ3", [key, az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
     }
 
@@ -3729,11 +3746,15 @@ class SolarSystemBaseView extends WatchUi.View {
             
             //deBug("alt", [az, alt]);
             if (alt<5) {return;}
+            /*
             var x = Math.cos(Math.toRadians(az+addAz)) * (90.0 - alt); 
             var y = Math.sin (Math.toRadians(az+addAz)) * (90.0 - alt);
 
             y = y * screenHeight / sizey + addy;
             x =xc - x * screenWidth /sizex;
+            */
+
+            var xy = XY(az, alt);
 
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
 
@@ -3743,9 +3764,9 @@ class SolarSystemBaseView extends WatchUi.View {
             //if (mag<1) {mag =1;}
             //mag += 3;
             //dc.fillCircle(x,y,mag);
-            drawPlanet(dc, name, [x,y,0,0], 2, 0, :orrery, null, null);
+            drawPlanet(dc, name, [xy[0],xy[1],0,0], 2, 0, :orrery, null, null);
             //deBug("PPPPQ3", [key, az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
-            dc.drawText(x + xc/8.0 , y + yc/8.0,starFont,name.substring(0,2),Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(xy[0] + xc/8.0 , xy[1] + yc/8.0,starFont,name.substring(0,2),Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     public function drawConstLine(dc, s1,s2,jughead){
@@ -3757,7 +3778,7 @@ class SolarSystemBaseView extends WatchUi.View {
             var res = raDecToAltAz_deg(s1[1] * byteDeg,proc(s1[2]),lastLoc[0],lastLoc[1],gmst_deg);
             var az = res[0];
             var alt = res[1];
-
+            /*
             var x = Math.cos(Math.toRadians(az + addAz)) * (90.0 - alt); 
             var y = Math.sin (Math.toRadians(az + addAz)) * (90.0 - alt);
             
@@ -3766,6 +3787,8 @@ class SolarSystemBaseView extends WatchUi.View {
             y = y * screenHeight / sizey + addy;
             x =xc - x * screenWidth /sizex;
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
+            */
+            var xy = XY(az, alt);
             
             res = raDecToAltAz_deg(s2[1] * byteDeg,proc(s2[2]),lastLoc[0],lastLoc[1],gmst_deg);
             var az2 = res[0];
@@ -3774,7 +3797,7 @@ class SolarSystemBaseView extends WatchUi.View {
             if (alt2<-2) {return;}
 
             //if (normalize180(alt2-alt) > 90 || normalize180(az2-az) > 90) {return;}
-
+            /*
             var x2 = Math.cos(Math.toRadians(az2 + addAz)) * (90.0 - alt2); 
             var y2 = Math.sin (Math.toRadians(az2 + addAz)) * (90.0 - alt2);
 
@@ -3782,10 +3805,14 @@ class SolarSystemBaseView extends WatchUi.View {
 
             y2 = y2 * screenHeight / sizey + addy;
             x2 =xc - x2 * screenWidth /sizex;
+
             //az2 =xc + (az2-xc) *alt2 /screenHeight; //poor man's spherical projection
-   
+            */
+
+            var xy2 = XY(az2, alt2);
             
-            dc.drawLine(x,y,x2,y2);
+            //dc.drawLine(x,y,x2,y2);
+            drawDashedLine (dc,xy[0], xy[1], xy2[0], xy2[1], 0,3, 1, null);
             //dc.fillCircle(az,alt,s1[0]*1.5);
             //dc.fillCircle(az2,alt2,s2[0]*1.5);
             //dc.fillCircle(ra,dec,mag);
@@ -3813,6 +3840,7 @@ class SolarSystemBaseView extends WatchUi.View {
             var az = res[0];
             var alt = res[1];
             if (alt<5) {return;}
+            /*
 
             var x = Math.cos(Math.toRadians(az + addAz)) * (90.0 - alt); 
             var y = Math.sin (Math.toRadians(az +addAz)) * (90.0 - alt);
@@ -3821,10 +3849,12 @@ class SolarSystemBaseView extends WatchUi.View {
             y = y * screenHeight / sizey + addy;
             x = xc -  x * screenWidth /sizex;
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
-            y += offsetY;
-            x += offsetX;
+            */
+            var xy = XY(az, alt);
+            xy[1] += offsetY;
+            xy[0] += offsetX;
 
-        dc.drawText(x, y, starFont,text,justify);
+        dc.drawText(xy[0], xy[1], starFont,text,justify);
 
     }
 
@@ -3857,13 +3887,15 @@ class SolarSystemBaseView extends WatchUi.View {
         var fakeZoom = zoom_level;
         if (zoom_level>5) {fakeZoom = 10-zoom_level;}
 
-        if (fakeZoom > 0 && fakeZoom < 4) {
+        if (fakeZoom > 0 && fakeZoom <= 4) {
             offset = 5;
-            bottom = (zoom_level - 1) * 22.5;
+            bottom = (fakeZoom - 1) *; //make it like the opposite side, once we're over the top...
+            bottom = (zoom_level -1) * 65f/3.0 - 35f;
             
         } else if (zoom_level == 5) {
             offset = 5;
-            bottom = (3 - 1) * 22.5;
+            //bottom = (5 - 1) * 18;
+            bottom =  90 - 60/2.0; // center on zenith
         }
 
         var sFontHeight = dc.getFontHeight(1);
@@ -3904,7 +3936,7 @@ class SolarSystemBaseView extends WatchUi.View {
         for (var i = 0; i <= 360; i += inc) {
             var dir = dirs[Math.round(i/inc).toNumber()];
 
-
+            if (zoom_level == 5 && mod(i,90).abs() >0.001) {continue;}
             var x = Math.cos(Math.toRadians(i + addAz)) * (90.0 - offset - bottom); 
             var y = Math.sin (Math.toRadians(i +addAz)) * (90.0 - offset - bottom);
 
@@ -3919,7 +3951,7 @@ class SolarSystemBaseView extends WatchUi.View {
             }
 
             
-            y = y * screenHeight / sizey + addy;
+            y = (y +addy)* screenHeight / sizey;
             x = xc -  x * screenWidth /sizex;
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
             
@@ -3942,9 +3974,15 @@ class SolarSystemBaseView extends WatchUi.View {
     var save_moveAz = 0;
     var planets;
     var zoom_level=0;
+    var gmst_deg = 0;
     var sizex =  90f;
     var sizey = 90f;
     var addy = 0f;
+    var addAz = 0f;
+    var starColor = Graphics.COLOR_WHITE;
+    //var constColor = Graphics.COLOR_LT_GRAY;
+    var constColor = 0x65a1c0;
+    var starBackgroundColor = Graphics.COLOR_BLACK;
     var starFont = 1;
 
     //var cc;
@@ -3967,17 +4005,20 @@ class SolarSystemBaseView extends WatchUi.View {
             return;}
 
         //set up starting or re-starting for the first time
-        if ((!last_started && !select_pressed) || $.nextPrev_pressed)      {
+        if ((!last_started && !select_pressed && !nextPrev_pressed) || $.menu_pressed)      {
+            deBug("1",null);
             $.started = true;
-            $.nextPrev_pressed = false;
+            $.menu_pressed = false;
             starFont = Graphics.FONT_SMALL;
             tally_finished = false;
             tally2_finished = false;
             tally3_finished = false;
             tally = 0;
             tally2 = 0;
-            sizex =  90f;
-            sizey = 90f;
+            
+            sizex =  92f;
+            sizey = 92f;
+                    
             addy = 0f;
             zoom_level = 0;
             deBug("restarting", null);
@@ -3987,6 +4028,7 @@ class SolarSystemBaseView extends WatchUi.View {
         
 
         if ($.select_pressed) {
+            deBug("2",null);
             $.started = true;
             $.nextPrev_pressed = false;
             $.select_pressed = false;
@@ -3996,19 +4038,19 @@ class SolarSystemBaseView extends WatchUi.View {
             tally = 0;
             tally2 = 0;
             zoom_level += 1;
-            zoom_level = zoom_level%10;
+            zoom_level = zoom_level%8;
             if (zoom_level == 0) {
                 
                     starFont = Graphics.FONT_SMALL;
-                    sizex =  90f;
-                    sizey = 90f;
+                    sizex =  92f;
+                    sizey = 92f;
                     addy = 0f;
                     
             } else {
                 
-                    sizex =45f;
-                    sizey = 45f;
-                    addy = (zoom_level -1) * 72f -180f;
+                    sizex =60f;
+                    sizey = 60f;
+                    addy = (zoom_level -1) * 65f/3.0 - 35f;
                     starFont = Graphics.FONT_MEDIUM;
                     
    
@@ -4029,22 +4071,27 @@ class SolarSystemBaseView extends WatchUi.View {
         //note that we must SUBTRACT the TZ & DST factors from our current local time to get the correct JD - the julianDate routine in functions.mc does this
         var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour, now_info.min, $.now.timeZoneOffset/3600f, $.now.dst);
 
-        var gmst_deg = Math.toDegrees(greenwichMeanSiderealTime(jd_ut));
+        gmst_deg = Math.toDegrees(greenwichMeanSiderealTime(jd_ut));
         
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
+        dc.setColor(starColor,starBackgroundColor);
         
         
         //moveAz 0 == east, 90 = south, 180 = west, 270 = north
-        var addAz = 0 + moveAz;
+        addAz = 0 + moveAz;
         kys = pp.keys();
-        if (save_moveAz != moveAz) {
+        if (menu_pressed || nextPrev_pressed) {
+            deBug("3",null);
+            menu_pressed = false;
+            nextPrev_pressed = false;
+            started = true;
+            last_started = true;
             tally2 = 0;
             tally = 0;
             
             tally2_finished = false;
             tally_finished = false;
             tally3_finished = false;
-            save_moveAz = moveAz;
+            //save_moveAz = moveAz;
         }
 
 
@@ -4071,6 +4118,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 tally2_finished = true;
             }
             deBug("starsc1", [kys.size(),tally2, first2, last2]);
+            dc.setColor(starColor,starBackgroundColor);
 
             tally2 += 20;
             deBug("SF", [sizex,sizey,addAz,addy, jd_ut, gmst_deg, lastLoc]);
@@ -4086,12 +4134,14 @@ class SolarSystemBaseView extends WatchUi.View {
                     //continue;}
                     //deBug("PPPPQ2:", [key, ra,dec,mag]);
 
-                drawStar(dc, ra,dec,mag, key, [sizex,sizey,addAz,addy,gmst_deg]) ;         
+                drawStar(dc, ra,dec,mag, key) ;         
 
             } 
         }
 
         if (!tally3_finished ) {
+
+            drawHorizon(dc);
 
             var whh = toArray(WatchUi.loadResource($.Rez.Strings.planets_Options2) as String,  "|", 0);
 
@@ -4137,7 +4187,8 @@ class SolarSystemBaseView extends WatchUi.View {
             //deBug("starsc", [cckys.size(),tally, first, last]);
             tally += 5;
 
-            
+            dc.setColor(constColor,starBackgroundColor);
+
             for (var i = first; i < last; i++) {
                 var key = cckys[i];
                 var c = $.cc[key];
