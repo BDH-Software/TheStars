@@ -3,7 +3,8 @@ import Toybox.WatchUi;
 import Toybox.Lang;
 import Toybox.System;
 
-var addLabels = false;
+var select_pressed = false;
+var nextPrev_pressed = false;
 
 //! Handle input on initial view
 class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
@@ -26,10 +27,10 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.LORR_show_horizon_line = false;
         $.last_button_time_sec = $.time_now.value();
         //$.exiting_back_button_firstpress=false;
-        if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
+        //if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
 
         //$.started = !$.started;   
-        addLabels = true;
+        select_pressed = true;
         return true;
     }
 
@@ -51,10 +52,10 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.change_mode_select_button_firstpress = false;
         
         $.run_oneTime = true; //in case we're stopped, it will run just once
-        if (buttonPresses == 1) {return;} //1st buttonpress just gets out of intro titles
-
-        if (type ==:next) {moveX +=22.5;}
-        else {moveX -=22.5;}
+        //if (buttonPresses == 1) {return;} //1st buttonpress just gets out of intro titles
+        nextPrev_pressed = true;
+        if (type ==:next) {moveAz +=22.5;}
+        else {moveAz -=22.5;}
 
       
 
