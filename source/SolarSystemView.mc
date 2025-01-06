@@ -3798,7 +3798,7 @@ class SolarSystemBaseView extends WatchUi.View {
     }
 
     public function putText (dc,text,font, justify, jughead){
-        if (Math.rand()%3!=0) {return;}
+        if (Math.rand()%3!=0 && zoom_level == 0 ) {return;}
             var ra = jughead[0]  * byteDeg;
             var dec = proc(jughead[1]);
             var sizex = jughead[2];
@@ -3854,7 +3854,10 @@ class SolarSystemBaseView extends WatchUi.View {
         var offset = 10;
         var bottom = 0;
         var addtxt = "";
-        if (zoom_level > 0 && zoom_level < 4) {
+        var fakeZoom = zoom_level;
+        if (zoom_level>5) {fakeZoom = 10-zoom_level;}
+
+        if (fakeZoom > 0 && fakeZoom < 4) {
             offset = 5;
             bottom = (zoom_level - 1) * 22.5;
             
@@ -3862,12 +3865,7 @@ class SolarSystemBaseView extends WatchUi.View {
             offset = 5;
             bottom = (3 - 1) * 22.5;
         }
-            
-        else if (zoom_level ==4){
-            offset = -5;
-            bottom = (zoom_level - 1) * 22.5;
 
-        }
         var sFontHeight = dc.getFontHeight(1);
         var dirFont = starFont;
         if (zoom_level > 0) {
@@ -3879,7 +3877,7 @@ class SolarSystemBaseView extends WatchUi.View {
         }
         var inc = 45;
 
-        if (zoom_level > 0 && zoom_level<5) {
+        if (zoom_level > 0 && zoom_level!=5) {
             inc = 22.5;
             dirs = ["N",
                     "NNE",   
@@ -3998,44 +3996,22 @@ class SolarSystemBaseView extends WatchUi.View {
             tally = 0;
             tally2 = 0;
             zoom_level += 1;
-            zoom_level = zoom_level%6;
-            switch (zoom_level) {
-                case 0:
+            zoom_level = zoom_level%10;
+            if (zoom_level == 0) {
+                
                     starFont = Graphics.FONT_SMALL;
                     sizex =  90f;
                     sizey = 90f;
                     addy = 0f;
-                    break;
-                case 1:
+                    
+            } else {
+                
                     sizex =45f;
                     sizey = 45f;
-                    addy = -180f;
+                    addy = (zoom_level -1) * 72f -180f;
                     starFont = Graphics.FONT_MEDIUM;
-                    break;
-                case 2:
-                    sizex =  45f;
-                    sizey = 45f;
-                    addy = -90f;
-                    starFont = Graphics.FONT_MEDIUM;
-                    break;
-                case 3:
-                    sizex =  45f;
-                    sizey = 45f;
-                    addy = 0f;
-                    starFont = Graphics.FONT_MEDIUM;
-                    break;
-                case 4:
-                    sizex = 45f;
-                    sizey = 45f;
-                    addy = 90f;
-                    starFont = Graphics.FONT_MEDIUM;
-                    break;
-                case 5:
-                    sizex = 45f;
-                    sizey = 45f;
-                    addy = 180f;
-                    starFont = Graphics.FONT_MEDIUM;
-                    break;    
+                    
+   
             }
 
 
