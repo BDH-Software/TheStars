@@ -1,15 +1,47 @@
-A planetarium on your Garmin smart watch - shows positions of sun & planets in the sky, and a moving top-down views of the solar system from close, medium, and wide views.  Includes several of the largest asteroids & dwarf planets.  
+The Stars shows you the night sky - planets, sun, moon, constellations, and all stars down the magnitude 4.0.
 
-It's a planetarium & naked-eye/binocular astronomy viewing guide on your wrist: What is up tonight or right now? at a glance.
+Find the constellations, the planets - whatever is out tonight, or today.
 
-Sunrise, sunset, moon phase, season - solstice, equinox - as seen from your location today and tonight, all viewable at a glance.  
-Or dive deeper into planetary, dwarf planet, & asteroid motion in the Solar System in the years & decades ahead and past.
+This app is very simple: It shows you exactly what stars and celestial objects are up right now, where you are.  The app opens looking towards the east, with a view of the stars and constellations from the horizon all the way to the zenith.
 
-Watch tonight's sky, or the outer Solar System over the next 4000 years, unfold in beautiful animations and graphics.
+Controls are simple as well:
 
-The planetary motion model is based on algorithms from the sophisticated VSOP model of planetary motion for very good accuracy for visual and general observation purposes for hundreds and thousands of years into the past and future.  You can view solar system, planet, and dwarf planet, positions with reasonable, though not perfect, accuracy through tens of thousands of years into the future or past.
+ - Up & Down buttons (or corresponding swipes, depending on your device) move your view leftwards or rightwards around the points of the compass.  Each view is looking in one compass direction or subdirection (E, ENE, NE, NNE, N, etc) and from horizon all the way to the zenith.
 
-**USAGE AND TIPS**
+- Want to zoom in?  Just press START (or the similar START/STOP/SELECT tap or button on your device). You will instantly zoom in closer.  Press START again and you will gradually move upwards to the Zenith, and then continue on all the way around to the opposite horizon.
+
+- Along the way you can use UP/DOWN to move left or right at the current altitude.
+
+- Long Press of MENU will instantly un-zoom and return you to the horizon.
+
+- Continually pressing START (note indicator Z1, Z2, Z3 - etc) will take you to the opposite horizon and then with one more press of START you un-zoom and return to the starting point.
+
+ - BACK button exits.
+
+ - No options or menu items. It's just the stars and planets exactly where and when you are right now.
+
+PLANETS and the MOON are abbreviated by the first two letters. These are the same abbreviations used in the companion app/widget/watchface THE PLANETS.  Full list here: https://github.com/bhugh/ThePlanets/wiki/The-Planets-for-Garmin-%E2%80%90-General-Information
+
+CONSTELLATIONS are indicated with their standard 3-letter abbreviations. The full list is here: https://en.wikipedia.org/wiki/IAU_designated_constellations
+
+Zoomed out you will see a smattering of constellation names.  When you zoom in via START you will see ALL constellation names in that area.
+
+STAR POSITIONS are adapted from the magnitude 4 version of the Hipparcos Star Catalog, prepared and formatted by Greg Miller, with many emendations to fill out major constellations.
+
+Planetary & Sun positions are based on Miller's implementation of the VSOP87a PICO algorithm, which is generally accurate to about +/-1.2 degrees for +/-4000 years from the present. https://www.celestialprogramming.com/vsop87-multilang/index.html
+
+Moon position & phase are again based on Miller's work: https://celestialprogramming.com/lowprecisionmoonposition.html  Note that this "low precision" algorithm gives a moon position within 1 degree of the "High Precision" algorithm for roughly +/- 5000 years from the present.  Only at time scales longer than the does it begin to fail badly.
+
+**ABOUT THE FIRST RELEASE**
+
+First release the THE STARS for Garmin watches & devices.  This project presented considerable difficulty: Just the star location data ALONE fills more memory than is allotted to a complete App for many Garmin devices. The star-to-constellation data is similar in size.  
+
+So fitting all that PLUS the code needed to render it at reasonable speed on low-powered devices has been a real challenge.
+
+The app runs on most Garmin devices, from the Instinct 2 up through Fenix 8 & FR 965.  A few older devices (Vivoactive HR, Edge 520, D2 Charlie, etc), don't support the bytearray compression used for the data, so they are not included as compatible devices.  The App runs very well on my Instinct 2 and should run on all devices listed.
+
+Enjoy!
+
 *Planet abbreviations:*
  * Sun
  * Me Mercury
@@ -21,40 +53,10 @@ The planetary motion model is based on algorithms from the sophisticated VSOP mo
  * Sa Saturn     
  * Ur Uranus 
  * Ne Neptune     
- * Pl Pluto      
- * Er Eris (dwarf planet) 
- * Ha Haumea (dwarf planet) 
- * Ma Makemake (dwarf planet) 
- * Go Gonggong (dwarf planet) 
- * Qu Quaoar (ringed dwarf planet) 
- * Ce Ceres (dwarf planet/asteroid) 
- * Ch Chiron (ringed dwarf planet)
+ * Pl Pluto
 
-This encompasses all of the Solar System planets and most of the larger dwarf planets.
-
-_Tips About Screens & General Usage_
- * TIP: Top-bottom of Large Circle are Solar Noon Midnight (marks). 
-
- * TIP: Horizontal moving marks are the HORIZON - anything above them is visible in the sky. Moving upper mark is the MERIDIAN, highest point of the ecliptic at your location right now. 
-
- * TIP: The Large Circle represents the ECLIPTIC, the apparent path of the Sun & Planets across the sky.
-
- * TIP: Planet positions are accurate to 1.2 deg for the period 2000BC to 6000 AD.
-
-_App Usage Tips - What you need to know to make it work_
- * APP TIPS: UP/DOWN or SWIPE Moves time forward/ back on the 1st screen. Otherwise, speeds or slows time. 
-
- * SELECT or TAP starts time if stopped,  otherwise, moves to next mode. BACK stops time if started, otherwise goes BACK one mode OR exits from the 1st screen 
-
- * TIP: The Solar System Orrery can run forward or back THOUSANDS of years. Try speeding up time to 10yrs then watch... 
-
- * TIP: Just opening the app gives a quick view of what's up tonight/right now. 
-
- * TIP: Auto Mode (FAST) moves time by 24 hrs so you can watch how planets move night to night 
-
- * TIP: Search for new moons, planetary conjunctions, etc.
-   
- * Long term orbits are interesting to investigate. Look at Pluto - a small object coming close to many large ones.  Mars is interesting, as are the Dwarf Planets.  (Planetary positions are well investigated and quite accurate to many thousands of years out.  Dwarf Planet orbits are far less stable and detailed orbital information needed to model their movements many hundreds and thousands of years into the future is no available or  not easy to find and use.  You can expect to see *significant* perturbations in these orbits next time an object passes nearer the center of the Solar System.  Such encounters are generally hundreds of years in the future. What happens after them is not known in detail! So take the first orbit of these objects as being close to reality.  After that, something different will definitely happen!)
+*Constellation abbreviations*
+The 88 constellations and their standard 3-letter abbreviations, along with pronunciation and other helpful information, is [on the Sky and Telescope web page](https://skyandtelescope.org/astronomy-resources/constellation-names-and-abbreviations/).  The App includes all 88 constellations.
 
 
 **APP TECHNICAL DETAILS**
@@ -65,20 +67,15 @@ Monkey C for Garmin IQ watches.
 
 **CREDITS & LICENSE:**
 
-_****** Planetary, sun, & moon positions:_  [Greg Miller's version of the VSOP Pico algorithm](https://github.com/gmiller123456/vsop87-multilang/blob/master/Languages/JavaScript/vsop87a_pico.js)
+_****** Planetary, sun, & moon positions, star catalog filtering & formatting:_  [Greg Miller's version of the VSOP Pico algorithm](https://github.com/gmiller123456/vsop87-multilang/blob/master/Languages/JavaScript/vsop87a_pico.js)  [Miller's presentation of the Hipparcos Star Catalog Data](https://github.com/gmiller123456/hip2000). [Miller's presentation of the Constellation Stick Figures based on Stellarium (GPL)](https://www.celestialprogramming.com/snippets/ConstellationStickFigures/constellationStickFigures.html).
+
+Both the star catalog and constellation stick figures have been extensively edited and amended to work well in the limited conditions of a watch operating system. A large number of stars beyond the 4.0 magnitide limit were added in order to fill out constellation outlines.
 
  ** LICENSE of Miller's VSOP code: PUBLIC DOMAIN
 
-_******* Sunrise/Set calculations calculations and some astronomical functions (found in functions.mc)_ are adapted from:
-    SolarSystem by Ioannis Nasios 
-   https://github.com/IoannisNasios/solarsystem
-
- ** LICENSE & COPYRIGHT of Nasios's original code: The MIT License, Copyright (c) 2020, Ioannis Nasios.
-
- _******* Logo Image:_ Backlight Saturn, [PIA08329: In Saturn's Shadow](https://photojournal.jpl.nasa.gov/catalog/PIA08329) Cassini Mission, credit NASA.
-
 _SOFTWARE LICENSE_
  * Portions due to Greg Miller's implementation of the VSOP algorithm Public Domain.
- * Portions based on Ioannis Masios's Sunrise/Set algorithm, MIT License
+ * Portions due to Stellarium: GPL.
+ * Hipparcos Star Catalog: Public Domain.
  * Remainder Copyright 2024 Brent Hugh.
 
