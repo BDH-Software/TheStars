@@ -287,6 +287,8 @@ class SolarSystemBaseView extends WatchUi.View {
 
     }
 
+    var onshow = false;
+
     //! Restore the state of the app and prepare the view to be shown
     public function onShow() as Void {
         //System.println ("onShow:" 
@@ -299,6 +301,7 @@ class SolarSystemBaseView extends WatchUi.View {
         //settings_view = null;
         //settings_delegate = null;
         started = true;
+        onshow = true; //forces dc.clear / redraw
         startAnimationTimer($.hz);
         WatchUi.requestUpdate();
 
@@ -1343,10 +1346,10 @@ class SolarSystemBaseView extends WatchUi.View {
     var sizey = 90f;
     var addy = 0f;
     var addAz = 0f;
-    var starColor = Graphics.COLOR_WHITE;
+    var starColor = Graphics.COLOR_BLACK;
     //var constColor = Graphics.COLOR_LT_GRAY;
     var constColor = 0x65a1c0;
-    var starBackgroundColor = Graphics.COLOR_BLACK;
+    var starBackgroundColor = Graphics.COLOR_WHITE;
     var starFont = 1;
 
     //var cc;
@@ -1368,8 +1371,18 @@ class SolarSystemBaseView extends WatchUi.View {
             //deBug("return",null);
             return;}
 
+        starColor = Graphics.COLOR_BLACK;
+        starBackgroundColor = Graphics.COLOR_WHITE;
+        constColor = 0x65a1c0;
+
+        if ($.Options_Dict[REVERSECOLORS] ){
+            starColor = Graphics.COLOR_WHITE;
+            starBackgroundColor = Graphics.COLOR_BLACK;
+            var constColor = 0x257170;
+        }
+
         //set up starting or re-starting for the first time
-        if ((!last_started && !select_pressed && !nextPrev_pressed && !back_pressed) || $.menu_pressed)      {
+        if ((!last_started && !select_pressed && !nextPrev_pressed && !back_pressed) || $.menu_pressed || onshow)      {
             //deBug("1",null);
             $.started = true;
             $.menu_pressed = false;
@@ -1377,6 +1390,7 @@ class SolarSystemBaseView extends WatchUi.View {
             tally_finished = false;
             tally2_finished = false;
             tally3_finished = false;
+            onshow = false;
             tally = 0;
             tally2 = 0;
             ppNextStar(true);

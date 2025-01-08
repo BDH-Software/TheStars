@@ -11,6 +11,7 @@ enum {
     CONSTLINES,
     CONSTNAMES,
     ALLBOLDER,
+    REVERSECOLORS,
 }
 
 /*
@@ -54,7 +55,9 @@ class StarsMenu extends WatchUi.Menu2 {
 
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.constNames) as String, null, CONSTNAMES, $.Options_Dict[CONSTNAMES], null));   
 
-        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.allBolder) as String, null, ALLBOLDER, $.Options_Dict[ALLBOLDER], null));   
+        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.allBolder) as String, null, ALLBOLDER, $.Options_Dict[ALLBOLDER], null));  
+
+        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.reverseColors) as String, null, REVERSECOLORS, $.Options_Dict[REVERSECOLORS], null));   
 
         
       
@@ -96,6 +99,12 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
                 $.Options_Dict[ret] = menuItem.isEnabled();
                 
             }
+            if (ret != null && ret.equals(REVERSECOLORS)) {
+                
+                Storage.setValue(ret, menuItem.isEnabled());
+                $.Options_Dict[ret] = menuItem.isEnabled();
+                
+            }
             
            
         }
@@ -131,4 +140,8 @@ function readStorageValues(){
     temp = Storage.getValue(ALLBOLDER);
     $.Options_Dict[ALLBOLDER] = temp != null ? (temp == true) : false; //last one is the default
     Storage.setValue(ALLBOLDER,$.Options_Dict[ALLBOLDER]);
+
+    temp = Storage.getValue(REVERSECOLORS);
+    $.Options_Dict[REVERSECOLORS] = temp != null ? (temp == true) : false; //last one is the default
+    Storage.setValue(REVERSECOLORS,$.Options_Dict[REVERSECOLORS]);
 }
