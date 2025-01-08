@@ -4,6 +4,8 @@ import Toybox.Lang;
 import Toybox.System;
 
 var select_pressed = false;
+var back_pressed = false;
+var zoom_level=0;
 var nextPrev_pressed = false;
 var menu_pressed = false;
 
@@ -33,6 +35,26 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.started = !$.started;   
         $.started = true;
         select_pressed = true;
+        return true;
+    }
+
+        //! Handle the select button
+    //! @return true if handled, false otherwise
+    public function onBack() as Boolean {
+
+        //System.println("select button pressed");
+        $.buttonPresses++;
+        //$.timeWasAdded=true;
+        //$.LORR_show_horizon_line = false;
+        //$.last_button_time_sec = $.time_now.value();
+        //$.exiting_back_button_firstpress=false;
+        //if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
+
+        if (zoom_level == 0) { return false; } //when back to ZOOM 0 one more back exits
+
+        //$.started = !$.started;   
+        $.started = true;
+        back_pressed = true;
         return true;
     }
 
@@ -90,11 +112,18 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
 
         if (keyvent == 7) {
 
-            menu_pressed = true;
-            $.started = true;
+            //menu_pressed = true;
+            //$.started = true;
 
+            var menu = new $.StarsMenu();
 
+            WatchUi.pushView(menu, new $.StarsMenuDelegate(), WatchUi.SLIDE_IMMEDIATE);
             return true;
+
+            WatchUi.requestUpdate();
+
+
+            //return true;
         }
         return false;
         

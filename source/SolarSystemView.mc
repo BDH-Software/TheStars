@@ -272,6 +272,7 @@ class SolarSystemBaseView extends WatchUi.View {
         //    $.now.sec.format("%02d"));
         $.save_started = $.started;
         $.started = false;
+        stopAnimationTimer();
         //pp=null;
         //pp_sun = null;
         //kys =  null;
@@ -297,7 +298,9 @@ class SolarSystemBaseView extends WatchUi.View {
         //timeWasAdded = true;
         //settings_view = null;
         //settings_delegate = null;
+        started = true;
         startAnimationTimer($.hz);
+        WatchUi.requestUpdate();
 
     }
 
@@ -771,6 +774,9 @@ class SolarSystemBaseView extends WatchUi.View {
 
         */
 
+        if (zoom_level>0) {size*=1.4;}
+        if ($.Options_Dict[ALLBOLDER]) {size*=1.5;}
+
         var pen = Math.round(size/10.0).toNumber();
         if (pen<1) {pen=1;}
         dc.setPenWidth(pen);
@@ -1061,6 +1067,8 @@ class SolarSystemBaseView extends WatchUi.View {
 
 
             mag = (40 - proc(mag))/10; //ranges from about 52 to 0
+            if (zoom_level>0) {mag *= 1.5;}
+            if ($.Options_Dict[ALLBOLDER] ) {mag *= 2;}
             //mag = mag*mag/700;
             if (mag<1) {mag =1;}
             //mag += 3;
@@ -1101,7 +1109,9 @@ class SolarSystemBaseView extends WatchUi.View {
             //dc.fillCircle(x,y,mag);
             drawPlanet(dc, name, [xy[0],xy[1],0,0], 2, 0, :orrery, null, null);
             //deBug("PPPPQ3", [key, az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
-            dc.drawText(xy[0] + xc/8.0 , xy[1] + yc/8.0,starFont,name.substring(0,2),Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            if ($.Options_Dict[CONSTNAMES]) {
+                dc.drawText(xy[0] + xc/8.0 , xy[1] + yc/8.0,starFont,name.substring(0,2),Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            }
     }
 
     public function drawConstLine(dc, s1,s2,jughead){
@@ -1146,9 +1156,25 @@ class SolarSystemBaseView extends WatchUi.View {
             if (alt<-5 &&alt2<-5) {return;}
 
             var xy2 = XY(az2, alt2);
+
+            var dot = 0;
+            var thick = 1;
+
+            if ($.Options_Dict[ALLBOLDER]){
+                thick = 2;
+                dot = 1;
+            }
             
             //dc.drawLine(x,y,x2,y2);
-            drawDashedLine (dc,xy[0], xy[1], xy2[0], xy2[1], 0,3, 1, null);
+            if (zoom_level > 0) { //const lines a little thicker & darker
+                
+                drawDashedLine (dc,xy[0], xy[1], xy2[0], xy2[1], dot + 1,3, thick + 1, null);
+
+            } else {
+
+                drawDashedLine (dc,xy[0], xy[1], xy2[0], xy2[1], dot,3, thick, null);
+
+            }
             //dc.fillCircle(az,alt,s1[0]*1.5);
             //dc.fillCircle(az2,alt2,s2[0]*1.5);
             //dc.fillCircle(ra,dec,mag);
@@ -1190,7 +1216,7 @@ class SolarSystemBaseView extends WatchUi.View {
             xy[1] += offsetY;
             xy[0] += offsetX;
 
-        dc.drawText(xy[0], xy[1], starFont,text,justify);
+        dc.drawText(xy[0], xy[1], font,text,justify);
 
     }
 
@@ -1312,7 +1338,6 @@ class SolarSystemBaseView extends WatchUi.View {
     var last_started = false;
     var save_moveAz = 0;
     var planets;
-    var zoom_level=0;
     var gmst_deg = 0;
     var sizex =  90f;
     var sizey = 90f;
@@ -1334,7 +1359,7 @@ class SolarSystemBaseView extends WatchUi.View {
         //System.println("Memory1: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
         //deBug("pp", [$.pp]);
 
-        if (!started&&!select_pressed&&!nextPrev_pressed) {
+        if (!started&&!select_pressed&&!nextPrev_pressed&&!back_pressed) {
             last_started = false;
             return;
         }
@@ -1344,11 +1369,11 @@ class SolarSystemBaseView extends WatchUi.View {
             return;}
 
         //set up starting or re-starting for the first time
-        if ((!last_started && !select_pressed && !nextPrev_pressed) || $.menu_pressed)      {
+        if ((!last_started && !select_pressed && !nextPrev_pressed && !back_pressed) || $.menu_pressed)      {
             //deBug("1",null);
             $.started = true;
             $.menu_pressed = false;
-            starFont = Graphics.FONT_SMALL;
+            starFont = $.Options_Dict[ALLBOLDER] ? Graphics.FONT_MEDIUM : Graphics.FONT_SMALL;
             tally_finished = false;
             tally2_finished = false;
             tally3_finished = false;
@@ -1367,22 +1392,30 @@ class SolarSystemBaseView extends WatchUi.View {
         
         
 
-        if ($.select_pressed) {
+        if ($.select_pressed || $.back_pressed) {
             //deBug("2",null);
+
+            if ($.select_pressed) {zoom_level += 1; }
+            else { zoom_level -= 1; }
+            zoom_level = zoom_level%5;
+
             $.started = true;
             $.nextPrev_pressed = false;
             $.select_pressed = false;
+            $.back_pressed = false;
             tally_finished = false;
             tally2_finished = false;
             tally3_finished = false;
             tally = 0;
             tally2 = 0;
             ppNextStar(true);
-            zoom_level += 1;
-            zoom_level = zoom_level%8;
+
+            var fontAdd = 0;
+            if ($.Options_Dict[ALLBOLDER]){ fontAdd =1;}
+
             if (zoom_level == 0) {
                 
-                    starFont = Graphics.FONT_SMALL;
+                    starFont = Graphics.FONT_SMALL + fontAdd;
                     sizex =  92f;
                     sizey = 92f;
                     addy = 0f;
@@ -1392,7 +1425,7 @@ class SolarSystemBaseView extends WatchUi.View {
                     sizex =60f;
                     sizey = 60f;
                     addy = (zoom_level -1) * 65f/3.0 - 35f;
-                    starFont = Graphics.FONT_MEDIUM;
+                    starFont = Graphics.FONT_MEDIUM + fontAdd;
                     
    
             }
@@ -1519,10 +1552,12 @@ class SolarSystemBaseView extends WatchUi.View {
                 var key = kys[i];
                 //deBug(key, planets[key]);
                 plotPlanet(dc, planets[key][0], planets[key][1], key, [sizex,sizey,addAz,addy,gmst_deg] );
-;
+
             }
             tally3_finished = true;
         }
+
+        if (!$.Options_Dict[CONSTLINES] && !$.Options_Dict[CONSTNAMES]) {tally_finished = true;}
 
         if (!tally_finished) {
             var cckys = $.cc.keys();
@@ -1562,6 +1597,7 @@ class SolarSystemBaseView extends WatchUi.View {
                         //save_keys.add(p1);
                         //save_keys.add(p2);
                         k_save = k2;
+                        if (!$.Options_Dict[CONSTLINES]) {break;}
                         drawConstLine(dc, pp[k1[0]][k1[1]],pp[k2[0]][k2[1]],
                                     [sizex, sizey, addAz, addy, gmst_deg]);
                         //deBug("drawn", [key,p1,p2]);
@@ -1570,8 +1606,8 @@ class SolarSystemBaseView extends WatchUi.View {
                         //deBug("dropped", [key,p1,p2]);
                     }
                 }
-                if (k_save != null) {
-                    putText(dc,key,1,  Graphics.TEXT_JUSTIFY_CENTER, [pp[k_save[0]][k_save[1]][1], pp[k_save[0]][k_save[1]][2], sizex, sizey,addAz,addy, gmst_deg, 4, 4]);
+                if (k_save != null && $.Options_Dict[CONSTNAMES]) {
+                    putText(dc,key, starFont,  Graphics.TEXT_JUSTIFY_CENTER, [pp[k_save[0]][k_save[1]][1], pp[k_save[0]][k_save[1]][2], sizex, sizey,addAz,addy, gmst_deg, 4, 4]);
                 
                 }
 

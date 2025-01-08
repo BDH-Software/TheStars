@@ -135,6 +135,8 @@ class SolarSystemBaseApp extends Application.AppBase {
 
         //System.println("ARR" + toArray("HI|THERE FRED|M<SYUEIJFJ |FIEJKDF:LKJF|SKDJFF|SDLKJSDFLKJ|THIESNEK|FJIEKJF","|",0));
 
+        readStorageValues();
+
         
         
         

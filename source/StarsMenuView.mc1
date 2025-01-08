@@ -1,0 +1,81 @@
+import Toybox.Application.Storage;
+import Toybox.Graphics;
+import Toybox.Lang;
+import Toybox.WatchUi;
+
+
+//! Initial app settings view
+class StarsMenuView extends WatchUi.View {
+
+    hidden var firstShow;
+
+    //! Constructor
+    public function initialize() {
+        View.initialize();
+        firstShow = true;
+
+    }
+
+    //! Handle the update event
+    //! @param dc Device context
+    public function onShow() as Void {
+
+
+                //Some watches dont have Menu2, in that case teh Menu 
+        //key just becomes EXIT...
+        if (!(WatchUi has :Menu2)) {
+            System.exit();
+        }
+        
+
+        // if this is the first call to `onShow', then we want the menu to immediately appear
+        if (firstShow) {
+            //System.println("firstShow...");
+            //WatchUi.switchToView(new $.ElegantAnaSettingsMenu(), new $.ElegantAnaSettingsMenuDelegate(), WatchUi.SLIDE_IMMEDIATE);
+            WatchUi.pushView(new $.StarsMenu(), new $.StarsMenuDelegate(), WatchUi.SLIDE_IMMEDIATE);
+            //WatchUi.popView(WatchUi.SLIDE_IMMEDIATE); //SLIDE_RIGHT
+            firstShow = false;
+        }
+
+        // otherwise, we are returning to this view, most likely be cause the menu was exited,
+        // either by pressing back, or by selecting an item that caused the menu to be popped,
+        // so we want to pop ourselves
+        else {
+            //System.println("not firstShow...");
+            WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
+        }
+    }
+
+    //! Handle the update event
+    //! @param dc Device context
+    public function onUpdate(dc as Dc) as Void {
+
+        
+        dc.clearClip();
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
+        dc.clear();
+        
+    }
+}
+
+//! Input handler for the initial app settings view
+class StarsMenuViewDelegate extends WatchUi.BehaviorDelegate {
+
+    //! Constructor
+    public function initialize() {
+        BehaviorDelegate.initialize();
+    }
+
+    //! Handle the menu event
+    //! @return true if handled, false otherwise
+    public function onMenu() as Boolean {
+        
+
+
+        var menu = new $.StarsMenu();
+
+        WatchUi.pushView(menu, new $.StarsMenuDelegate(), WatchUi.SLIDE_IMMEDIATE);
+        return true;
+    }
+}
+
