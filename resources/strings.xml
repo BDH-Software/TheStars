@@ -51,10 +51,11 @@
 
 <string id = "constLines">Constellation Lines?</string>
 
-<string id = "constNames">Constellation &amp; Panet Names?</string>
+<string id = "constNames">Constellation &amp; Planet Names?</string>
 
 <string id = "allBolder">Everything Bolder?</string>
-<string id = "allBolder">Reverse Colors?</string>
+
+<string id = "reverseColors">Reverse Colors?</string>
 
 
 

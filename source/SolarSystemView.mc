@@ -572,8 +572,8 @@ class SolarSystemBaseView extends WatchUi.View {
         //var z = xyr[2];
         //var radius = xyr[3];
 
-        var col = Graphics.COLOR_WHITE;
-        fillcol = Graphics.COLOR_BLACK;
+        var col = starColor;
+        fillcol = starBackgroundColor;
         b_size = base_size/def_size*min_c;
         min_size = 3.0/def_size*min_c;
         var max_size = 1.7*min_size;
@@ -636,7 +636,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 
              case "Pluto":
                 size =b_size *jup_size * 0.016993034f; 
-                col = Graphics.COLOR_WHITE;
+                col = starColor;
                 fillcol = Graphics.COLOR_RED;
                 break;   
                      
@@ -783,7 +783,7 @@ class SolarSystemBaseView extends WatchUi.View {
         var pen = Math.round(size/10.0).toNumber();
         if (pen<1) {pen=1;}
         dc.setPenWidth(pen);
-        dc.setColor(fillcol, Graphics.COLOR_BLACK);        
+        dc.setColor(fillcol, starBackgroundColor);        
         if (size>1) {dc.fillCircle(x, y, size);}
         dc.setColor(col, Graphics.COLOR_TRANSPARENT);
         dc.drawCircle(x, y, size);
@@ -1371,14 +1371,14 @@ class SolarSystemBaseView extends WatchUi.View {
             //deBug("return",null);
             return;}
 
-        starColor = Graphics.COLOR_BLACK;
-        starBackgroundColor = Graphics.COLOR_WHITE;
+        starColor = Graphics.COLOR_WHITE;
+        starBackgroundColor = Graphics.COLOR_BLACK;
         constColor = 0x65a1c0;
 
         if ($.Options_Dict[REVERSECOLORS] ){
-            starColor = Graphics.COLOR_WHITE;
-            starBackgroundColor = Graphics.COLOR_BLACK;
-            var constColor = 0x257170;
+            starColor = Graphics.COLOR_BLACK;
+            starBackgroundColor = Graphics.COLOR_WHITE;
+            constColor = 0x053130;
         }
 
         //set up starting or re-starting for the first time
