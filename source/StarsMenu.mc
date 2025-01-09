@@ -100,6 +100,7 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
         if (menuItem instanceof ToggleMenuItem) {
 
             var ret = menuItem.getId() as String;
+            
             if (ret != null && ret.equals(TIMEDIRECTION)) {
 
                 $.time_add_direction = 1;
@@ -140,7 +141,8 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
                 
             } else
             
-            {
+            
+            if (ret != null){
                           
                 Storage.setValue(ret, menuItem.isEnabled());
                 $.Options_Dict[ret] = menuItem.isEnabled();                        
@@ -166,6 +168,9 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
             //deBug("tn", [t_now, $.time_now, t_now instanceof Time.Moment, $.time_now instanceof Time.Moment]);
 
             $.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);
+
+            processStars_init();
+             processStars();
 
         } 
         

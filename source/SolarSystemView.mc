@@ -131,6 +131,7 @@ class SolarSystemBaseView extends WatchUi.View {
     */
 
     var local_animation_count = 0;
+    var gps_wait = 0;
 
     function animationTimerCallback() as Void {
             
@@ -153,7 +154,12 @@ class SolarSystemBaseView extends WatchUi.View {
               
             }*/
 
-            if (!$.hippconst_finished ) {
+            if (!gps_read && gps_wait < 20) {
+                gps_wait ++;
+                deBug("Waiting for gps...");
+                return;
+
+            } else if (!$.hippconst_finished ) {
                 started = false;
                 processStars();
                 WatchUi.requestUpdate();
@@ -521,6 +527,7 @@ class SolarSystemBaseView extends WatchUi.View {
         );
 
         dc.drawText(xc, yc,font,"STARS",Graphics.TEXT_JUSTIFY_CENTER);
+        
 
         if ($.time_changed) {
 

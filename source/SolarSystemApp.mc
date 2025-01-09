@@ -17,6 +17,7 @@ import Toybox.Activity;
 var view_mode;
 var lastLoc;
 var hz = 20f;
+var gps_read = false;
 
 
 //var page = 0;
@@ -441,17 +442,20 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
 
         //if (info == null || info.position == null) { pinfo = Position.getInfo(); }
         //System.println ("sc1: Null? " + (pinfo==null));
-        //if (pinfo != null ) {deBug ("setPosition getting position from OS:",  pinfo.position.toDegrees());}
+        if (pinfo != null ) {deBug ("setPosition getting position from OS:",  pinfo.position.toDegrees());}
 
         var curr_pos = null;
-        if (pinfo!= null && pinfo.position != null) { curr_pos = pinfo.position; }
+        if (pinfo!= null && pinfo.position != null) { curr_pos = pinfo.position; gps_read = true; }
         else { //if there is nothing in the pinfo passed to us we just try to grab it now (ie, at init)
             pinfo = Position.getInfo(); 
-            if (pinfo!= null && pinfo.position != null) { curr_pos = pinfo.position; }
+            if (pinfo!= null && pinfo.position != null) { curr_pos = pinfo.position; gps_read = true; }
         }
         
         var temp = curr_pos.toDegrees()[0];
-        if ( (temp - 180).abs() < 0.1 || temp.abs() < 0.1 ) {curr_pos = null;} //bad data
+        //if ( (temp - 180).abs() < 0.1 || temp.abs() < 0.1 ) {
+        if ( (temp - 180).abs() < 0.1) {
+            curr_pos = null;
+            } //bad data
         
 
         /*
@@ -499,7 +503,11 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         //if ($.Options_Dict.hasKey(lastLoc_enum)) {new_lastLoc = $.Options_Dict[lastLoc_enum];}
 
         var rt = Storage.getValue(lastLoc_enum);
-        if (rt != null) {new_lastLoc = rt;}
+        if (rt != null) {
+            new_lastLoc = rt;
+            deBug("POS from Storage", rt);
+            
+            }
 
 
         if (curr_pos == null ){
@@ -513,7 +521,7 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
                 new_lastLoc = new Position.Location(            
                     { :latitude => 39.833333, :longitude => long, :format => :degrees }
                     ).toDegrees();
-                    //System.println ("sc1b: " + self.lastLoc);
+                System.println ("post from time zone: " + new_lastLoc);
            }
         } else {
 
@@ -542,9 +550,9 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
             Storage.setValue(lastLoc_enum, new_lastLoc);
         }
         
-        self.lastLoc = new_lastLoc; //if man_set is true, then we don't want to update self.lastLoc with the new value, we want to keep the value that was set by the user.
+        $.lastLoc = new_lastLoc; //if man_set is true, then we don't want to update self.lastLoc with the new value, we want to keep the value that was set by the user.
 
-        //System.println("setPosition (from GPS, final) at " + animation_count + " to: "  + new_lastLoc + " manual GPS mode?" + man_set + " final SET pos: " + self.lastLoc);
+        System.println("setPosition (from GPS, final) at " + animation_count + " to: "  + new_lastLoc + " final SET pos: " + $.lastLoc);
         //return man_set;
         return;
     }
