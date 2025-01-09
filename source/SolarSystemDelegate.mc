@@ -35,6 +35,7 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.started = !$.started;   
         $.started = true;
         select_pressed = true;
+        $.time_changed = false;
         return true;
     }
 
@@ -55,6 +56,7 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.started = !$.started;   
         $.started = true;
         back_pressed = true;
+        $.time_changed = false;
         return true;
     }
 
@@ -78,6 +80,7 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         $.run_oneTime = true; //in case we're stopped, it will run just once
         //if (buttonPresses == 1) {return;} //1st buttonpress just gets out of intro titles
         nextPrev_pressed = true;
+        $.time_changed = false;
         if (type ==:next) {moveAz -=22.5;}
         else {moveAz +=22.5;}
 

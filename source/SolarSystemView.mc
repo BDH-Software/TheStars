@@ -512,13 +512,63 @@ class SolarSystemBaseView extends WatchUi.View {
         
         var font = Graphics.FONT_SYSTEM_LARGE;
         var textHeight = dc.getFontHeight(font);
-        dc.drawText(xc, yc - textHeight,font,"THE",Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(
+            xc, 
+            yc - textHeight,
+            font,
+            "THE",
+            Graphics.TEXT_JUSTIFY_CENTER
+        );
+
         dc.drawText(xc, yc,font,"STARS",Graphics.TEXT_JUSTIFY_CENTER);
 
-        if ($.time_add_hrs != 0 || $.time_add_days != 00 || $.time_add_months != 0) {
+        if ($.time_changed) {
 
-            dc.drawText(xc, yc + 2*textHeight,font, $.now_info.hour.format("%02d")+":" + $.now_info.min.format("%02d"));
-            dc.drawText(xc, yc + 3*textHeight,font, $.now_info.day.format("%02d") + " " + $.now_info.month + " " + $.now_info.year);
+            var where = new Position.Location({
+                :latitude  => $.lastLoc[0],
+                :longitude => $.lastLoc[1],
+                :format    => :degrees,
+            });
+
+            //deBug("tn", [$.time_now, $.time_now instanceof Time.Moment]);
+            
+            var med_info = Time.Gregorian.info($.time_now, Time.FORMAT_MEDIUM);
+
+            //var t_now = new Time.Moment($.time_now.value());
+
+            //var local = Time.localMoment(where, $.time_now);
+            //var local = Time.localMoment(where, t_now.value());
+
+            //var local_info = Time.Gregorian.info(local, Time.FORMAT_MEDIUM);
+
+            var mySettings = System.getDeviceSettings();
+            var is24Hr = mySettings.is24Hour;
+
+            
+            var hr = $.now_info.hour.format("%02d");
+            var ampm = "";
+
+            if (!is24Hr) {
+                 hr = $.now_info.hour%12;
+                    if (hr == 0) {hr = 12;}
+                    ampm = "am";
+                    if ($.now_info.hour >=12) {
+                        ampm = "pm";
+                    }
+            }
+
+            var ti = hr +":" + $.now_info.min.format("%02d") + ampm;
+
+            dc.drawText(
+                xc, 
+                yc + 2*textHeight,
+                font, 
+                ti, 
+                Graphics.TEXT_JUSTIFY_CENTER
+            );
+
+            //dc.drawText(xc, yc + 1*textHeight,font, local_info.day.format("%02d") + " " + local_info.month + " " + local_info.year,Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(xc, yc + 1*textHeight,font, $.now_info.day.format("%02d") + " " + med_info.month + " " + $.now_info.year,Graphics.TEXT_JUSTIFY_CENTER);
         }
         //dc.drawText(0, 0, "THE");
         //dc.drawText(0, 0, "STARS");
@@ -536,6 +586,8 @@ class SolarSystemBaseView extends WatchUi.View {
     var planetRand = 0;
     
     var ranvar = 0;
+    var showingTitle = false;
+    var titleShows = 0;
     
     public function onUpdate(dc as Dc) as Void {
         
@@ -548,9 +600,24 @@ class SolarSystemBaseView extends WatchUi.View {
 
         $.now = System.getClockTime(); //for testing
 
-        if (!$.hippconst_finished) {
+        if (!$.hippconst_finished || $.time_changed) {
+            showingTitle = true;
+            titleShows ++;
+            if (titleShows >60 && $.hippconst_finished && $.time_changed) {$.time_changed = false;} 
             titlePage(dc);
+            return;
         }
+        if (showingTitle) {
+
+            showingTitle = false;
+            $.select_pressed = false;
+            $.back_pressed = false;
+            $.nextPrev_pressed = false;
+            titleShows = 0;
+            return; 
+            //first button press gets out of Title screen
+        }
+        
        
        /* if (!started) {
             tally=0;

@@ -16,7 +16,7 @@ import Toybox.Activity;
 
 var view_mode;
 var lastLoc;
-var hz = 10f;
+var hz = 20f;
 
 
 //var page = 0;
@@ -69,6 +69,8 @@ var time_add_hrs as Lang.Number = 0; //hrs added via menu
 var time_add_days  as Lang.Number = 0; 
 var time_add_months  as Lang.Number = 0;
 var time_add_years  as Lang.Number = 0;
+var time_add_direction as Lang.Number = 1;
+var time_changed = false;
 
 var show_intvl = 0; //whether or not to show current SPEED on display
 var animSinceModeChange = 0; //used to tell when to blank screen etc.
