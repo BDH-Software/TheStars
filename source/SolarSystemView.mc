@@ -1172,14 +1172,14 @@ class SolarSystemBaseView extends WatchUi.View {
 
     public function drawStar(dc, ra,dec,mag){
 
-        //deBug("draws", [dc,  ra,dec,mag]);
+        deBug("draws", [dc,  ra,dec,mag]);
 
             var res = raDecToAltAz_deg(ra * byteDeg,proc(dec),lastLoc[0],lastLoc[1],gmst_deg);
             var az = res[0];
             var alt = res[1];
             
             //deBug("alt", [az, alt]);
-            if (alt<-1) {return  [az, alt];}
+            //if (alt<-1) {return  [az, alt];}
             /*var x = Math.cos(Math.toRadians(az+addAz)) * (90.0 - alt); 
             var y = Math.sin (Math.toRadians(az+addAz)) * (90.0 - alt);
 
@@ -1197,9 +1197,10 @@ class SolarSystemBaseView extends WatchUi.View {
             //mag = mag*mag/700;
             if (mag<1) {mag =1;}
             //mag += 3;
+            dc.setColor(starColor,Graphics.COLOR_TRANSPARENT);
             dc.fillCircle(xy[0],xy[1],mag);
             //deBug("PPPPQ3", [az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
-            return [az, alt];
+            return xy;
     }
 
     public function plotPlanet(dc, ra,dec, name, jughead){
@@ -1240,6 +1241,7 @@ class SolarSystemBaseView extends WatchUi.View {
             }
     }
 
+/*
     public function drawConstLineS(dc, cnst, jughead) {
 
         for  (var i = 0; i<cnst.size(); i++) {
@@ -1267,6 +1269,7 @@ class SolarSystemBaseView extends WatchUi.View {
             x =xc - x * screenWidth /sizex;
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
             */
+            /*
             var xy = XY(az, alt);
             
             res = raDecToAltAz_deg(s2[0] * byteDeg,proc(s2[1]),lastLoc[0],lastLoc[1],gmst_deg);
@@ -1287,6 +1290,8 @@ class SolarSystemBaseView extends WatchUi.View {
 
             //az2 =xc + (az2-xc) *alt2 /screenHeight; //poor man's spherical projection
             */
+
+            /*
             if (alt<-5 &&alt2<-5) {return;}
 
             var xy2 = XY(az2, alt2);
@@ -1314,11 +1319,40 @@ class SolarSystemBaseView extends WatchUi.View {
             //dc.fillCircle(ra,dec,mag);
     }
 
+    */
+
+    public function drawConstLine_new(dc, xy,xy2){
+         
+
+            var dot = 0;
+            var thick = 1;
+
+            if ($.Options_Dict[ALLBOLDER]){
+                thick = 2;
+                dot = 1;
+            }
+            
+            //dc.drawLine(x,y,x2,y2);
+            if (zoom_level > 0) { //const lines a little thicker & darker
+                
+                drawDashedLine (dc,xy[0], xy[1], xy2[0], xy2[1], dot + 1,3, thick + 1, null);
+
+            } else {
+
+                drawDashedLine (dc,xy[0], xy[1], xy2[0], xy2[1], dot,3, thick, null);
+
+            }
+            //dc.fillCircle(az,alt,s1[0]*1.5);
+            //dc.fillCircle(az2,alt2,s2[0]*1.5);
+            //dc.fillCircle(ra,dec,mag);
+    }
+    /*
+
     public function drawConstLine_num (key1, key2, sizex, sizey, addAz, addy){
 
         //drawConstLine()
 
-    }
+*/
 
     public function putText (dc,text,font, justify, jughead){
         if (Math.rand()%3!=0 && zoom_level == 0 ) {return;}
@@ -1756,45 +1790,61 @@ class SolarSystemBaseView extends WatchUi.View {
             //deBug("starsc", [cckys.size(),tally, first, last]);
             tally += 5;
 
-            dc.setColor(constColor,Graphics.COLOR_TRANSPARENT);
+            //dc.setColor(constColor,Graphics.COLOR_TRANSPARENT);
+            
 
+            //get & plot all stars for each const, then the lines, then the name
             for (var i = first; i < last; i++) {
+                dc.setColor(starColor,Graphics.COLOR_TRANSPARENT);
                 var key = $.cc_name[i];
                 var c = $.cc_stars[i];
                 var k_save = null;
-                var lines = [];
-                for (var j= 0; j<c.size()/2; j++) {
-                    var p1 = c[2*j];
-                    var p2 = c[2*j+1];
-                    //var k1 = ppReturnKey(p1);
-                    //var k2 = ppReturnKey(p2);
-                    if (p1 != null && p2 != null) {
-                        //save_keys.add(p1);
-                        //save_keys.add(p2);
-                        k_save = p2;
-                        if (!$.Options_Dict[CONSTLINES]) {break;}
-                        lines.add([[pp_ra[p1], pp_dec[p1]], [pp_ra[p2], pp_dec[p2]]]);
-                        /* drawConstLine(dc, 
-                                [pp_ra[k1],pp_dec[k1]],
-                                [pp_ra[k2],pp_dec[k2]],
-                                [sizex, sizey, addAz, addy, gmst_deg]);
-                            */
+                //var lines = [];
+                var c_stars = {};
 
-                        //deBug("drawn", [key,p1,p2]);
+                for (var j=0; j<c.size();j++) {
+                    var p = c[j];
+                    if (c_stars.hasKey(p)) {continue;}
+                    if (p != null) {
+                        k_save = p;
+                        var res = drawStar(dc, pp_ra[p],pp_dec[p],pp_mag[p]);
+                        c_stars.put(p, res); 
 
-                    } else {
-                        //deBug("dropped", [key,p1,p2]);
                     }
                 }
+
                 if (k_save != null && $.Options_Dict[CONSTNAMES]) {
+                    dc.setColor(constColor,Graphics.COLOR_TRANSPARENT);
                     putText(dc,key, starFont,  Graphics.TEXT_JUSTIFY_CENTER, 
                     [pp_ra[k_save], pp_dec[k_save],                    
                     sizex, sizey,addAz,addy, gmst_deg, 4, 4]);
                 
                 }
-                if (lines.size() > 0) {
-                    drawConstLineS(dc, lines, [sizex, sizey, addAz, addy, gmst_deg]);
+
+                
+                if ($.Options_Dict[CONSTLINES]) {
+                    dc.setColor(constColor,Graphics.COLOR_TRANSPARENT);
+                    //now also draw the LINES with the same info                
+                    for (var j= 0; j<c.size()/2; j++) {
+                        var p1 = c[2*j];
+                        var p2 = c[2*j+1];
+                        //var k1 = ppReturnKey(p1);
+                        //var k2 = ppReturnKey(p2);
+                        if (p1 != null && p2 != null) {
+                            //save_keys.add(p1);
+                            //save_keys.add(p2);
+                            k_save = p2;
+                            
+                            drawConstLine_new (dc, c_stars[p1],c_stars[p2]);
+                            
+
+                        } 
+                    }
                 }
+
+                
+                
+                
 
 
             }

@@ -225,10 +225,10 @@ function processStars(){
                     var cnstKs = [];
                     var tal = 0;
                     var himag = 10000000;
-                    var saveStar = [];
+                    //var saveStar = [];
 
                     //var saveStar2 = null;
-                    for (var k = 0; k<cnst.size()/2;k=k+2) {
+                    for (var k = 0; k<cnst.size();k=k+2) {
                         var star = [];
                         star.add(cnst[k].toNumber());
                         star.add (cnst[k+1].toNumber());
@@ -236,6 +236,7 @@ function processStars(){
                         //if ($.pp.hasKey(star)) {
                         for (var x =0;x<2;x++) {
                             starK.add( ppReturnKey(star[x]));
+                            //deBug("cstll3", [key, cnst, star, starK]);
                             
                             
                             if (starK[x] != null) {
@@ -268,6 +269,7 @@ function processStars(){
 
                     }
                     //if (tal*100/cnst.size()>50 && himag < 45) {
+                    //deBug("const444", [key, cnst, tal, himag, cnstKs]);
                     if (tal*100/cnst.size()>5) {
                         //deBug("adding", [key, tal, himag, cnst.size()]);
                         //$.cc.put(key,cnst);
