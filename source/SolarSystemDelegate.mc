@@ -117,12 +117,14 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
 
             //menu_pressed = true;
             //$.started = true;
-            
+            deBug("menu0", null);
             //if the device can handle MENU2...
             if ((WatchUi has :Menu2)) {
+                deBug("menu1", null);
                 var menu = new $.StarsMenu();
 
                 WatchUi.pushView(menu, new $.StarsMenuDelegate(), WatchUi.SLIDE_IMMEDIATE);
+                deBug("menu2", null);
                 return true;
 
             } else {  //For MENU2-less devices it is just a way to reset the view/escape zoom

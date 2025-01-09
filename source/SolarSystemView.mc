@@ -702,7 +702,7 @@ class SolarSystemBaseView extends WatchUi.View {
     var def_size = 175.0 /2;
     var b_size = 2.0;
     var jup_size = 4.0;
-    var min_size = 1.0;
+    var min_size = 2;
     var fillcol= Graphics.COLOR_BLACK;
     //var col = Graphics.COLOR_WHITE;
 
@@ -719,7 +719,7 @@ class SolarSystemBaseView extends WatchUi.View {
         var col = starColor;
         fillcol = starBackgroundColor;
         b_size = base_size/def_size*min_c;
-        min_size = 3.0/def_size*min_c;
+        min_size = 4.0/def_size*min_c;
         var max_size = 1.7*min_size;
         size = b_size;
 
@@ -728,8 +728,15 @@ class SolarSystemBaseView extends WatchUi.View {
         if (key.equals("Sun")) {
             size = 8*b_size;
             if (type == :orrery) {size = 2*b_size;}
-            col = 0xf7ef05;
+            /*col = 0xf7ef05;
             fillcol = 0xf7ef05;
+            if ($.Options_Dict[REVERSECOLORS]) {
+                // #670000 #767804  #8f1b0b #f7ef05
+                col = 0x8f1b0b;
+                fillcol = 0x8f1b0b;
+
+            } */
+            //Colors set below...
             //if (type == :orrery) { size = b_size;}
             
         }
@@ -745,6 +752,11 @@ class SolarSystemBaseView extends WatchUi.View {
                 //fillcol = 0x838370;
                 col = 0xffff88;
                 fillcol = 0xeeee88;
+                if ($.Options_Dict[REVERSECOLORS]) {
+                    // #665555   #666622 
+                    col = 0x665555;
+                    fillcol = 0x665555;
+                }
                 break;
 
             case "Mars":
@@ -756,14 +768,28 @@ class SolarSystemBaseView extends WatchUi.View {
             case "Saturn":
                 size =b_size *jup_size * 0.832944744f;
                 col = 0x947ec2;
+                if ($.Options_Dict[REVERSECOLORS]) {
+                    col = 0x500e62 ;
+                    // #500e62  #200030 
+                    fillcol = 0x200030;
+                }
                 break;
             case "Jupiter":
                 size =b_size *jup_size;
                 col = 0xcf9c63;
+                if ($.Options_Dict[REVERSECOLORS]) {
+                    col = 0x6f0c13 ;
+                    // #cf9c63 #6f0c13 #4f2023 
+                    fillcol = 0x4f2023  ;
+                }
                 break;
             case "Neptune":
                 size =b_size *jup_size * 0.3521906424f;
                 col = Graphics.COLOR_BLUE;
+                if ($.Options_Dict[REVERSECOLORS]) {
+                    // #000077 #0000ff #0000cc
+                    col = 0x000099;
+                    }
                 fillcol = col;
                 break;
             case "Uranus":
@@ -773,7 +799,9 @@ class SolarSystemBaseView extends WatchUi.View {
                 break;
          
             case "Moon":
-                size =b_size *jup_size * 0.09113015119f; //same as EARTH here, we adjust to true size rel. to earth below
+                size = 8*b_size; //same as sun for STARS
+                //size =b_size *jup_size * 0.09113015119f; //same as EARTH here, we adjust to true size rel. to earth below
+                if (type == :orrery) {size = 2*b_size;} //same as SUN for STARS purposes
                 col = 0xe0e0e0;        
                 fillcol = 0x171f25;                                
                 break;                
@@ -926,8 +954,12 @@ class SolarSystemBaseView extends WatchUi.View {
 
         var pen = Math.round(size/10.0).toNumber();
         if (pen<1) {pen=1;}
+        if ($.Options_Dict[ALLBOLDER]) {pen*=1.8;}
+        if (size<=9) {pen = 1;}
+
         dc.setPenWidth(pen);
-        dc.setColor(fillcol, starBackgroundColor);        
+        dc.setColor(fillcol, starBackgroundColor); 
+
         if (size>1) {dc.fillCircle(x, y, size);}
         dc.setColor(col, Graphics.COLOR_TRANSPARENT);
         dc.drawCircle(x, y, size);
@@ -935,7 +967,15 @@ class SolarSystemBaseView extends WatchUi.View {
         switch (key) {
             case "Sun" :
                 //dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
-                dc.setColor(0xf7ef05, Graphics.COLOR_TRANSPARENT);
+              
+                if ($.Options_Dict[REVERSECOLORS]) {
+                // #670000    #cf2020              #767804 #8f1b0b
+                  dc.setColor(0xcf2020, Graphics.COLOR_TRANSPARENT);
+                } else {
+                      dc.setColor(0xf7ef05, Graphics.COLOR_TRANSPARENT);
+                }
+
+                
                 //if (type == :orrery) {break;}
                 if (size<10) {size = 10;}
                 
@@ -951,8 +991,14 @@ class SolarSystemBaseView extends WatchUi.View {
 
                 }
                 break;
-            case "Mercury" :                
-                dc.setColor(0xffffff, Graphics.COLOR_TRANSPARENT);        
+            case "Mercury" :   
+                //if ($.Options_Dict[REVERSECOLORS]) {
+                // #670000                 
+                  //dc.setColor(0x000000, Graphics.COLOR_TRANSPARENT);        
+                //} else {
+                      dc.setColor(0xffffff, Graphics.COLOR_TRANSPARENT);        
+                //}             
+                
                 drawARC (dc, 17, 7, x, y - size/2.0,size/2.25, pen, null);
                 drawARC (dc, 0, 24, x, y + size/3.0,size/2.25, pen, null);
                 break;
@@ -960,7 +1006,13 @@ class SolarSystemBaseView extends WatchUi.View {
                 //dc.fillCircle(x, y, size);
                 //dc.setColor(0x737348, Graphics.COLOR_TRANSPARENT);        
                 //drawARC (dc, 17, 7, x, y - size/2.5,size/2.3, 1, null);
-                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT); 
+                // #ffff00  
+                
+                if ($.Options_Dict[REVERSECOLORS]) {
+                    dc.setColor(0xffff00, Graphics.COLOR_TRANSPARENT); 
+                } else {
+                    dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT); 
+                }
                 drawARC (dc, 0, 24, x, y - size/5.0,size/2.2, pen, null);
                 dc.drawLine (x, y - size/5.0 + size/2.2, x, y+3.8*size/5.0);
 
@@ -984,6 +1036,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 //dc.fillCircle(x, y,size/4);
                 break;    
             case "Jupiter":
+
                 dc.drawLine(x-size*.968+pen/3.0, y-size/4, x+size*.968-pen/3.0, y-size/4);
                 dc.drawLine(x-size*.968+pen/3.0, y+size/4, x+size*.968-pen/3.0, y+size/4);
                 break;
@@ -996,6 +1049,10 @@ class SolarSystemBaseView extends WatchUi.View {
                 //dc.drawLine(x-size, y+size/4, x+size, y+size/4);
                 break;
             case "Neptune" :
+                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
+                if ($.Options_Dict[REVERSECOLORS] ) {
+                    dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);   
+                }
                 dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
                 y1 = y + size/12.0;             //
                 dc.drawLine(x, y1+3*size/5.5, x, y1-3*size/4);
@@ -1017,7 +1074,11 @@ class SolarSystemBaseView extends WatchUi.View {
                 break;
            
             case "Moon" :  
-                    if (size<8) {size = 8;}
+                    if (size<11) {size = 11;}
+                    
+                        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+                        dc.fillCircle(x, y, size);
+                    
 
                     if (moon_age_deg >= 94 && moon_age_deg < 175) {
                          dc.setColor(0xf0f9ff, Graphics.COLOR_TRANSPARENT);                //0x171f25
@@ -1069,7 +1130,7 @@ class SolarSystemBaseView extends WatchUi.View {
                     }
                     //black OR white ellipse to blank out or add some/all of the half moon to show
                     //phases in between quarters
-                    //This can be refined more to show exact lit percentages, if desireds.
+                    //This can be refined more to show exact lit percentages, if desired.
                     if (moon_age_deg > 0 && moon_age_deg < 86){
                          dc.setColor(0x171f25, Graphics.COLOR_TRANSPARENT);                //0x171f25
                          dc.fillEllipse(x, y, size * Math.sqrt(90-moon_age_deg)/9.48683, size);
@@ -1084,7 +1145,10 @@ class SolarSystemBaseView extends WatchUi.View {
 
                     
                     //draw the full circle last so it always looks like a full round circle w/ phases
-                    dc.setColor(0xf0f9ff, Graphics.COLOR_TRANSPARENT);  
+                    // #0xf0f9ff   #0f0900 
+                    var mcol = $.Options_Dict[REVERSECOLORS] ? 0x0f0900 : 0xf0f9ff;
+                    //if($.Options_Dict[REVERSECOLORS])
+                    dc.setColor(mcol, Graphics.COLOR_TRANSPARENT);  
                     dc.drawCircle(x, y, size);
                     //deBug("Moon!", moon_age_deg);
                     
@@ -1202,7 +1266,11 @@ class SolarSystemBaseView extends WatchUi.View {
         var xy2 = XY_nosqueeze(0, 0);
         //dc.setColor(0xe1a75c,starBackgroundColor);
         //dc.drawCircle(xy[0], xy[1],dist (xy, xy2));
-        drawARC (dc, 0, 24.05, xy[0], xy[1],dist (xy, xy2) + 1, 3, 0xe1a75c);
+        // #e1a75c #71462c
+        var d = dist (xy, xy2) + 1;
+        var col = 0xe1a75c;
+        if ($.Options_Dict[REVERSECOLORS]) {col = 0x71462c;}
+        drawARC (dc, -6, 6, xy[0], xy[1], d + d/70.0, d/35.0, col);
 
     }
 
@@ -1596,15 +1664,16 @@ class SolarSystemBaseView extends WatchUi.View {
             //putText(dc,dir,1,  Graphics.TEXT_JUSTIFY_CENTER, [pp[p_save][1], pp[p_save][2], sizex, sizey,addAz,addy, gmst_deg, 4, 4]);
             if (i == 360) {
                 //dc.setColor(0xe1a75c, Graphics.COLOR_TRANSPARENT);
-                // #922fcc // #39d8f7 #472807 
+                // #922fcc // #39d8f7 #175877 
                 dc.setColor(0x39d8f7, Graphics.COLOR_TRANSPARENT);
                 if (!$.Options_Dict[REVERSECOLORS]) {
                    dc.setColor(0x39d8f7, Graphics.COLOR_TRANSPARENT);
                 } else {
-                   dc.setColor(0x472807, Graphics.COLOR_TRANSPARENT);
+                   dc.setColor(0x175877, Graphics.COLOR_TRANSPARENT);
                 }
 
                 dc.drawCircle(x,y,yc/25); //draw a small circle at zenith
+
                 if (!$.Options_Dict[REVERSECOLORS]) {
                    dc.setColor(0xa26fcc, Graphics.COLOR_TRANSPARENT);
                 } else {
@@ -1824,12 +1893,12 @@ class SolarSystemBaseView extends WatchUi.View {
             } 
         }
 
-        if (!tally3_finished) {
+        if (!tally3_finished && tally_finished) {
             //deBug("Tally3", null);
 
             dc.setColor(starColor,starBackgroundColor);
 
-            dc.clear();
+            //dc.clear();
             
             
 
@@ -1874,7 +1943,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
         if (!$.Options_Dict[CONSTLINES] && !$.Options_Dict[CONSTNAMES]) {tally_finished = true;}
 
-        if (!tally_finished && tally3_finished) {
+        if (!tally_finished) {
             //deBug("Tally", null);
             //var cckys = $.cc.keys();
 
@@ -1889,9 +1958,14 @@ class SolarSystemBaseView extends WatchUi.View {
                 //started = false;
             }
             */
+            if (tally == 0) {
+                dc.setColor(starColor,starBackgroundColor);
+
+                dc.clear();
+            }
 
 
-            var increment = 30;
+            var increment = 25;
             var first = tally;
             var last = tally + increment;
             if (last >= cc_name.size()) {

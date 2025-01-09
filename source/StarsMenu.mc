@@ -55,6 +55,10 @@ class StarsMenu extends WatchUi.Menu2 {
         //loadSettingsOpt();
 
 
+
+       deBug("menu3", null);
+
+
         Menu2.initialize({:title=>WatchUi.loadResource($.Rez.Strings.settingstitle) as String});
        
 
@@ -66,6 +70,7 @@ class StarsMenu extends WatchUi.Menu2 {
 
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.reverseColors) as String, null, REVERSECOLORS, $.Options_Dict[REVERSECOLORS], null));   
 
+deBug("menu4", null);
            
 
         Menu2.addItem(new WatchUi.ToggleMenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_hrs.toString() + "hrs)", null, ADDHOURS, false, null));   
@@ -74,7 +79,8 @@ class StarsMenu extends WatchUi.Menu2 {
         Menu2.addItem(new WatchUi.ToggleMenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_years.toString() + "yrs)", null, ADDYEARS, false, null));  
 
         Menu2.addItem(new WatchUi.ToggleMenuItem((WatchUi.loadResource($.Rez.Strings.timeDirection) as String), null, TIMEDIRECTION, $.time_add_direction == 1, null)); 
-
+        
+        deBug("menu5", null);
 
         
       
