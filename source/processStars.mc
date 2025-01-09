@@ -15,21 +15,23 @@ import Toybox.Math;
 var cc = {};
 //(:hasByteArray)
 //var ret as Lang.ByteArray = []b;
+/*
 (:hasByteArray)
 var pp_az as Lang.ByteArray = []b;
 (:hasByteArray)
 var pp_alt as Lang.ByteArray = []b;
 (:hasByteArray)
 var pp_mag as Lang.ByteArray = []b;
+*/
 
 
 //(:noByteArray)
 //var ret as Lang.ByteArray = [];
-(:noByteArray)
+//(:noByteArray)
 var pp_az as Lang.ByteArray = [];
-(:noByteArray)
+//(:noByteArray)
 var pp_alt as Lang.ByteArray = [];
-(:noByteArray)
+//(:noByteArray)
 var pp_mag as Lang.ByteArray = [];
 
 
@@ -56,6 +58,7 @@ var const_finished = false;
 var gmst_deg=0;
 //var byteConv = 256/360.0;
 
+/*
 (:hasByteArray)
 function processStars_init(){
     //pp = [{},{},{},{},{}];
@@ -85,6 +88,8 @@ function processStars_init(){
 }
 
 (:noByteArray)
+*/
+
 function processStars_init(){
     //pp = [{},{},{},{},{}];
     cc = {};
@@ -163,8 +168,8 @@ function processStars(){
                 var res = raDecToAltAz_deg(star[1],star[2],lastLoc[0],lastLoc[1],$.gmst_deg); //remember they are listed in order MAG, RA, DECL
 
                 //deBug("RADEC", [star[1],star[2],lastLoc, $.gmst_deg]);
-                var az = res[0];
-                var alt = res[1];
+                //var az = res[0];
+                //var alt = res[1];
             
             
                 //deBug("alt", [az, alt]);
@@ -177,7 +182,8 @@ function processStars(){
                 //var ret as Lang.ByteArray = [];
                 //deBug("256b",[star[1]*256/360, (star[1]*256/360).toChar(), (star[1]*256/360 ) & 256]);
                 pp_hipp.add(kys[i].toNumber());
-                pp_az.add((res[0]*256/360).toNumber()); 
+                //pp_az.add((res[0]*256/360).toNumber()); 
+                pp_az.add((res[0]).toNumber()); 
                 pp_alt.add((res[1]).toNumber());
                 pp_mag.add((star[0]).toNumber());
 

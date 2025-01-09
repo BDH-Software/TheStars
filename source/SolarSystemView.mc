@@ -561,10 +561,10 @@ class SolarSystemBaseView extends WatchUi.View {
 
         }
 
-        if (tp_displayCount > 7) {
+        if (tp_displayCount > 5) {
             var dots = "";
             for (var i = 0; i < 5; i++){
-                if (i<(tp_displayCount/3)%5) {
+                if (i<(tp_displayCount/2)%5) {
                     dots += ".";}
                     else {dots +=" ";}
             }
@@ -1172,7 +1172,7 @@ class SolarSystemBaseView extends WatchUi.View {
     }
 
 
-    const byteDeg = 360f/256f;
+    //const byteDeg = 360f/256f;
 
     public function XY (az, alt) {
             var x = Math.cos(Math.toRadians(az+addAz)) * (90.0 - alt); 
@@ -1263,7 +1263,8 @@ class SolarSystemBaseView extends WatchUi.View {
 
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
             //deBug("drawst", [az, alt]);
-            var xy = XY(az*byteDeg, proc(alt));
+            //var xy = XY(az*byteDeg, proc(alt));
+            var xy = XY(az, alt);
             //deBug("drawst", [az, alt, az*byteDeg, proc(alt), xy]);
 
             /* if (xy[0]<-screenWidth * .3 || xy[0]>screenWidth * 1.3 ||
@@ -1274,7 +1275,8 @@ class SolarSystemBaseView extends WatchUi.View {
 
 
 
-            mag = (40 - proc(mag))/10; //ranges from about 52 to 0
+            //mag = (40 - proc(mag))/10; //ranges from about 52 to 0
+            mag = (40 - mag)/10; //ranges from about 52 to 0
             if (zoom_level>0) {mag *= 1.5;}
             if ($.Options_Dict[ALLBOLDER] ) {mag *= 2;}
             //mag = mag*mag/700;
@@ -1439,8 +1441,10 @@ class SolarSystemBaseView extends WatchUi.View {
 
     public function putText (dc,text,font, justify, jughead){
         if (Math.rand()%3!=0 && zoom_level == 0 ) {return;}
-            var ra = jughead[0]  * byteDeg;
-            var dec = proc(jughead[1]);
+            //var ra = jughead[0]  * byteDeg;
+            var ra = jughead[0];
+            //var dec = proc(jughead[1]);
+            var dec = jughead[1];
             //var sizex = jughead[2];
             //var sizey = jughead[3];
             //var addAz = jughead[4];
@@ -1471,6 +1475,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
     }
 
+    /*
     (:hasByteArray)
     function proc (x) {
         if (x > 127) {x = x - 256.toNumber(); }
@@ -1481,6 +1486,7 @@ class SolarSystemBaseView extends WatchUi.View {
     function proc (x) {
         return  x.toNumber();
     }
+    */
 
     function placeDirections(dc, jughead){
         var dirs = ["N",
@@ -1554,8 +1560,13 @@ class SolarSystemBaseView extends WatchUi.View {
 
         //same color as horizon...
         //dc.setColor(0xe1a75c, Graphics.COLOR_TRANSPARENT);
-        //#922fcc
-        dc.setColor(0x922fcc, Graphics.COLOR_TRANSPARENT);
+        //#922fcc #a26fcc #620f67
+        
+        if (!$.Options_Dict[REVERSECOLORS]) {
+            dc.setColor(0xa26fcc, Graphics.COLOR_TRANSPARENT);
+        } else {
+            dc.setColor(0x620f67, Graphics.COLOR_TRANSPARENT);
+        }
 
 
         for (var i = 0; i <= 360; i += inc) {
@@ -1585,10 +1596,20 @@ class SolarSystemBaseView extends WatchUi.View {
             //putText(dc,dir,1,  Graphics.TEXT_JUSTIFY_CENTER, [pp[p_save][1], pp[p_save][2], sizex, sizey,addAz,addy, gmst_deg, 4, 4]);
             if (i == 360) {
                 //dc.setColor(0xe1a75c, Graphics.COLOR_TRANSPARENT);
-                // #922fcc // #39d8f7
+                // #922fcc // #39d8f7 #773807 
                 dc.setColor(0x39d8f7, Graphics.COLOR_TRANSPARENT);
+                if (!$.Options_Dict[REVERSECOLORS]) {
+                   dc.setColor(0x39d8f7, Graphics.COLOR_TRANSPARENT);
+                } else {
+                   dc.setColor(0x773807, Graphics.COLOR_TRANSPARENT);
+                }
+
                 dc.drawCircle(x,y,yc/25); //draw a small circle at zenith
-                dc.setColor(0x922fcc, Graphics.COLOR_TRANSPARENT);
+                if (!$.Options_Dict[REVERSECOLORS]) {
+                   dc.setColor(0xa26fcc, Graphics.COLOR_TRANSPARENT);
+                } else {
+                   dc.setColor(0x620f67, Graphics.COLOR_TRANSPARENT);
+                }
             }
         }
     }
