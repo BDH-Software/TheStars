@@ -12,6 +12,11 @@ enum {
     CONSTNAMES,
     ALLBOLDER,
     REVERSECOLORS,
+    ADDHOURS,  
+    ADDDAYS,
+    ADDMONTHS,
+    ADDYEARS,  
+    lastLoc_enum =10,
 }
 
 /*
@@ -29,6 +34,7 @@ function cleanUpSettingsOpt(){
 */
 
 var Options_Dict = {};
+
 
 //! The app settings menu
 class StarsMenu extends WatchUi.Menu2 {
@@ -59,6 +65,11 @@ class StarsMenu extends WatchUi.Menu2 {
 
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.reverseColors) as String, null, REVERSECOLORS, $.Options_Dict[REVERSECOLORS], null));   
 
+        Menu2.addItem(new WatchUi.ToggleMenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_hrs.toString() + "hrs)", null, ADDHOURS, false, null));   
+        Menu2.addItem(new WatchUi.ToggleMenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_hrs.toString() + "days)", null, ADDDAYS, false, null));   
+        Menu2.addItem(new WatchUi.ToggleMenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_hrs.toString() + "mnths)", null, ADDMONTHS, false, null));   
+        Menu2.addItem(new WatchUi.ToggleMenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_hrs.toString() + "yrs)", null, ADDYEARS, false, null));   
+
         
       
 
@@ -67,6 +78,8 @@ class StarsMenu extends WatchUi.Menu2 {
 
 //! Input handler for the app settings menu
 class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
+
+    var changeTime = false;
 
     var mainView;
     //! Constructor
@@ -81,31 +94,40 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
         if (menuItem instanceof ToggleMenuItem) {
 
             var ret = menuItem.getId() as String;
-            if (ret != null && ret.equals(CONSTLINES)) {
+
+            if (ret != null && ret.equals(ADDHOURS)) {
+
+                $.time_add_hrs = ($.time_add_hrs + 1)%24;
+                changeTime = true;   
+                menuItem.setLabel((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_hrs.toString() + "hrs)");             
                 
-                Storage.setValue(ret, menuItem.isEnabled());
-                $.Options_Dict[ret] = menuItem.isEnabled();
+            } else if (ret != null && ret.equals(ADDDAYS)) {
+
+                $.time_add_days = ($.time_add_days + 1)%31;
+                changeTime = true;   
+                menuItem.setLabel((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_days.toString() + "days)");             
                 
-            } 
-            if (ret != null && ret.equals(CONSTNAMES)) {
+            } else if (ret != null && ret.equals(ADDMONTHS)) {
+
+                $.time_add_months = ($.time_add_months + 1)%12;
+                changeTime = true;   
+                menuItem.setLabel((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_months.toString() + "mnths)");             
                 
-                Storage.setValue(ret, menuItem.isEnabled());
-                $.Options_Dict[ret] = menuItem.isEnabled();
-                
-            }
-            if (ret != null && ret.equals(ALLBOLDER)) {
-                
-                Storage.setValue(ret, menuItem.isEnabled());
-                $.Options_Dict[ret] = menuItem.isEnabled();
-                
-            }
-            if (ret != null && ret.equals(REVERSECOLORS)) {
-                
-                Storage.setValue(ret, menuItem.isEnabled());
-                $.Options_Dict[ret] = menuItem.isEnabled();
-                
-            }
             
+            } else if (ret != null && ret.equals(ADDYEARS)) {
+
+                $.time_add_years = ($.time_add_years + 1);
+                changeTime = true;   
+                menuItem.setLabel((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_years.toString() + "yrs)");             
+                
+            } else
+            
+            {
+                          
+                Storage.setValue(ret, menuItem.isEnabled());
+                $.Options_Dict[ret] = menuItem.isEnabled();                        
+                
+            }            
            
         }
 
@@ -116,10 +138,17 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
         
         //$.cleanUpSettingsOpt();
-        
+        if (changeTime) {
 
+            var addTime = Time.Gregorian.duration({:days => $.time_add_days + $.time_add_months*30, :hours => $.time_add_hrs, :years =>$.time_add_years});
+            $.time_now = Time.now().add(addTime);
+            $.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);
+
+        } 
+        
         WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
         WatchUi.requestUpdate();
+    
 
     }
 

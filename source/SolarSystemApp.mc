@@ -47,29 +47,35 @@ var hz = 10f;
                 24-15/60.0, 24,24+15/60.0, 24*2-15/60.0, 24*2,24*2+15/60.0, 24*3,24*5, 24*7, //47; Days up to a week (added 0)
                 24*15,29.53059*24, 24*31, 24*61, 24*91, 24*122, 24*183, 24*300, //56;300 days 1/2, 1/4, 1/12, 1/24 of a year (added 1)
                 24*365,24*365.2422, 24 * 400, 24 * 500, 24*365*2, 24*365*4, 24*365 * 7, 24*365 * 10]; //64; year multiples (added 0)*/
-var speeds;
-var speeds_index; //the currently used speed that will be added to TIME @ each update of screen  //
+//var speeds;
+//var speeds_index; //the currently used speed that will be added to TIME @ each update of screen  //
 //var screen0Move_index = 33;
 
 var started = false; //whether to move forward on an update, ie STOPPED or STARTED moving
 var start_time_sec = 0;
 var last_button_time_sec = 0;
 var save_started = null;
-var reset_date_stop = false; //set TRUE when reset date is called, which STOPS time.
+//var reset_date_stop = false; //set TRUE when reset date is called, which STOPS time.
 //var hz = 5.0; //updates per second (Requested from OS)
 var run_oneTime = true; //set to TRUE by anything that once the screeupdate to run ONCE when it is stopped
 
-var message = [];
-var message_until = 0;
+//var message = [];
+//var message_until = 0;
 var animation_count = 0;
 var buttonPresses = 0;
-var orreryDraws = 0;
+//var orreryDraws = 0;
 
-var time_add_hrs = 0.0; //cumulation of all time to be added to time.NOW when a screen is displayed
+var time_add_hrs as Lang.Number = 0; //hrs added via menu
+var time_add_days  as Lang.Number = 0; 
+var time_add_months  as Lang.Number = 0;
+var time_add_years  as Lang.Number = 0;
 
 var show_intvl = 0; //whether or not to show current SPEED on display
 var animSinceModeChange = 0; //used to tell when to blank screen etc.
 var solarSystemView_class as SolarSystemBaseView?; //saved instance of main class 
+var solarSystemDelegate_class as SolarSystemBaseDelegate?; //saved instance of main class
+
+var SolarSystemBaseApp_class as SolarSystemBaseApp?;
 
 //enum {exitApp, resetDate, orrZoomOption, thetaOption, labelDisplayOption, refreshOption, screen0MoveOption, planetSizeOption, planetsOption, helpOption, helpBanners}
 
@@ -78,7 +84,7 @@ var solarSystemView_class as SolarSystemBaseView?; //saved instance of main clas
 //By specifying values here, they will not change so ie the program STORAGE will not get messed up
 //if we add a new enum.  Never change the VALUE of an enum once established.  YOu
 //can just remove it or add another interspersed, but give the new one a new unique VALUE.
-enum {changeMode_enum= 0,
+/*enum {changeMode_enum= 0,
         resetDate_enum= 1,
         orrZoomOption_enum= 2,
         thetaOption_enum= 3,
@@ -93,7 +99,7 @@ enum {changeMode_enum= 0,
         helpBanners_enum= 9,
         lastLoc_enum = 10,
         } //screen0MoveOption_enum, 
-
+        */
 
 class SolarSystemBaseApp extends Application.AppBase {
 
@@ -101,13 +107,15 @@ class SolarSystemBaseApp extends Application.AppBase {
     //var view_mode = [ECLIPTIC_STATIC, ECLIPTIC_MOVE, SMALL_ORRERY, MED_ORRERY, LARGE_ORRERY];
 
 
-    private var _solarSystemView as SolarSystemBaseView?;
-    private var _solarSystemDelegate as SolarSystemBaseDelegate?;
+    public var _solarSystemView as SolarSystemBaseView?;
+    public var _solarSystemDelegate as SolarSystemBaseDelegate?;
 
     //! Constructor
     public function initialize() {
         AppBase.initialize();
         System.println("init starting...");
+
+        SolarSystemBaseApp_class = self;
         
         //geo_cache = new Geocentric_cache();
         
@@ -136,10 +144,7 @@ class SolarSystemBaseApp extends Application.AppBase {
         //System.println("ARR" + toArray("HI|THERE FRED|M<SYUEIJFJ |FIEJKDF:LKJF|SKDJFF|SDLKJSDFLKJ|THIESNEK|FJIEKJF","|",0));
 
         readStorageValues();
-
-        
-        
-        
+                        
 
     }
 
@@ -202,15 +207,18 @@ class SolarSystemBaseApp extends Application.AppBase {
             +  now.hour.format("%02d") + ":" +
             now.min.format("%02d") + ":" +
             now.sec.format("%02d"));*/
-
+        processStars_init();
         processStars();
+
+        //_solarSystemView = null;
+        //_solarSystemDelegate = null;
 
         _solarSystemView = new $.SolarSystemBaseView();
         //solarSystemView_class = _solarSystemView;
         _solarSystemDelegate = new $.SolarSystemBaseDelegate(_solarSystemView);
         return [_solarSystemView, _solarSystemDelegate];
-        _solarSystemDelegate = null;
-        _solarSystemView = null;
+        //_solarSystemDelegate = null;
+        //_solarSystemView = null;
 
     }
     /*

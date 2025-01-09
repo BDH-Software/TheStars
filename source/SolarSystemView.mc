@@ -115,6 +115,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
     //msg lines in an array to display & how long to display them
     //3 or 4 usually fit
+    /*
     public function sendMessage (time_sec, msgs) {
         // /2.0 cuts display timein half, need a better solution involving actual
         //clock than guessing about animation  frequency
@@ -127,6 +128,7 @@ class SolarSystemBaseView extends WatchUi.View {
         //System.println("sm2: " + time_sec + " "+ message +  " : " + msgs);
         
     }
+    */
 
     var local_animation_count = 0;
 
@@ -151,7 +153,7 @@ class SolarSystemBaseView extends WatchUi.View {
               
             }*/
 
-            if (!hippconst_finished ) {
+            if (!$.hippconst_finished ) {
                 started = false;
                 processStars();
                 WatchUi.requestUpdate();
@@ -512,6 +514,12 @@ class SolarSystemBaseView extends WatchUi.View {
         var textHeight = dc.getFontHeight(font);
         dc.drawText(xc, yc - textHeight,font,"THE",Graphics.TEXT_JUSTIFY_CENTER);
         dc.drawText(xc, yc,font,"STARS",Graphics.TEXT_JUSTIFY_CENTER);
+
+        if ($.time_add_hrs != 0 || $.time_add_days != 00 || $.time_add_months != 0) {
+
+            dc.drawText(xc, yc + 2*textHeight,font, $.now_info.hour.format("%02d")+":" + $.now_info.min.format("%02d"));
+            dc.drawText(xc, yc + 3*textHeight,font, $.now_info.day.format("%02d") + " " + $.now_info.month + " " + $.now_info.year);
+        }
         //dc.drawText(0, 0, "THE");
         //dc.drawText(0, 0, "STARS");
 
@@ -540,7 +548,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
         $.now = System.getClockTime(); //for testing
 
-        if (!hippconst_finished) {
+        if (!$.hippconst_finished) {
             titlePage(dc);
         }
        
@@ -1112,6 +1120,7 @@ class SolarSystemBaseView extends WatchUi.View {
             //dc.fillCircle(x,y,mag);
             drawPlanet(dc, name, [xy[0],xy[1],0,0], 2, 0, :orrery, null, null);
             //deBug("PPPPQ3", [key, az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
+            dc.setColor(starColor,Graphics.COLOR_TRANSPARENT);
             if ($.Options_Dict[CONSTNAMES]) {
                 dc.drawText(xy[0] + xc/8.0 , xy[1] + yc/8.0,starFont,name.substring(0,2),Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
             }
@@ -1354,7 +1363,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
     //var cc;
     public function starField(dc) {
-         //deBug("RDSWC2: ", allPlanets);
+         deBug("RDSWC2: ", null);
          //var zoom_whh, whh;
 
          
@@ -1368,7 +1377,7 @@ class SolarSystemBaseView extends WatchUi.View {
         }
 
         if ($.pp == null) {
-            //deBug("return",null);
+            deBug("return",null);
             return;}
 
         starColor = Graphics.COLOR_WHITE;

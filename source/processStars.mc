@@ -14,13 +14,29 @@ var pp = [{},{},{},{},{}];
 //var pold = [{},{}];
 var cc = {};
 var ret as Lang.ByteArray = [3]b;
+var hippconst_finished = false;
 var hipp_proc = 0;
 var const_proc = 0;
 var hipp_finished = false;
 var const_finished = false;
-var hippconst_finished = false;
 
-function processStars(){
+function processStars_init(){
+    pp = [{},{},{},{},{}];
+    cc = {};
+    ret = [3]b;
+    hippconst_finished = false;
+    hipp_proc = 0;
+    const_proc = 0;
+    hipp_finished = false;
+    const_finished = false;
+    started = false;
+
+}
+
+function processStars(){    
+
+    
+
     var pp_orig = {};
 
     var pprez = [$.Rez.JsonData.hipparcos4_1,
@@ -163,8 +179,11 @@ function processStars(){
     
     
     if (const_proc >= pprez.size()) { const_finished = true;}
-    if (hipp_finished && const_finished) {hippconst_finished = true;
-    started = true;}
+    if (hipp_finished && const_finished) {
+        deBug("hippconst_finished", const_finished);
+        $.hippconst_finished = true;
+        $.started = true;
+    }
 }
 
 function ppHasKey(key) {
