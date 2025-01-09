@@ -516,35 +516,71 @@ class SolarSystemBaseView extends WatchUi.View {
         }
     }
     */
+    var tp_displayCount = 0;
 
     function titlePage(dc as Dc) {
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
         dc.clear();
         //dc.setPenColor(0, 0, 0);
+
         
         
         var font = Graphics.FONT_SYSTEM_LARGE;
         var dateFont = Graphics.FONT_SYSTEM_MEDIUM;
         var textHeight = dc.getFontHeight(font);
-        dc.drawText(
-            xc, 
-            yc - textHeight,
-            font,
-            "THE",
-            Graphics.TEXT_JUSTIFY_CENTER
-        );
 
-        dc.drawText(xc, yc,font,"STARS",Graphics.TEXT_JUSTIFY_CENTER);
-
-        if (!$.goodGPS)
-        {     dc.drawText(
-                xc / 4.0, 
-                yc -2 *textHeight,
-                dateFont, 
-                "(getting GPS position)",
+        if (!$.time_changed) {
+            dc.drawText(
+                xc, 
+                yc - textHeight,
+                font,
+                "THE",
                 Graphics.TEXT_JUSTIFY_CENTER
             );
+
+            dc.drawText(xc, yc,font,"STARS",Graphics.TEXT_JUSTIFY_CENTER);
+
+            if (!$.goodGPS)
+            {     dc.drawText(
+                    xc / 4.0, 
+                    yc -2 *textHeight,
+                    dateFont, 
+                    "(getting GPS position)",
+                    Graphics.TEXT_JUSTIFY_CENTER
+                );
+            }
+        } else {
+
+                dc.drawText(
+                xc, 
+                yc - textHeight,
+                font,
+                "THE STARS",
+                Graphics.TEXT_JUSTIFY_CENTER
+            );
+
         }
+
+        if (tp_displayCount > 7) {
+            var dots = "";
+            for (var i = 0; i < 5; i++){
+                if (i<(tp_displayCount/3)%5) {
+                    dots += ".";}
+                    else {dots +=" ";}
+            }
+            
+            
+            {     dc.drawText(
+                    xc - dc.getTextWidthInPixels("Think", dateFont-1),
+                    yc +2 *textHeight,
+                    dateFont-1, 
+                    "thinking"+dots,
+                    Graphics.TEXT_JUSTIFY_LEFT
+                );
+            }
+        }
+
+        tp_displayCount++;
         
 
         if ($.time_changed) {
@@ -581,7 +617,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
             dc.drawText(
                 xc, 
-                yc + 2*textHeight,
+                yc + 1*textHeight,
                 dateFont, 
                 ti, 
                 Graphics.TEXT_JUSTIFY_CENTER
@@ -590,7 +626,7 @@ class SolarSystemBaseView extends WatchUi.View {
             //dc.drawText(xc, yc + 1*textHeight,font, local_info.day.format("%02d") + " " + local_info.month + " " + local_info.year,Graphics.TEXT_JUSTIFY_CENTER);
             dc.drawText(
                 xc, 
-                yc + 1*textHeight,
+                yc + 0*textHeight,
                 dateFont, 
                 $.now_info.day.format("%02d") + " " + med_info.month + " " + $.now_info.year,Graphics.TEXT_JUSTIFY_CENTER
             );

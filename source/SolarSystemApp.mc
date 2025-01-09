@@ -16,7 +16,7 @@ import Toybox.Activity;
 
 var view_mode;
 var lastLoc;
-var hz = 5f;
+var hz = 10f;
 var gps_read = false;
 
 
