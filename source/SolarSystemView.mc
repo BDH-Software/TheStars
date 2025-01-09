@@ -1596,12 +1596,12 @@ class SolarSystemBaseView extends WatchUi.View {
             //putText(dc,dir,1,  Graphics.TEXT_JUSTIFY_CENTER, [pp[p_save][1], pp[p_save][2], sizex, sizey,addAz,addy, gmst_deg, 4, 4]);
             if (i == 360) {
                 //dc.setColor(0xe1a75c, Graphics.COLOR_TRANSPARENT);
-                // #922fcc // #39d8f7 #773807 
+                // #922fcc // #39d8f7 #472807 
                 dc.setColor(0x39d8f7, Graphics.COLOR_TRANSPARENT);
                 if (!$.Options_Dict[REVERSECOLORS]) {
                    dc.setColor(0x39d8f7, Graphics.COLOR_TRANSPARENT);
                 } else {
-                   dc.setColor(0x773807, Graphics.COLOR_TRANSPARENT);
+                   dc.setColor(0x472807, Graphics.COLOR_TRANSPARENT);
                 }
 
                 dc.drawCircle(x,y,yc/25); //draw a small circle at zenith
@@ -1797,7 +1797,7 @@ class SolarSystemBaseView extends WatchUi.View {
             //tally2 += 20;
             //deBug("SF", [sizex,sizey,addAz,addy, jd_ut, gmst_deg, lastLoc]);
             //for (var i = first2; i < last2; i++) {
-            for (var i=0;i<30;i++) {
+            for (var i=0;i<100;i++) {
                 tally2++;
                 //var key = kys[i];
                 var star = ppNextStar(null, skipConst);            
@@ -1891,16 +1891,16 @@ class SolarSystemBaseView extends WatchUi.View {
             */
 
 
-
+            var increment = 30;
             var first = tally;
-            var last = tally + 15;
+            var last = tally + increment;
             if (last >= cc_name.size()) {
                 last = cc_name.size();
                 tally_finished = true;
             }
 
             //deBug("starsc", [cckys.size(),tally, first, last]);
-            tally += 5;
+            tally += increment;
 
             //dc.setColor(constColor,Graphics.COLOR_TRANSPARENT);
             
