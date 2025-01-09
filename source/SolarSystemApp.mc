@@ -73,6 +73,7 @@ var time_add_years  as Lang.Number = 0;
 var time_add_direction as Lang.Number = 1;
 var time_changed = false;
 var time_just_changed = false;
+var pos_just_changed = false;
 
 var show_intvl = 0; //whether or not to show current SPEED on display
 var animSinceModeChange = 0; //used to tell when to blank screen etc.
@@ -400,6 +401,8 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
     function setPosition (pinfo as Position.Info) {
         System.println ("setPosition");
 
+        var save_lastLoc = $.lastLoc;
+
         //We only need this ONCE, not continuously, so . . . 
         //Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:setPosition));
 
@@ -527,6 +530,13 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         }
         
         $.lastLoc = new_lastLoc; //if man_set is true, then we don't want to update self.lastLoc with the new value, we want to keep the value that was set by the user.
+        if ($.lastLoc!=null &&
+        $.lastLoc[0] != null && $.lastLoc[1] != null&& save_lastLoc != null &&
+            ($.lastLoc[0] != save_lastLoc[0] ||
+            $.lastLoc[1] != save_lastLoc[1])){
+                $.pos_just_changed = true;
+
+            }
 
         System.println("setPosition (from GPS, final) at " + animation_count + " to: "  + new_lastLoc + " final SET pos: " + $.lastLoc);
         //return man_set;
