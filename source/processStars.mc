@@ -35,10 +35,13 @@ var pp_mag as Lang.ByteArray = [];
 typedef pp_hipp as Array<Number>;
 typedef cc_name as Array<String>;
 typedef cc_stars as Array<Array<String>>;
+typedef temp_PPIndex as Array<Dictionary<Number,Number>>;
 
 var pp_hipp = [];
 var cc_name = [];
 var cc_stars = [];
+var temp_PPIndex = [{},{},{},{},{},{},{},{},{},{},{},{},{},]; //same as # of hipparcos thingers
+var pp_count as Lang.Number = 0;
 
 var hippconst_finished = false;
 var hipp_proc = 0;
@@ -46,10 +49,43 @@ var const_proc = 0;
 var hipp_finished = false;
 var const_finished = false;
 
+(:hasByteArray)
 function processStars_init(){
     //pp = [{},{},{},{},{}];
     cc = {};
     //ret = [3]b;
+    pp_ra = []b;
+    pp_dec = []b;
+    pp_mag = []b;
+    pp_hipp = [];
+    cc_name = [];
+    cc_stars = [];
+    temp_PPIndex = [{},{},{},{},{},{},{},{},{},{},{},{},{},];
+    pp_count = 0;
+
+    hippconst_finished = false;
+    hipp_proc = 0;
+    const_proc = 0;
+    hipp_finished = false;
+    const_finished = false;
+    started = false;
+
+}
+
+(:noByteArray)
+function processStars_init(){
+    //pp = [{},{},{},{},{}];
+    cc = {};
+    //ret = [3]b;
+    pp_ra = [];
+    pp_dec = [];
+    pp_mag = [];
+    pp_hipp = [];
+    cc_name = [];
+    cc_stars = [];
+    temp_PPIndex = [{},{},{},{},{},{},{},{},{},{},{},{},{},];
+    pp_count = 0;
+
     hippconst_finished = false;
     hipp_proc = 0;
     const_proc = 0;
@@ -90,13 +126,14 @@ function processStars(){
 
             var myStats = System.getSystemStats();
             System.println("Memory2: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
-            myStats = null;
+            myStats = null; 
+            
 
             //get rid of any stars that cannot be seen from this latitude (sloppy filter >85 instead aof >90 to reduce size a bit more)
             var kys = pp_orig.keys();
             //deBug("pppor",[pp_orig,kys]);
             var sz = kys.size();
-            var ppsz = sz/5 + 1;
+            //var ppsz = sz/5 + 1;
             for (var i =0; i<sz; i++) {
                 var star = pp_orig[kys[i]];
                 if (normalize180(lastLoc[0] - star[2]).abs()>95) {
@@ -110,7 +147,11 @@ function processStars(){
                     pp_dec.add(star[2]);
                     pp_mag.add(star[0]);
 
-                    deBug("PP_", [star,kys[i].toNumber(),star[1]*256/360, star[2], star[0] ] );
+                    temp_PPIndex[j].put(kys[i].toNumber(), pp_count);
+                    //deBug("PP_", [pp_count, star,kys[i].toNumber(),star[1]*256/360, star[2], star[0] ] );
+                    pp_count++;
+
+                    //deBug("PP_", [pp_count, star,kys[i].toNumber(),star[1]*256/360, star[2], star[0] ] );
                     /*
                     ret = []b;
                     ret.add(star[0]) as Lang.ByteArray;
@@ -181,36 +222,71 @@ function processStars(){
                 for (var i = 0; i<kys.size(); i++) {
                     var key = kys[i];
                     var cnst = pp_orig[key];
+                    var cnstKs = [];
                     var tal = 0;
                     var himag = 10000000;
-                    for (var k = 0; k<cnst.size();k++) {
-                        var star = cnst[k].toNumber();
+                    var saveStar = [];
+
+                    //var saveStar2 = null;
+                    for (var k = 0; k<cnst.size()/2;k=k+2) {
+                        var star = [];
+                        star.add(cnst[k].toNumber());
+                        star.add (cnst[k+1].toNumber());
+                        var starK = [];
                         //if ($.pp.hasKey(star)) {
-                        var starK = ppReturnKey(star);
-                        if (starK != -1) {
-                            tal++;
-                            //var mag = pp[starK[0]][starK[1]][0];
-                            var mag = pp_mag[starK];
-                            if (mag < himag) { himag = mag;}
+                        for (var x =0;x<2;x++) {
+                            starK.add( ppReturnKey(star[x]));
                             
-                        }                        
+                            
+                            if (starK[x] != null) {
+                                tal++;
+                                //var mag = pp[starK[0]][starK[1]][0];
+                                //deBug("constlll", [starK, k, cnst[k], pp_mag.size() ]);
+                                var mag = pp_mag[starK[x]];
+                                if (mag < himag) { himag = mag;}                            
+                            }                        
+                        }
+
+                        if (starK[0] != null && starK[1] != null) {
+                                cnstKs.add(starK[0]);                                  
+                                cnstKs.add(starK[1]);
+                        } 
+
+                        //could stitch up any missing stars here, but ....
+                        
+                        /* else if (starK[0]==null) {
+                            saveStar[0] = stark[1]; //the GOOD one first
+                            saveStar[1] = starK[0]; //bad one
+
+                        } else if (starK[1]==null) {
+                            saveStar[1] = stark[1]; 
+                            saveStar[0] = starK[0]; //bad one
+                        } else {continue;}
+
+                        if (saveStar!=null &&)
+                        */
+
                     }
                     //if (tal*100/cnst.size()>50 && himag < 45) {
                     if (tal*100/cnst.size()>5) {
                         //deBug("adding", [key, tal, himag, cnst.size()]);
                         //$.cc.put(key,cnst);
                         cc_name.add(key);
-                        cc_stars.add(cnst);
+                        cc_stars.add(cnstKs);
                         //deBug("adding", [key, tal, himag, cnst.size()]);
                     } else {
                         //deBug("omitting", [key, tal, himag, cnst.size()]);
                     }
                 }
+
+                pp_orig = null;
             //}
 
+            
             var myStats = System.getSystemStats();
             System.println("Memory3: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
             myStats = null;
+            
             
 
             //deBug("pp", $.pp);
@@ -223,6 +299,7 @@ function processStars(){
     if (const_proc >= pprez.size()) { const_finished = true;}
     if (hipp_finished && const_finished) {
         deBug("hippconst_finished", const_finished);
+        temp_PPIndex = [{},{},{},{},{},{},{},{},{},{},{},{},{},];
         $.hippconst_finished = true;
         $.started = true;
     }
@@ -239,12 +316,21 @@ function ppHasKey(key) {
 
 //null if it doesn't exist
 function ppReturnKey(key) {
-    return pp_hipp.indexOf(key);
+    //var ret = pp_hipp.indexOf(key);
+    //if (ret == -1) { ret = null;}
     
-    /*for (var i = 0; i<pp.size();i++) {
-        if (pp[i].hasKey(key)){ return [i,key];}
+    var ret2 = null;
+    
+    for (var i = 0; i<temp_PPIndex.size();i++) {
+        if (temp_PPIndex[i].hasKey(key)){ 
+            ret2 = temp_PPIndex[i][key];
+            break;
+        }
     }
-    return null; */
+    //return null;
+    //deBug("ppretkey", [ret, ret2]);
+
+    return ret2;
 }
 
 /*

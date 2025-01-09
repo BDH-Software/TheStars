@@ -105,6 +105,7 @@ var animSinceModeChange = 0; //used to tell when to blank screen etc.
         lastLoc_enum = 10,
         } //screen0MoveOption_enum, 
         */
+var goodGPS = false;
 
 class SolarSystemBaseApp extends Application.AppBase {
 
@@ -141,7 +142,7 @@ class SolarSystemBaseApp extends Application.AppBase {
         //readStorageValues();
         
 
-        setPosition(null);
+        $.goodGPS = setPosition(null);
 
         //sunrise_cache = new sunRiseSet_cache2();        //works fine but not using it now..
         //System.println("inited...");
@@ -182,7 +183,12 @@ class SolarSystemBaseApp extends Application.AppBase {
         
         
         //readStorageValues();
-        Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:setPosition));
+        //only if we haven't managed to scrape up a good GPS location
+        //from activities, direct query, or storage do we 
+        //try to actually ACTIVATE GPS
+        if (!goodGPS) {
+            Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:setPosition));
+        }
     }
 
     //! Handle app shutdown
@@ -401,6 +407,8 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
     function setPosition (pinfo as Position.Info) {
         System.println ("setPosition");
 
+        var goodGPS = false;
+
         var save_lastLoc = $.lastLoc;
 
         //We only need this ONCE, not continuously, so . . . 
@@ -427,13 +435,16 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         if (pinfo!= null && pinfo.position != null) { curr_pos = pinfo.position; gps_read = true; }
         else { //if there is nothing in the pinfo passed to us we just try to grab it now (ie, at init)
             pinfo = Position.getInfo(); 
-            if (pinfo!= null && pinfo.position != null) { curr_pos = pinfo.position; gps_read = true; }
+            if (pinfo!= null && pinfo.position != null) { curr_pos = pinfo.position; gps_read = true; 
+            goodGPS = true;
+            }
         }
         
         var temp = curr_pos.toDegrees()[0];
         //if ( (temp - 180).abs() < 0.1 || temp.abs() < 0.1 ) {
         if ( (temp - 180).abs() < 0.1) {
             curr_pos = null;
+            goodGPS = false;
             } //bad data
         
 
@@ -465,11 +476,12 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
             var a_pos = null;
             //System.println ("sc1.2:Activity a_pos==Null3? " + (a_pos==null));
             
-            if (a_info!=null && a_info has :position && a_info.position != null)
-            { a_pos = a_info.position;}
+            if (a_info!=null && a_info has :currentLocation && a_info.position != null)
+            { a_pos = a_info.currentLocation;}
             if (a_pos != null ) {
-                //System.println ("sc1.2: a_pos " + a_pos.toDegrees());
+                System.println ("Position: Got from Activity.getActivityInfo() currentLocation" + a_pos + " " + a_pos.toDegrees());
                 curr_pos = a_pos; 
+                goodGPS = true;
             }
         }
         
@@ -484,6 +496,7 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         var rt = Storage.getValue(lastLoc_enum);
         if (rt != null) {
             new_lastLoc = rt;
+            if (rt != null) {goodGPS = true;}
             deBug("POS from Storage", rt);
             
             }
@@ -500,12 +513,14 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
                 new_lastLoc = new Position.Location(            
                     { :latitude => 39.833333, :longitude => long, :format => :degrees }
                     ).toDegrees();
+                goodGPS = false;    
                 System.println ("post from time zone: " + new_lastLoc);
            }
         } else {
 
             var loc = curr_pos.toDegrees();
             new_lastLoc = loc;
+            goodGPS = true;
             //System.println ("sc1c:"+ curr_pos.toDegrees());
             //System.println ("sc1c");
         }        
@@ -530,7 +545,7 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         }
         
         $.lastLoc = new_lastLoc; //if man_set is true, then we don't want to update self.lastLoc with the new value, we want to keep the value that was set by the user.
-        if ($.lastLoc!=null &&
+        if ($.lastLoc!=null && save_lastLoc !=null &&
         $.lastLoc[0] != null && $.lastLoc[1] != null&& save_lastLoc != null &&
             ($.lastLoc[0] != save_lastLoc[0] ||
             $.lastLoc[1] != save_lastLoc[1])){
@@ -540,5 +555,5 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
 
         System.println("setPosition (from GPS, final) at " + animation_count + " to: "  + new_lastLoc + " final SET pos: " + $.lastLoc);
         //return man_set;
-        return;
+        return goodGPS;
     }

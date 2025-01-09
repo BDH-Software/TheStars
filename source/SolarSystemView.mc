@@ -390,6 +390,13 @@ class SolarSystemBaseView extends WatchUi.View {
     //dashed line 
     //Note len_line can be ZERO - in that case it just draws a single pixel/dot for each "dash"
     public function drawDashedLine (myDc,x1, y1, x2, y2, len_line, len_skip, width, color) {
+
+        if (x1<-screenWidth * .3 || x1>screenWidth * 1.3 ||
+         x2<-screenWidth * .3 || x2>screenWidth * 1.3 ||
+         y1<-screenHeight * .3 || y1>screenHeight * 1.3 ||
+        y2<-screenHeight * .3 || y2>screenHeight * 1.3) {
+            return;
+        }
                 
         myDc.setPenWidth(width);
         if (color != null) {myDc.setColor(color, Graphics.COLOR_TRANSPARENT);}
@@ -528,6 +535,16 @@ class SolarSystemBaseView extends WatchUi.View {
         );
 
         dc.drawText(xc, yc,font,"STARS",Graphics.TEXT_JUSTIFY_CENTER);
+
+        if (!$.goodGPS)
+        {     dc.drawText(
+                xc / 4.0, 
+                yc -2 *textHeight,
+                dateFont, 
+                "(getting GPS position)",
+                Graphics.TEXT_JUSTIFY_CENTER
+            );
+        }
         
 
         if ($.time_changed) {
@@ -1611,6 +1628,7 @@ class SolarSystemBaseView extends WatchUi.View {
         
 
         if (!tally2_finished && tally_finished && tally3_finished) {
+            deBug("Tally2", null);
 
             //var star = ppNextStar();
             if (tally2 == 0) {
@@ -1633,7 +1651,7 @@ class SolarSystemBaseView extends WatchUi.View {
             //tally2 += 20;
             //deBug("SF", [sizex,sizey,addAz,addy, jd_ut, gmst_deg, lastLoc]);
             //for (var i = first2; i < last2; i++) {
-            for (var i=0;i<40;i++) {
+            for (var i=0;i<30;i++) {
                 tally2++;
                 //var key = kys[i];
                 var star = ppNextStar(null);            
@@ -1661,6 +1679,7 @@ class SolarSystemBaseView extends WatchUi.View {
         }
 
         if (!tally3_finished) {
+            deBug("Tally3", null);
 
             dc.setColor(starColor,starBackgroundColor);
 
@@ -1710,6 +1729,7 @@ class SolarSystemBaseView extends WatchUi.View {
         if (!$.Options_Dict[CONSTLINES] && !$.Options_Dict[CONSTNAMES]) {tally_finished = true;}
 
         if (!tally_finished && tally3_finished) {
+            deBug("Tally", null);
             //var cckys = $.cc.keys();
 
             /*
@@ -1727,7 +1747,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
 
             var first = tally;
-            var last = tally + 10;
+            var last = tally + 7;
             if (last >= cc_name.size()) {
                 last = cc_name.size();
                 tally_finished = true;
@@ -1746,14 +1766,14 @@ class SolarSystemBaseView extends WatchUi.View {
                 for (var j= 0; j<c.size()/2; j++) {
                     var p1 = c[2*j];
                     var p2 = c[2*j+1];
-                    var k1 = ppReturnKey(p1);
-                    var k2 = ppReturnKey(p2);
-                    if (k1 != -1 && k2 != -1) {
+                    //var k1 = ppReturnKey(p1);
+                    //var k2 = ppReturnKey(p2);
+                    if (p1 != null && p2 != null) {
                         //save_keys.add(p1);
                         //save_keys.add(p2);
-                        k_save = k2;
+                        k_save = p2;
                         if (!$.Options_Dict[CONSTLINES]) {break;}
-                        lines.add([[pp_ra[k1], pp_dec[k1]], [pp_ra[k2], pp_dec[k2]]]);
+                        lines.add([[pp_ra[p1], pp_dec[p1]], [pp_ra[p2], pp_dec[p2]]]);
                         /* drawConstLine(dc, 
                                 [pp_ra[k1],pp_dec[k1]],
                                 [pp_ra[k2],pp_dec[k2]],
