@@ -117,11 +117,22 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
 
             //menu_pressed = true;
             //$.started = true;
+            
+            //if the device can handle MENU2...
+            if ((WatchUi has :Menu2)) {
+                var menu = new $.StarsMenu();
 
-            var menu = new $.StarsMenu();
+                WatchUi.pushView(menu, new $.StarsMenuDelegate(), WatchUi.SLIDE_IMMEDIATE);
+                return true;
 
-            WatchUi.pushView(menu, new $.StarsMenuDelegate(), WatchUi.SLIDE_IMMEDIATE);
-            return true;
+            } else {  //For MENU2-less devices it is just a way to reset the view/escape zoom
+
+                $.zoom_level = 0;
+                $.menu_pressed = true;
+                $.started = true;
+
+
+            }
 
             WatchUi.requestUpdate();
 

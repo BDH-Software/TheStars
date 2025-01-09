@@ -3,11 +3,13 @@
 <iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="1">
     <iq:application entry="SolarSystemBaseApp" id="040b5290-83de-4049-9a0a-f428e4e6f01c" launcherIcon="@Drawables.LauncherIcon" minSdkVersion="2.4.0" name="@Strings.AppName" type="watch-app">
         <iq:products>
+            <iq:product id="approachs60"/>
             <iq:product id="approachs62"/>
             <iq:product id="approachs7042mm"/>
             <iq:product id="approachs7047mm"/>
             <iq:product id="d2air"/>
             <iq:product id="d2airx10"/>
+            <iq:product id="d2charlie"/>
             <iq:product id="d2delta"/>
             <iq:product id="d2deltapx"/>
             <iq:product id="d2deltas"/>
@@ -26,8 +28,11 @@
             <iq:product id="edge520plus"/>
             <iq:product id="edge530"/>
             <iq:product id="edge540"/>
+            <iq:product id="edge820"/>
             <iq:product id="edge830"/>
             <iq:product id="edge840"/>
+            <iq:product id="edge_1000"/>
+            <iq:product id="edge_520"/>
             <iq:product id="edgeexplore"/>
             <iq:product id="edgeexplore2"/>
             <iq:product id="enduro"/>
@@ -74,7 +79,9 @@
             <iq:product id="fr55"/>
             <iq:product id="fr645"/>
             <iq:product id="fr645m"/>
+            <iq:product id="fr735xt"/>
             <iq:product id="fr745"/>
+            <iq:product id="fr935"/>
             <iq:product id="fr945"/>
             <iq:product id="fr945lte"/>
             <iq:product id="fr955"/>
@@ -101,6 +108,8 @@
             <iq:product id="marqexpedition"/>
             <iq:product id="marqgolfer"/>
             <iq:product id="montana7xx"/>
+            <iq:product id="oregon7xx"/>
+            <iq:product id="rino7xx"/>
             <iq:product id="venu"/>
             <iq:product id="venu2"/>
             <iq:product id="venu2plus"/>
@@ -119,6 +128,7 @@
             <iq:product id="vivoactive4"/>
             <iq:product id="vivoactive4s"/>
             <iq:product id="vivoactive5"/>
+            <iq:product id="vivoactive_hr"/>
         </iq:products>
         <iq:permissions>
             <iq:uses-permission id="Positioning"/>

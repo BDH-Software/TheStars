@@ -13,10 +13,25 @@ import Toybox.Math;
 //var pp2 = {};
 //var pold = [{},{}];
 var cc = {};
-var ret as Lang.ByteArray = []b;
+//(:hasByteArray)
+//var ret as Lang.ByteArray = []b;
+(:hasByteArray)
 var pp_ra as Lang.ByteArray = []b;
+(:hasByteArray)
 var pp_dec as Lang.ByteArray = []b;
+(:hasByteArray)
 var pp_mag as Lang.ByteArray = []b;
+
+//(:noByteArray)
+//var ret as Lang.ByteArray = [];
+(:noByteArray)
+var pp_ra as Lang.ByteArray = [];
+(:noByteArray)
+var pp_dec as Lang.ByteArray = [];
+(:noByteArray)
+var pp_mag as Lang.ByteArray = [];
+
+
 typedef pp_hipp as Array<Number>;
 typedef cc_name as Array<String>;
 typedef cc_stars as Array<Array<String>>;
@@ -34,7 +49,7 @@ var const_finished = false;
 function processStars_init(){
     //pp = [{},{},{},{},{}];
     cc = {};
-    ret = [3]b;
+    //ret = [3]b;
     hippconst_finished = false;
     hipp_proc = 0;
     const_proc = 0;

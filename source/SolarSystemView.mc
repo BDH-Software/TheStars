@@ -257,8 +257,8 @@ class SolarSystemBaseView extends WatchUi.View {
 
         thisSys = System.getDeviceSettings();
         
-        screenHeight = dc.getWidth();
-        screenWidth = dc.getHeight();
+        screenHeight = dc.getHeight();
+        screenWidth = dc.getWidth();
 
         xc = dc.getWidth() / 2;
         yc = dc.getHeight() / 2;
@@ -1127,14 +1127,26 @@ class SolarSystemBaseView extends WatchUi.View {
 
             y = (y + addy) * screenHeight / sizey ;
             x = xc - x * screenWidth /sizex;
+            return [x, y];    
+    }
+    //for purposes of Horizon, we need to not squeeze X & Y differently; it's top 
+    //to bottom of the screenHeight.
+    //Also this is an approximation now, probably should be like a ellipse or sojmething
+    //of we are scaling X & Y differently.
+    public function XY_nosqueeze (az, alt) {
+            var x = Math.cos(Math.toRadians(az+addAz)) * (90.0 - alt); 
+            var y = Math.sin (Math.toRadians(az+addAz)) * (90.0 - alt);
+
+            y = (y + addy) * screenHeight / sizey ;
+            x = xc - x * screenHeight /sizey;
             return [x, y];
 
     }
 
 
     public function drawHorizon(dc){
-        var xy = XY(0, 90);
-        var xy2 = XY(0, 0);
+        var xy = XY_nosqueeze(0, 90);
+        var xy2 = XY_nosqueeze(0, 0);
         //dc.setColor(0xe1a75c,starBackgroundColor);
         //dc.drawCircle(xy[0], xy[1],dist (xy, xy2));
         drawARC (dc, 0, 24.05, xy[0], xy[1],dist (xy, xy2) + 1, 3, 0xe1a75c);
