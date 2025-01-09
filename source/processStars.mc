@@ -16,30 +16,35 @@ var cc = {};
 //(:hasByteArray)
 //var ret as Lang.ByteArray = []b;
 (:hasByteArray)
-var pp_ra as Lang.ByteArray = []b;
+var pp_az as Lang.ByteArray = []b;
 (:hasByteArray)
-var pp_dec as Lang.ByteArray = []b;
+var pp_alt as Lang.ByteArray = []b;
 (:hasByteArray)
 var pp_mag as Lang.ByteArray = []b;
+
 
 //(:noByteArray)
 //var ret as Lang.ByteArray = [];
 (:noByteArray)
-var pp_ra as Lang.ByteArray = [];
+var pp_az as Lang.ByteArray = [];
 (:noByteArray)
-var pp_dec as Lang.ByteArray = [];
+var pp_alt as Lang.ByteArray = [];
 (:noByteArray)
 var pp_mag as Lang.ByteArray = [];
 
 
+
+typedef pp_inConst as Array<Boolean>; //if its in a constellation,
 typedef pp_hipp as Array<Number>;
 typedef cc_name as Array<String>;
 typedef cc_stars as Array<Array<String>>;
 typedef temp_PPIndex as Array<Dictionary<Number,Number>>;
 
+var pp_inConst = [];
 var pp_hipp = [];
 var cc_name = [];
 var cc_stars = [];
+
 var temp_PPIndex = [{},{},{},{},{},{},{},{},{},{},{},{},{},]; //same as # of hipparcos thingers
 var pp_count as Lang.Number = 0;
 
@@ -48,16 +53,18 @@ var hipp_proc = 0;
 var const_proc = 0;
 var hipp_finished = false;
 var const_finished = false;
+var gmst_deg=0;
+//var byteConv = 256/360.0;
 
 (:hasByteArray)
 function processStars_init(){
     //pp = [{},{},{},{},{}];
     cc = {};
     //ret = [3]b;
-    pp_ra = []b;
-    pp_dec = []b;
+    pp_az = []b;
+    pp_alt = []b;
     pp_mag = []b;
-    pp_hipp = [];
+    pp_hipp = [];    
     cc_name = [];
     cc_stars = [];
     temp_PPIndex = [{},{},{},{},{},{},{},{},{},{},{},{},{},];
@@ -69,6 +76,11 @@ function processStars_init(){
     hipp_finished = false;
     const_finished = false;
     started = false;
+
+    
+    var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour, now_info.min, $.now.timeZoneOffset/3600f, $.now.dst);
+
+    $.gmst_deg = Math.toDegrees(greenwichMeanSiderealTime(jd_ut));
 
 }
 
@@ -77,10 +89,10 @@ function processStars_init(){
     //pp = [{},{},{},{},{}];
     cc = {};
     //ret = [3]b;
-    pp_ra = [];
-    pp_dec = [];
+    pp_az = [];
+    pp_alt = [];
     pp_mag = [];
-    pp_hipp = [];
+    pp_hipp = [];    
     cc_name = [];
     cc_stars = [];
     temp_PPIndex = [{},{},{},{},{},{},{},{},{},{},{},{},{},];
@@ -92,6 +104,12 @@ function processStars_init(){
     hipp_finished = false;
     const_finished = false;
     started = false;
+
+    var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour, now_info.min, $.now.timeZoneOffset/3600f, $.now.dst);
+
+    $.gmst_deg = Math.toDegrees(greenwichMeanSiderealTime(jd_ut));
+
+    //deBug("JDGMST", [jd_ut, $.gmst_deg]);
 
 }
 
@@ -139,32 +157,37 @@ function processStars(){
                 if (normalize180(lastLoc[0] - star[2]).abs()>95) {
                     //pp_orig.remove(kys[i]);
                     //deBug("omit", [kys[i], star]);
-                } else {
-                    //var ret as Lang.ByteArray = [];
-                    //deBug("256b",[star[1]*256/360, (star[1]*256/360).toChar(), (star[1]*256/360 ) & 256]);
-                    pp_hipp.add(kys[i].toNumber());
-                    pp_ra.add(star[1]*256/360); //remember they are listed in order MAG, RA, DECL
-                    pp_dec.add(star[2]);
-                    pp_mag.add(star[0]);
+                    continue;
+                } 
 
-                    temp_PPIndex[j].put(kys[i].toNumber(), pp_count);
-                    //deBug("PP_", [pp_count, star,kys[i].toNumber(),star[1]*256/360, star[2], star[0] ] );
-                    pp_count++;
+                var res = raDecToAltAz_deg(star[1],star[2],lastLoc[0],lastLoc[1],$.gmst_deg); //remember they are listed in order MAG, RA, DECL
 
-                    //deBug("PP_", [pp_count, star,kys[i].toNumber(),star[1]*256/360, star[2], star[0] ] );
-                    /*
-                    ret = []b;
-                    ret.add(star[0]) as Lang.ByteArray;
-                    ret.add((star[1]*256/360)) as Lang.ByteArray;
-                    ret.add(star[2]) as Lang.ByteArray;
-                    //pp.put((kys[i]).toNumber(), ret);
-                    //deBug("PPPPQ0",[kys[i].toNumber(), ret, star, $.pp.size()]);
-                    var dict = i/ppsz;
-                    $.pp[dict].put((kys[i].toNumber()), ret);                    
-                    //deBug("PPPPQ1",[kys[i].toNumber(), ret, star]);
-                    */
-                }   
-            }
+                //deBug("RADEC", [star[1],star[2],lastLoc, $.gmst_deg]);
+                var az = res[0];
+                var alt = res[1];
+            
+            
+                //deBug("alt", [az, alt]);
+                if (res[1]<-2) {
+                    //deBug("omit2", [kys[i], res, star]);
+                    continue;
+                }
+
+
+                //var ret as Lang.ByteArray = [];
+                //deBug("256b",[star[1]*256/360, (star[1]*256/360).toChar(), (star[1]*256/360 ) & 256]);
+                pp_hipp.add(kys[i].toNumber());
+                pp_az.add((res[0]*256/360).toNumber()); 
+                pp_alt.add((res[1]).toNumber());
+                pp_mag.add((star[0]).toNumber());
+
+                temp_PPIndex[j].put(kys[i].toNumber(), pp_count);
+                //deBug("PP_", [kys[i].toNumber(), star, res[0]*256/360, res[1], star[0], pp_hipp[pp_count], pp_az[pp_count], pp_alt[pp_count], pp_mag[pp_count]] );
+                pp_count++;
+
+
+            }   
+            
             kys = null;
             pp_orig = null;
             hipp_proc++;
@@ -172,6 +195,9 @@ function processStars(){
 
         
     if (hipp_proc >= pprez.size()) { 
+        
+        pp_inConst = new Array <Boolean> [pp_hipp.size()];
+        
         hipp_finished = true;
 
     }
@@ -232,10 +258,10 @@ function processStars(){
                         var star = [];
                         star.add(cnst[k].toNumber());
                         star.add (cnst[k+1].toNumber());
-                        var starK = [];
+                        var starK = new Array <Number> [2];
                         //if ($.pp.hasKey(star)) {
                         for (var x =0;x<2;x++) {
-                            starK.add( ppReturnKey(star[x]));
+                            starK[x] = ppReturnKey(star[x]);
                             //deBug("cstll3", [key, cnst, star, starK]);
                             
                             
@@ -251,6 +277,9 @@ function processStars(){
                         if (starK[0] != null && starK[1] != null) {
                                 cnstKs.add(starK[0]);                                  
                                 cnstKs.add(starK[1]);
+                                
+                                pp_inConst[starK[0]] = true;
+                                pp_inConst[starK[1]] = true;
                         } 
 
                         //could stitch up any missing stars here, but ....
@@ -300,7 +329,7 @@ function processStars(){
     
     if (const_proc >= pprez.size()) { const_finished = true;}
     if (hipp_finished && const_finished) {
-        deBug("hippconst_finished", const_finished);
+        //deBug("hippconst_finished", const_finished);
         temp_PPIndex = [{},{},{},{},{},{},{},{},{},{},{},{},{},];
         $.hippconst_finished = true;
         $.started = true;
@@ -386,18 +415,38 @@ function ppNextStar(restart) {
 }
 */
 
+/*
+function removeStar (star) {
+    pp_az[star] = null;
+
+}
+*/
+
+////////////////////////////////////////////////////////
+/* RETURNS NEXT STAR IN QUEUE
+/* SKIPPING THOSE THAT ARE IN A CONSTELLATION (WHICH
+/* ARE PLOTTED SEPARATELY
+*******************************************************/
 var currItem = 0;
 
-function ppNextStar(restart) {
-        if (currItem >= pp_hipp.size() || restart) {
-        
+function ppNextStar(restart, skipConst) {
+
+        if (currItem >= pp_hipp.size() || restart) {    
             
             currItem = 0;
         //deBug("PPNS RET", [currDict,currItem]);
             return null;
         }
+
+        while (skipConst != null && skipConst && currItem < pp_hipp.size() && pp_inConst[currItem]!= null && pp_inConst[currItem]) {
         //var i = pp_hipp[currItem];
-        var ret = [pp_ra[currItem], pp_dec[currItem], pp_mag[currItem]];
+            currItem++;
+        }
+        if (currItem >= pp_hipp.size()) {
+            return null;
+        } 
+        var ret =[pp_az[currItem], pp_alt[currItem], pp_mag[currItem]];
+        //deBug("ppnextstar", ret);
         currItem++;
         return ret;
 

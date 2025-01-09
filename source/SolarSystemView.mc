@@ -1170,16 +1170,54 @@ class SolarSystemBaseView extends WatchUi.View {
 
     }
 
+    /*
     public function drawStar(dc, ra,dec,mag){
 
-        deBug("draws", [dc,  ra,dec,mag]);
+        //deBug("draws", [dc,  ra,dec,mag]);
 
             var res = raDecToAltAz_deg(ra * byteDeg,proc(dec),lastLoc[0],lastLoc[1],gmst_deg);
             var az = res[0];
             var alt = res[1];
             
+            
             //deBug("alt", [az, alt]);
-            //if (alt<-1) {return  [az, alt];}
+            if (alt<-2) {return null;}
+            /*var x = Math.cos(Math.toRadians(az+addAz)) * (90.0 - alt); 
+            var y = Math.sin (Math.toRadians(az+addAz)) * (90.0 - alt);
+
+            y = (y + addy) * screenHeight / sizey ;
+            x = xc - x * screenWidth /sizex; 
+            */
+
+            /*
+
+            //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
+            var xy = XY(az, alt);
+
+
+            mag = (40 - proc(mag))/10; //ranges from about 52 to 0
+            if (zoom_level>0) {mag *= 1.5;}
+            if ($.Options_Dict[ALLBOLDER] ) {mag *= 2;}
+            //mag = mag*mag/700;
+            if (mag<1) {mag =1;}
+            //mag += 3;
+            dc.setColor(starColor,Graphics.COLOR_TRANSPARENT);
+            dc.fillCircle(xy[0],xy[1],mag);
+            //deBug("PPPPQ3", [az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
+            return xy;
+    }
+
+    */
+
+    public function drawStar(dc, az,alt,mag){
+
+        //deBug("draws", [dc,  ra,dec,mag]);
+
+
+            
+            
+            //deBug("alt", [az, alt]);
+            if (alt<-2) {return null;}
             /*var x = Math.cos(Math.toRadians(az+addAz)) * (90.0 - alt); 
             var y = Math.sin (Math.toRadians(az+addAz)) * (90.0 - alt);
 
@@ -1188,7 +1226,16 @@ class SolarSystemBaseView extends WatchUi.View {
             */
 
             //az =xc + (az-xc) *alt /screenHeight; //poor man's spherical projection
-            var xy = XY(az, alt);
+            //deBug("drawst", [az, alt]);
+            var xy = XY(az*byteDeg, proc(alt));
+            //deBug("drawst", [az, alt, az*byteDeg, proc(alt), xy]);
+
+            /* if (xy[0]<-screenWidth * .3 || xy[0]>screenWidth * 1.3 ||
+            xy[1]<-screenHeight * .3 || xy[1]>screenHeight * 1.3 
+            ) { return null; } */
+        
+
+
 
 
             mag = (40 - proc(mag))/10; //ranges from about 52 to 0
@@ -1323,7 +1370,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
     public function drawConstLine_new(dc, xy,xy2){
          
-
+            //deBug("dcNEW", [xy,xy2]);
             var dot = 0;
             var thick = 1;
 
@@ -1388,8 +1435,14 @@ class SolarSystemBaseView extends WatchUi.View {
 
     }
 
+    (:hasByteArray)
     function proc (x) {
         if (x > 127) {x = x - 256.toNumber(); }
+        return  x.toNumber();
+    }
+
+    (:noByteArray)
+    function proc (x) {
         return  x.toNumber();
     }
 
@@ -1515,7 +1568,7 @@ class SolarSystemBaseView extends WatchUi.View {
     var last_started = false;
     var save_moveAz = 0;
     var planets;
-    var gmst_deg = 0;
+    //var gmst_deg = 0;
     var sizex =  90f;
     var sizey = 90f;
     var addy = 0f;
@@ -1525,6 +1578,7 @@ class SolarSystemBaseView extends WatchUi.View {
     var constColor = 0x65a1c0;
     var starBackgroundColor = Graphics.COLOR_WHITE;
     var starFont = 1;
+    var skipConst = false;
 
     //var cc;
     public function starField(dc) {
@@ -1567,7 +1621,7 @@ class SolarSystemBaseView extends WatchUi.View {
             onshow = false;
             tally = 0;
             tally2 = 0;
-            ppNextStar(true);
+            ppNextStar(true, null);
             
             sizex =  92f;
             sizey = 92f;
@@ -1596,7 +1650,7 @@ class SolarSystemBaseView extends WatchUi.View {
             tally3_finished = false;
             tally = 0;
             tally2 = 0;
-            ppNextStar(true);
+            ppNextStar(true, null);
 
             var fontAdd = 0;
             if ($.Options_Dict[ALLBOLDER]){ fontAdd =1;}
@@ -1631,9 +1685,9 @@ class SolarSystemBaseView extends WatchUi.View {
         */
 
         //note that we must SUBTRACT the TZ & DST factors from our current local time to get the correct JD - the julianDate routine in functions.mc does this
-        var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour, now_info.min, $.now.timeZoneOffset/3600f, $.now.dst);
+        //var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour, now_info.min, $.now.timeZoneOffset/3600f, $.now.dst);
 
-        gmst_deg = Math.toDegrees(greenwichMeanSiderealTime(jd_ut));
+        //gmst_deg = Math.toDegrees(greenwichMeanSiderealTime(jd_ut));
         
         dc.setColor(starColor,starBackgroundColor);
         
@@ -1649,7 +1703,7 @@ class SolarSystemBaseView extends WatchUi.View {
             started = true;
             last_started = true;
             tally2 = 0;
-            ppNextStar(true);
+            ppNextStar(true, null);
             tally = 0;
             
             tally2_finished = false;
@@ -1662,12 +1716,13 @@ class SolarSystemBaseView extends WatchUi.View {
         
 
         if (!tally2_finished && tally_finished && tally3_finished) {
-            deBug("Tally2", null);
+            //deBug("Tally2", null);
 
             //var star = ppNextStar();
             if (tally2 == 0) {
-                ppNextStar(true); //reset the queue
+                ppNextStar(true, null); //reset the queue
                 drawHorizon(dc);
+                skipConst = ($.Options_Dict[CONSTLINES] || !$.Options_Dict[CONSTNAMES]); 
             }
 
             
@@ -1688,15 +1743,15 @@ class SolarSystemBaseView extends WatchUi.View {
             for (var i=0;i<30;i++) {
                 tally2++;
                 //var key = kys[i];
-                var star = ppNextStar(null);            
+                var star = ppNextStar(null, skipConst);            
                 if (star == null) { 
                     tally2_finished = true;
                     break;
                 }
                 //var pt= star[0];
                 //var pt = pp[key[0]][key[1]];
-                var ra = star[0];
-                var dec = star[1];
+                var az = star[0];
+                var alt = star[1];
                 var mag = star[2];
 
                 //if (ra<0 || ra > sizex || dec + addy < 0 || dec +addy > sizey) {
@@ -1704,7 +1759,7 @@ class SolarSystemBaseView extends WatchUi.View {
                     //continue;}
                 
                 //deBug("PPPPQ2:", [ra,dec,mag]);
-                var res = drawStar(dc, ra,dec,mag); 
+                drawStar(dc, az,alt,mag); 
                 //deBug("ppppq3", [res, star]);
                 //if (res[1] < -5) {pp[star[1]].remove(star[2]);}  //remove  stuff below the horizon for memory considerations & we won't ever need/use it      
 
@@ -1713,7 +1768,7 @@ class SolarSystemBaseView extends WatchUi.View {
         }
 
         if (!tally3_finished) {
-            deBug("Tally3", null);
+            //deBug("Tally3", null);
 
             dc.setColor(starColor,starBackgroundColor);
 
@@ -1763,7 +1818,7 @@ class SolarSystemBaseView extends WatchUi.View {
         if (!$.Options_Dict[CONSTLINES] && !$.Options_Dict[CONSTNAMES]) {tally_finished = true;}
 
         if (!tally_finished && tally3_finished) {
-            deBug("Tally", null);
+            //deBug("Tally", null);
             //var cckys = $.cc.keys();
 
             /*
@@ -1781,7 +1836,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
 
             var first = tally;
-            var last = tally + 7;
+            var last = tally + 15;
             if (last >= cc_name.size()) {
                 last = cc_name.size();
                 tally_finished = true;
@@ -1807,8 +1862,15 @@ class SolarSystemBaseView extends WatchUi.View {
                     if (c_stars.hasKey(p)) {continue;}
                     if (p != null) {
                         k_save = p;
-                        var res = drawStar(dc, pp_ra[p],pp_dec[p],pp_mag[p]);
-                        c_stars.put(p, res); 
+                        var res = drawStar(dc, pp_az[p], pp_alt[p], pp_mag[p]);
+                        pp_inConst[p]=true;
+                        /*if (res == null) {
+                            removeStar(p);
+
+                        }*/
+                        //else {
+                        if (res!=null) {c_stars.put(p, res); }
+                        //}
 
                     }
                 }
@@ -1816,7 +1878,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 if (k_save != null && $.Options_Dict[CONSTNAMES]) {
                     dc.setColor(constColor,Graphics.COLOR_TRANSPARENT);
                     putText(dc,key, starFont,  Graphics.TEXT_JUSTIFY_CENTER, 
-                    [pp_ra[k_save], pp_dec[k_save],                    
+                    [pp_alt[k_save], pp_az[k_save],                    
                     sizex, sizey,addAz,addy, gmst_deg, 4, 4]);
                 
                 }
@@ -1830,10 +1892,11 @@ class SolarSystemBaseView extends WatchUi.View {
                         var p2 = c[2*j+1];
                         //var k1 = ppReturnKey(p1);
                         //var k2 = ppReturnKey(p2);
-                        if (p1 != null && p2 != null) {
+                        if (p1 != null && p2 != null && c_stars[p1] != null && c_stars[p2] != null) {
                             //save_keys.add(p1);
                             //save_keys.add(p2);
                             k_save = p2;
+                            //deBug("dcln", [c_stars[p1], c_stars[p2], p1, p2, c_stars]);
                             
                             drawConstLine_new (dc, c_stars[p1],c_stars[p2]);
                             

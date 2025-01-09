@@ -352,7 +352,8 @@ import Toybox.Lang;
 function raDecToAltAz_deg(ra_deg,dec_deg,lat_deg,lon_deg,gmst_deg){
     var ret = raDecToAltAz_rad(Math.toRadians(ra_deg),Math.toRadians(dec_deg),Math.toRadians(lat_deg),Math.toRadians(lon_deg),Math.toRadians(gmst_deg));
 
-    return [Math.toDegrees(ret[0]),Math.toDegrees(ret[1]), Math.toDegrees(ret[2]), Math.toDegrees(ret[3])];
+    //return [Math.toDegrees(ret[0]),Math.toDegrees(ret[1]), Math.toDegrees(ret[2]), Math.toDegrees(ret[3])];
+    return [Math.toDegrees(ret[0]),Math.toDegrees(ret[1])];
     //az = azimuth, a = altitude, H = hour angle, localSiderealTime = local sidereal time
 
 }
@@ -372,7 +373,8 @@ function raDecToAltAz_rad(ra,dec,lat,lon,gmst_rad){
     az-=Math.PI;
 
     if(az<0){az+=2*Math.PI;}
-    return [az,a, localSiderealTime,H];
+    //return [az,a, localSiderealTime,H];
+    return [az,a];
     //az = azimuth, a = altitude, H = hour angle, localSiderealTime = local sidereal time
 }
     

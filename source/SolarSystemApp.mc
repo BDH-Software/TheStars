@@ -16,7 +16,7 @@ import Toybox.Activity;
 
 var view_mode;
 var lastLoc;
-var hz = 20f;
+var hz = 5f;
 var gps_read = false;
 
 
@@ -121,7 +121,7 @@ class SolarSystemBaseApp extends Application.AppBase {
         AppBase.initialize();
         System.println("init starting...");
 
-        Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:setPosition));
+        //Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:setPosition));
 
         //SolarSystemBaseApp_class = self;
         
@@ -244,6 +244,7 @@ class SolarSystemBaseApp extends Application.AppBase {
         //_solarSystemView = null;
 
     }
+}
     /*
     // settingsview works only for watch faces & data fields (?)
     public function getSettingsView() as [Views] or [Views, InputDelegates] or Null {
@@ -365,7 +366,7 @@ class SolarSystemBaseApp extends Application.AppBase {
     }
 */
 
-}
+
 
 /*  SAMPLEs..
 class SolarSystemInputDelegate extends WatchUi.InputDelegate {
@@ -405,7 +406,7 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
     //fills in the variable lastLoc with current location and/or
     //several fallbacks
     function setPosition (pinfo as Position.Info) {
-        System.println ("setPosition");
+        //System.println ("setPosition");
 
         var goodGPS = false;
 
@@ -426,6 +427,8 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         //var man_set = setPositionFromManual(); //will be TRUE if the position is set manually
         //We still go ahead & try to determine the actual GPS position & save it in options_dict & storage
         //for future use
+
+        //System.println ("setPosition1");
 
         //if (info == null || info.position == null) { pinfo = Position.getInfo(); }
         //System.println ("sc1: Null? " + (pinfo==null));
@@ -471,17 +474,23 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
 
         */
 
+        //System.println ("setPosition2");
+
         if (curr_pos == null) {
-            var a_info = Activity.getActivityInfo();
-            var a_pos = null;
-            //System.println ("sc1.2:Activity a_pos==Null3? " + (a_pos==null));
-            
-            if (a_info!=null && a_info has :currentLocation && a_info.position != null)
-            { a_pos = a_info.currentLocation;}
-            if (a_pos != null ) {
-                System.println ("Position: Got from Activity.getActivityInfo() currentLocation" + a_pos + " " + a_pos.toDegrees());
-                curr_pos = a_pos; 
-                goodGPS = true;
+            if ((Activity has :getActivityInfo)) {
+                var a_info = Activity.getActivityInfo();
+                var a_pos = null;
+                //System.println ("sc1.2:Activity a_pos==Null3? " + (a_pos==null));
+                //System.println ("setPosition3");
+                
+                if (a_info!=null && a_info has :currentLocation && a_info.currentLocation != null)
+                { a_pos = a_info.currentLocation;}
+                //System.println ("setPosition4");
+                if (a_pos != null ) {
+                    System.println ("Position: Got from Activity.getActivityInfo() currentLocation" + a_pos + " " + a_pos.toDegrees());
+                    curr_pos = a_pos; 
+                    goodGPS = true;
+                }
             }
         }
         
@@ -492,6 +501,7 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
 
         var new_lastLoc = null;
         //if ($.Options_Dict.hasKey(lastLoc_enum)) {new_lastLoc = $.Options_Dict[lastLoc_enum];}
+        //System.println ("setPosition5");
 
         var rt = Storage.getValue(lastLoc_enum);
         if (rt != null) {
@@ -501,9 +511,12 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
             
             }
 
+            //System.println ("setPosition6");
+
 
         if (curr_pos == null ){
            if (new_lastLoc == null) { 
+                //System.println ("setPosition7");
                 var long = -98.583333; 
 
                 //approximate longitude from time zone offset if no other option
@@ -517,6 +530,8 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
                 System.println ("post from time zone: " + new_lastLoc);
            }
         } else {
+
+            //System.println ("setPosition8");
 
             var loc = curr_pos.toDegrees();
             new_lastLoc = loc;
@@ -540,16 +555,19 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         //System.println ("lastLoc: " + lastLoc );
 
         if (new_lastLoc != null) {
+            //System.println ("setPosition9");
             //$.Options_Dict.put(lastLoc_enum, new_lastLoc);
             Storage.setValue(lastLoc_enum, new_lastLoc);
         }
         
         $.lastLoc = new_lastLoc; //if man_set is true, then we don't want to update self.lastLoc with the new value, we want to keep the value that was set by the user.
+        //System.println ("setPosition10");
         if ($.lastLoc!=null && save_lastLoc !=null &&
         $.lastLoc[0] != null && $.lastLoc[1] != null&& save_lastLoc != null &&
             ($.lastLoc[0] != save_lastLoc[0] ||
             $.lastLoc[1] != save_lastLoc[1])){
                 $.pos_just_changed = true;
+                //System.println ("setPosition11");
 
             }
 
@@ -557,3 +575,4 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         //return man_set;
         return goodGPS;
     }
+
