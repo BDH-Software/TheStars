@@ -159,6 +159,7 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
         
         //$.cleanUpSettingsOpt();
         if (changeTime) {
+            $.time_just_changed = true;
 
             var addTime =new Time.Duration($.time_add_direction * ($.time_add_days * 24 * 3600 + $.time_add_months * 30 * 24 * 3600 + $.time_add_hrs * 3600 + $.time_add_years * 365 * 24 * 3600));
             var t_now = Time.now();
@@ -167,10 +168,7 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
             //deBug("tn", [t_now, $.time_now, t_now instanceof Time.Moment, $.time_now instanceof Time.Moment]);
 
-            $.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);
-
-            processStars_init();
-             processStars();
+            $.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);            
 
         } 
         

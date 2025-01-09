@@ -605,7 +605,14 @@ class SolarSystemBaseView extends WatchUi.View {
 
         
 
-        $.now = System.getClockTime(); //for testing
+        //$.now = System.getClockTime(); //for testing
+
+        if ($.time_just_changed){
+            processStars_init();
+            processStars();
+            $.time_just_changed = false;
+            return;
+        }
 
         if (!$.hippconst_finished || $.time_changed) {
             showingTitle = true;

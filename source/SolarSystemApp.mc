@@ -72,13 +72,14 @@ var time_add_months  as Lang.Number = 0;
 var time_add_years  as Lang.Number = 0;
 var time_add_direction as Lang.Number = 1;
 var time_changed = false;
+var time_just_changed = false;
 
 var show_intvl = 0; //whether or not to show current SPEED on display
 var animSinceModeChange = 0; //used to tell when to blank screen etc.
-var solarSystemView_class as SolarSystemBaseView?; //saved instance of main class 
-var solarSystemDelegate_class as SolarSystemBaseDelegate?; //saved instance of main class
+//var solarSystemView_class as SolarSystemBaseView?; //saved instance of main class 
+//var solarSystemDelegate_class as SolarSystemBaseDelegate?; //saved instance of main class
 
-var SolarSystemBaseApp_class as SolarSystemBaseApp?;
+//var SolarSystemBaseApp_class as SolarSystemBaseApp?;
 
 //enum {exitApp, resetDate, orrZoomOption, thetaOption, labelDisplayOption, refreshOption, screen0MoveOption, planetSizeOption, planetsOption, helpOption, helpBanners}
 
@@ -118,7 +119,9 @@ class SolarSystemBaseApp extends Application.AppBase {
         AppBase.initialize();
         System.println("init starting...");
 
-        SolarSystemBaseApp_class = self;
+        Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:setPosition));
+
+        //SolarSystemBaseApp_class = self;
         
         //geo_cache = new Geocentric_cache();
         
@@ -135,8 +138,9 @@ class SolarSystemBaseApp extends Application.AppBase {
 
         //These  2 must be done AFTER View class is inited
         //readStorageValues();
-        Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));
-        setInitPosition();
+        
+
+        setPosition(null);
 
         //sunrise_cache = new sunRiseSet_cache2();        //works fine but not using it now..
         //System.println("inited...");
@@ -161,13 +165,15 @@ class SolarSystemBaseApp extends Application.AppBase {
         $.buttonPresses = 0;
         $.animation_count = 0;
         //$.countWhenMode0Started = 0;
-        $.now = System.getClockTime(); //before ANY routines or functions run, so all can have access if necessary        
-        $.time_now = Time.now();
-        $.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);
+        //$.now = System.getClockTime(); //before ANY routines or functions run, so all can have access if necessary        
+        //$.time_now = Time.now();
+        //$.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);
+        /*
         System.println ("onStart at " 
             +  $.now.hour.format("%02d") + ":" +
             $.now.min.format("%02d") + ":" +
             $.now.sec.format("%02d") + " " + now_info.year + "-" + now_info.month + "-" + now_info.day);
+            */
 
         if (_solarSystemView != null) {
             _solarSystemView.startAnimationTimer($.hz);
@@ -175,19 +181,21 @@ class SolarSystemBaseApp extends Application.AppBase {
         
         
         //readStorageValues();
-        Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));
+        Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:setPosition));
     }
 
     //! Handle app shutdown
     //! @param state Shutdown arguments
     public function onStop(state as Dictionary?) as Void {
+        /*
         System.println ("onStop at " 
             +  $.now.hour.format("%02d") + ":" +
             $.now.min.format("%02d") + ":" +
             $.now.sec.format("%02d"));
+            */
         _solarSystemView.stopAnimationTimer();
         started = false;
-        Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:onPosition));
+        Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:setPosition));
         _solarSystemView = null;
         _solarSystemDelegate = null;
         //settings_view = null;
@@ -195,6 +203,7 @@ class SolarSystemBaseApp extends Application.AppBase {
 
     }
 
+/*
     //! Update the current position
     //! @param info Position information
     public function onPosition(info as Position.Info) as Void {
@@ -202,6 +211,7 @@ class SolarSystemBaseApp extends Application.AppBase {
         setPosition(info);
 
     }
+    */
 
     //! Return the initial view for the app
     //! @return Array [View]
@@ -216,10 +226,13 @@ class SolarSystemBaseApp extends Application.AppBase {
         //_solarSystemView = null;
         //_solarSystemDelegate = null;
 
+        /*
         _solarSystemView = new $.SolarSystemBaseView();
         //solarSystemView_class = _solarSystemView;
         _solarSystemDelegate = new $.SolarSystemBaseDelegate(_solarSystemView);
-        return [_solarSystemView, _solarSystemDelegate];
+        */
+        return [new $.SolarSystemBaseView(), new $.SolarSystemBaseDelegate(_solarSystemView)];
+        //return [_solarSystemView, _solarSystemDelegate];
         //_solarSystemDelegate = null;
         //_solarSystemView = null;
 
@@ -381,44 +394,7 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
     }
     */
 
-    //Until setPosition gets a callback we will use SOME value for lastLoc
-    //We call setInitPosition immeidately upon startup & then setPosition will fill in
-    //later as correct data is available.
-    function setInitPosition () {        
-        //lastLoc = [-70.00894, -179.44008]; //for testing
-        //lastLoc = [-60.00894, 179.44008]; //for testing
-        //lastLoc = [39.00894, -94.44008]; //for testing
-        //lastLoc = [59.00894, -94.44008]; //for testing
-        //lastLoc = [0,0]; //for testing
-        //lastLoc = [51.5, 0]; //for testing - Greenwich
-        //deBug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TESTINGTESTINGTESTING LAT/LONG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", lastLoc);
-        //return;
-
-        //in case MANUAL POSITION set in settings
-        //deBug("SIP 1", null);
-        
-        setPosition(null);
-
-        /*
-
-        //this is pretty much redundant with setPosition now, could be removed??
-        if (lastLoc == null ) {
-            if (lastLoc == null) {self.lastLoc = new Position.Location(            
-                        { :latitude => 39.833333, :longitude => -94.583333, :format => :degrees }
-                        ).toDegrees(); }
-            if ($.Options_Dict.hasKey(lastLoc_enum)) {lastLoc = $.Options_Dict[lastLoc_enum];}
-            
-            var temp = Storage.getValue(lastLoc_enum);
-            if (temp!=null) {lastLoc = temp;}
-            Storage.setValue(lastLoc_enum, lastLoc);
-            $.Options_Dict.put(lastLoc_enum, lastLoc);
-        }
-        //System.println("setINITPosition at " + animation_count + " to: "  + lastLoc);
-        */
-    //}
-
-    }
-
+   
     //fills in the variable lastLoc with current location and/or
     //several fallbacks
     function setPosition (pinfo as Position.Info) {

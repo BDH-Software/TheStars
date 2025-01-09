@@ -62,9 +62,9 @@ function processStars(){
 
             pp_orig= WatchUi.loadResource( pprez[j]) as Dictionary;
 
-            var myStats = System.getSystemStats();
-            System.println("Memory2: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
-            myStats = null;
+            //var myStats = System.getSystemStats();
+            //System.println("Memory2: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
+            //myStats = null;
 
             //get rid of any stars that cannot be seen from this latitude (sloppy filter >85 instead aof >90 to reduce size a bit more)
             var kys = pp_orig.keys();
