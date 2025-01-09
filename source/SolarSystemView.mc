@@ -564,10 +564,11 @@ class SolarSystemBaseView extends WatchUi.View {
         if (tp_displayCount > 5) {
             var dots = "";
             for (var i = 0; i < 5; i++){
-                if (i<(tp_displayCount/2)%5) {
+                if (i<(tp_displayCount)%5) {
                     dots += ".";}
                     else {dots +=" ";}
             }
+            tp_displayCount++;
             
             
             {     dc.drawText(
@@ -580,7 +581,7 @@ class SolarSystemBaseView extends WatchUi.View {
             }
         }
 
-        tp_displayCount++;
+        
         
 
         if ($.time_changed) {
@@ -1510,21 +1511,13 @@ class SolarSystemBaseView extends WatchUi.View {
     public function putText (dc,text,font, justify, jughead){
         if (Math.rand()%3!=0 && zoom_level == 0 ) {return;}
             //var ra = jughead[0]  * byteDeg;
-            var ra = jughead[0];
-            //var dec = proc(jughead[1]);
-            var dec = jughead[1];
-            //var sizex = jughead[2];
-            //var sizey = jughead[3];
-            //var addAz = jughead[4];
-            //var addy = jughead[5];
-            var gmst_deg = jughead[6];
-            var offsetX = jughead[7];
-            var offsetY = jughead[8];
+            var az = jughead[0];
 
-            var res = raDecToAltAz_deg(ra,dec,lastLoc[0],lastLoc[1],gmst_deg); //rad & dec processing done above....
-            var az = res[0];
-            var alt = res[1];
-            if (alt<1) {return;}
+            var alt = jughead[1];
+
+            var offsetX = jughead[2];
+            var offsetY = jughead[3];
+            if (alt<-1) {return;}
             /*
 
             var x = Math.cos(Math.toRadians(az + addAz)) * (90.0 - alt); 
@@ -1992,7 +1985,7 @@ class SolarSystemBaseView extends WatchUi.View {
                     var p = c[j];
                     if (c_stars.hasKey(p)) {continue;}
                     if (p != null) {
-                        k_save = p;
+                        
                         var res = drawStar(dc, pp_az[p], pp_alt[p], pp_mag[p]);
                         pp_inConst[p]=true;
                         /*if (res == null) {
@@ -2000,7 +1993,11 @@ class SolarSystemBaseView extends WatchUi.View {
 
                         }*/
                         //else {
-                        if (res!=null) {c_stars.put(p, res); }
+                        if (res!=null) {
+                            c_stars.put(p, res); 
+                            if (k_save == null) {k_save = p;}
+                            else if (Math.rand()%5==0) { k_save = p;}
+                        }
                         //}
 
                     }
@@ -2009,8 +2006,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 if (k_save != null && $.Options_Dict[CONSTNAMES]) {
                     dc.setColor(constColor,Graphics.COLOR_TRANSPARENT);
                     putText(dc,key, starFont,  Graphics.TEXT_JUSTIFY_CENTER, 
-                    [pp_alt[k_save], pp_az[k_save],                    
-                    sizex, sizey,addAz,addy, gmst_deg, 4, 4]);
+                    [pp_az[k_save],pp_alt[k_save],xc/12.0, yc/12.0]);
                 
                 }
 
