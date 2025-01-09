@@ -531,11 +531,6 @@ class SolarSystemBaseView extends WatchUi.View {
 
         if ($.time_changed) {
 
-            var where = new Position.Location({
-                :latitude  => $.lastLoc[0],
-                :longitude => $.lastLoc[1],
-                :format    => :degrees,
-            });
 
             //deBug("tn", [$.time_now, $.time_now instanceof Time.Moment]);
             

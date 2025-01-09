@@ -11,12 +11,12 @@ var menu_pressed = false;
 
 //! Handle input on initial view
 class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
-    private var _mainview as SolarSystemBaseApp?;
+    //private var _mainview as SolarSystemBaseApp?;
     //! Constructor
-    public function initialize(view) {
+    public function initialize() {
         BehaviorDelegate.initialize();
         //System.println("delegate initl..");
-        _mainview = view;
+        //_mainview = view;
     }
 
 

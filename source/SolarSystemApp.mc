@@ -111,8 +111,8 @@ class SolarSystemBaseApp extends Application.AppBase {
     //var view_mode = [ECLIPTIC_STATIC, ECLIPTIC_MOVE, SMALL_ORRERY, MED_ORRERY, LARGE_ORRERY];
 
 
-    public var _solarSystemView as SolarSystemBaseView?;
-    public var _solarSystemDelegate as SolarSystemBaseDelegate?;
+    //public var _solarSystemView as SolarSystemBaseView?;
+    //public var _solarSystemDelegate as SolarSystemBaseDelegate?;
 
     //! Constructor
     public function initialize() {
@@ -175,9 +175,9 @@ class SolarSystemBaseApp extends Application.AppBase {
             $.now.sec.format("%02d") + " " + now_info.year + "-" + now_info.month + "-" + now_info.day);
             */
 
-        if (_solarSystemView != null) {
-            _solarSystemView.startAnimationTimer($.hz);
-        }
+        //if (_solarSystemView != null) {
+            //_solarSystemView.startAnimationTimer($.hz);
+        //}
         
         
         //readStorageValues();
@@ -193,11 +193,11 @@ class SolarSystemBaseApp extends Application.AppBase {
             $.now.min.format("%02d") + ":" +
             $.now.sec.format("%02d"));
             */
-        _solarSystemView.stopAnimationTimer();
+        //_solarSystemView.stopAnimationTimer();
         started = false;
         Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:setPosition));
-        _solarSystemView = null;
-        _solarSystemDelegate = null;
+        //_solarSystemView = null;
+        //_solarSystemDelegate = null;
         //settings_view = null;
         //settings_delegate = null;
 
@@ -231,7 +231,7 @@ class SolarSystemBaseApp extends Application.AppBase {
         //solarSystemView_class = _solarSystemView;
         _solarSystemDelegate = new $.SolarSystemBaseDelegate(_solarSystemView);
         */
-        return [new $.SolarSystemBaseView(), new $.SolarSystemBaseDelegate(_solarSystemView)];
+        return [new $.SolarSystemBaseView(), new $.SolarSystemBaseDelegate()];
         //return [_solarSystemView, _solarSystemDelegate];
         //_solarSystemDelegate = null;
         //_solarSystemView = null;
