@@ -8,23 +8,12 @@ import Toybox.Math;
 
 
 
-//var pp = [{},{},{},{},{}];
+var pp = [{},{},{},{},{}];
 //var pp1 = {};
 //var pp2 = {};
 //var pold = [{},{}];
 var cc = {};
-var ret as Lang.ByteArray = []b;
-var pp_ra as Lang.ByteArray = []b;
-var pp_dec as Lang.ByteArray = []b;
-var pp_mag as Lang.ByteArray = []b;
-typedef pp_hipp as Array<Number>;
-typedef cc_name as Array<String>;
-typedef cc_stars as Array<Array<String>>;
-
-var pp_hipp = [];
-var cc_name = [];
-var cc_stars = [];
-
+var ret as Lang.ByteArray = [3]b;
 var hippconst_finished = false;
 var hipp_proc = 0;
 var const_proc = 0;
@@ -32,7 +21,7 @@ var hipp_finished = false;
 var const_finished = false;
 
 function processStars_init(){
-    //pp = [{},{},{},{},{}];
+    pp = [{},{},{},{},{}];
     cc = {};
     ret = [3]b;
     hippconst_finished = false;
@@ -73,9 +62,9 @@ function processStars(){
 
             pp_orig= WatchUi.loadResource( pprez[j]) as Dictionary;
 
-            var myStats = System.getSystemStats();
-            System.println("Memory2: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
-            myStats = null;
+            //var myStats = System.getSystemStats();
+            //System.println("Memory2: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
+            //myStats = null;
 
             //get rid of any stars that cannot be seen from this latitude (sloppy filter >85 instead aof >90 to reduce size a bit more)
             var kys = pp_orig.keys();
@@ -90,13 +79,6 @@ function processStars(){
                 } else {
                     //var ret as Lang.ByteArray = [];
                     //deBug("256b",[star[1]*256/360, (star[1]*256/360).toChar(), (star[1]*256/360 ) & 256]);
-                    pp_hipp.add(kys[i].toNumber());
-                    pp_ra.add(star[1]*256/360); //remember they are listed in order MAG, RA, DECL
-                    pp_dec.add(star[2]);
-                    pp_mag.add(star[0]);
-
-                    deBug("PP_", [star,kys[i].toNumber(),star[1]*256/360, star[2], star[0] ] );
-                    /*
                     ret = []b;
                     ret.add(star[0]) as Lang.ByteArray;
                     ret.add((star[1]*256/360)) as Lang.ByteArray;
@@ -106,7 +88,6 @@ function processStars(){
                     var dict = i/ppsz;
                     $.pp[dict].put((kys[i].toNumber()), ret);                    
                     //deBug("PPPPQ1",[kys[i].toNumber(), ret, star]);
-                    */
                 }   
             }
             kys = null;
@@ -172,10 +153,9 @@ function processStars(){
                         var star = cnst[k].toNumber();
                         //if ($.pp.hasKey(star)) {
                         var starK = ppReturnKey(star);
-                        if (starK != -1) {
+                        if (starK != null) {
                             tal++;
-                            //var mag = pp[starK[0]][starK[1]][0];
-                            var mag = pp_mag[starK];
+                            var mag = pp[starK[0]][starK[1]][0];
                             if (mag < himag) { himag = mag;}
                             
                         }                        
@@ -183,9 +163,7 @@ function processStars(){
                     //if (tal*100/cnst.size()>50 && himag < 45) {
                     if (tal*100/cnst.size()>5) {
                         //deBug("adding", [key, tal, himag, cnst.size()]);
-                        //$.cc.put(key,cnst);
-                        cc_name.add(key);
-                        cc_stars.add(cnst);
+                        $.cc.put(key,cnst);
                         //deBug("adding", [key, tal, himag, cnst.size()]);
                     } else {
                         //deBug("omitting", [key, tal, himag, cnst.size()]);
@@ -193,9 +171,9 @@ function processStars(){
                 }
             //}
 
-            var myStats = System.getSystemStats();
-            System.println("Memory3: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
-            myStats = null;
+            //myStats = System.getSystemStats();
+            //System.println("Memory3: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
+            //myStats = null;
             
 
             //deBug("pp", $.pp);
@@ -214,25 +192,20 @@ function processStars(){
 }
 
 function ppHasKey(key) {
-    return pp_hipp.indexOf(key)>0;
-    /* for (var i = 0; i<pp.size();i++) {
+    for (var i = 0; i<pp.size();i++) {
         if (pp[i].hasKey(key)){ return true;}
     }
     return false;
-    */
 }
 
 //null if it doesn't exist
 function ppReturnKey(key) {
-    return pp_hipp.indexOf(key);
-    
-    /*for (var i = 0; i<pp.size();i++) {
+    for (var i = 0; i<pp.size();i++) {
         if (pp[i].hasKey(key)){ return [i,key];}
     }
-    return null; */
+    return null;
 }
 
-/*
 function ppKeys(){
     var ret = [];
     for (var i=0;i<pp.size();i++) {
@@ -250,9 +223,7 @@ function ppKeys(){
     }
     return ret;
 }
-*/
 
-/*
 var currPPKeys = [];
 var currDict = 0;
 var currItem = 0;
@@ -281,24 +252,4 @@ function ppNextStar(restart) {
     return ret;
 
 }
-*/
-
-var currItem = 0;
-
-function ppNextStar(restart) {
-        if (currItem >= pp_hipp.size() || restart) {
-        
-            
-            currItem = 0;
-        //deBug("PPNS RET", [currDict,currItem]);
-            return null;
-        }
-        //var i = pp_hipp[currItem];
-        var ret = [pp_ra[currItem], pp_dec[currItem], pp_mag[currItem]];
-        currItem++;
-        return ret;
-
-}
-    
-
 
