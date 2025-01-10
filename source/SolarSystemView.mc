@@ -564,11 +564,11 @@ class SolarSystemBaseView extends WatchUi.View {
         if (tp_displayCount > 5) {
             var dots = "";
             for (var i = 0; i < 5; i++){
-                if (i<(tp_displayCount)%5) {
+                if (i<(tp_displayCount-6)%5) {
                     dots += ".";}
                     else {dots +=" ";}
             }
-            tp_displayCount++;
+            
             
             
             {     dc.drawText(
@@ -580,6 +580,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 );
             }
         }
+        tp_displayCount++;
 
         
         
@@ -780,8 +781,8 @@ class SolarSystemBaseView extends WatchUi.View {
                 col = 0xcf9c63;
                 if ($.Options_Dict[REVERSECOLORS]) {
                     col = 0x6f0c13 ;
-                    // #cf9c63 #6f0c13 #4f2023 
-                    fillcol = 0x4f2023  ;
+                    // #cf9c63 #6f0c13 #7f4043  #4f2023
+                    fillcol = 0x7f4043   ;
                 }
                 break;
             case "Neptune":
@@ -1037,16 +1038,38 @@ class SolarSystemBaseView extends WatchUi.View {
                 //dc.fillCircle(x, y,size/4);
                 break;    
             case "Jupiter":
+                if ($.Options_Dict[REVERSECOLORS]) {
+                // #d74444    #cf2020              #767804 #
+                // #dfcdbb #dfbbbb
+                  dc.setColor(0xdfcdbb, Graphics.COLOR_TRANSPARENT);
+                }
+                var jp = 2.5*pen;
+                if (jp>size/6.0) {jp = size/6.0;}
+                dc.setPenWidth(jp);
 
-                dc.drawLine(x-size*.968+pen/3.0, y-size/4, x+size*.968-pen/3.0, y-size/4);
-                dc.drawLine(x-size*.968+pen/3.0, y+size/4, x+size*.968-pen/3.0, y+size/4);
+
+                //dc.drawLine(x-size*.968+pen/3.0, y-size/4, x+size*.968-pen/3.0, y-size/4);
+                //dc.drawLine(x-size*.968+pen/3.0, y+size/4, x+size*.968-pen/3.0, y+size/4);
+                dc.drawLine(x-size*.968+pen, y-size/4, x+size*.968-pen/2.0, y-size/4);
+                dc.drawLine(x-size*.968+pen, y+size/4, x+size*.968-pen/2.0, y+size/4);
+                
+                //dc.setPenWidth(pen);
+                dc.drawCircle(x, y, size+1);
+
+                dc.setColor(0xd74444, Graphics.COLOR_TRANSPARENT);
+
+                dc.fillEllipse(x-size*7/32.0, y+size/4.0+size/10.0, size/2.7, size/3.2);
+                // #f78787
+                dc.setColor(0xf78787, Graphics.COLOR_TRANSPARENT);
+
+                dc.fillEllipse(x+size*8.9/32.0, y+size/4.2+size/2.5, size/4.5, size/5.005);
                 break;
             case "Saturn":
                 dc.drawLine(x-size*1.7, y+size/3, x+size*1.7, y-size/3);
                 //dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
                 dc.drawLine(x-size*1.6, y+size*.37 , x+size*1.6, y-size*.21);
                 //dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-                dc.drawLine(x-size*1.5, y+size*.41 , x+size*1.5, y-size*.15);
+                dc.drawLine(x-size*1.75, y+size*.38 , x+size*1.5, y-size*.15);
                 //dc.drawLine(x-size, y+size/4, x+size, y+size/4);
                 break;
             case "Neptune" :
