@@ -661,7 +661,7 @@ class SolarSystemBaseView extends WatchUi.View {
                     xc, 
                     yc + 0*textHeight,
                     dateFont, 
-                    targDate_years.format("%.2f"), 
+                    targDate_years.format("%.2f") + " (Julian)", 
                     Graphics.TEXT_JUSTIFY_CENTER
                 );
 

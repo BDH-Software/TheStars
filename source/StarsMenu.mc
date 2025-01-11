@@ -78,10 +78,11 @@ deBug("menu4", null);
         Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String), time_add_hrs.toString() + " hours", ADDHOURS, null));   
         Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String), time_add_days.toString() + " days", ADDDAYS, null));   
         Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String), time_add_months.toString() + " months", ADDMONTHS, null));   
-        Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String), time_add_years.toString() + " years", ADDYEARS, false, null));  
-        Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String), time_add_decades.toString() + " decades", ADDDECADES, false, null));
-        Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String), time_add_centuries.toString() + " centuries", ADDCENTURIES, false, null));  
-        Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeDirection) as String), null, TIMEDIRECTION, $.time_add_direction == 1, null)); 
+        Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String), time_add_years.toString() + " years", ADDYEARS, null));  
+        Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String), time_add_decades.toString() + " decades", ADDDECADES, null));
+        Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String), time_add_centuries.toString() + " centuries", ADDCENTURIES, null)); 
+        var dir = $.time_add_direction == 1 ? "Forward" : "Backward";
+        Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeDirection) as String), dir, TIMEDIRECTION, null)); 
         
         deBug("menu5", null);
 
@@ -122,34 +123,27 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
         } else 
 
         if (menuItem instanceof MenuItem) {    
-            if (ret != null && ret.equals(TIMEDIRECTION)) {
-
-                $.time_add_direction = 1;
-                if (!menuItem.isEnabled()) {$.time_add_direction = -1;}
-                changeTime = true;   
-                $.time_changed = true;                  
-                
-            } else
+            
 
             if (ret != null && ret.equals(ADDHOURS)) {
 
                 $.time_add_hrs = ($.time_add_hrs + 1)%24;
                 changeTime = true;   
-                menuItem.setSubLabel((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_hrs.toString() + " hours");           
+                menuItem.setSubLabel(time_add_hrs.toString() + " hours");           
                 $.time_changed = true;                  
                 
             } else if (ret != null && ret.equals(ADDDAYS)) {
 
                 $.time_add_days = ($.time_add_days + 1)%31;
                 changeTime = true;   
-                menuItem.setSubLabel((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_days.toString() + " days");   
+                menuItem.setSubLabel( time_add_days.toString() + " days");   
                 $.time_changed = true;                       
                 
             } else if (ret != null && ret.equals(ADDMONTHS)) {
 
                 $.time_add_months = ($.time_add_months + 1)%12;
                 changeTime = true;   
-                menuItem.setSubLabel((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_months.toString() + " months");       
+                menuItem.setSubLabel(time_add_months.toString() + " months");       
                 $.time_changed = true;                     
                 
             
@@ -157,21 +151,30 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
                 $.time_add_years = ($.time_add_years + 1)%10;
                 changeTime = true;   
-                menuItem.setSubLabel((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_years.toString() + " years");       
+                menuItem.setSubLabel(time_add_years.toString() + " years");       
                 $.time_changed = true;  
 
             } else if (ret != null && ret.equals(ADDDECADES)) {
 
                 $.time_add_decades = ($.time_add_decades + 1)%10;
                 changeTime = true;   
-                menuItem.setSubLabel((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_decades.toString() + " decades");       
+                menuItem.setSubLabel(time_add_decades.toString() + " decades");       
                 $.time_changed = true;                       
                 
             } else if (ret != null && ret.equals(ADDCENTURIES)) {
 
                 $.time_add_centuries = ($.time_add_centuries + 1);
                 changeTime = true;   
-                menuItem.setSubLabel((WatchUi.loadResource($.Rez.Strings.timeForward) as String) + time_add_decades.toString() + " centuries");       
+                menuItem.setSubLabel(time_add_centuries.toString() + " centuries");       
+                $.time_changed = true;                       
+                
+            } 
+            
+            else if (ret != null && ret.equals(TIMEDIRECTION)) {
+                $.time_add_direction = - $.time_add_direction;
+                var dir = $.time_add_direction == 1 ? "Forward" : "Backward";                
+                changeTime = true;   
+                menuItem.setSubLabel(dir);       
                 $.time_changed = true;                       
                 
             } 
