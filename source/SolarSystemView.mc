@@ -36,6 +36,7 @@ var moveAz = 0;
 var moveY = 0;
 var _updatePositionNeeded = true;
 var _rereadGPSNeeded = true;
+var addTime_hrs = 0;
 
 //! This view displays the position information
 class SolarSystemBaseView extends WatchUi.View {
@@ -587,51 +588,130 @@ class SolarSystemBaseView extends WatchUi.View {
 
         if ($.time_changed) {
 
+            if ($.addTime_hrs < 700000 && $.addTime_hrs > -500000) {
 
-            //deBug("tn", [$.time_now, $.time_now instanceof Time.Moment]);
-            
-            var med_info = Time.Gregorian.info($.time_now, Time.FORMAT_MEDIUM);
+                //var addTime_dur =new Time.Duration($.time_add_direction * ($.time_add_days * 24 * 3600 + $.time_add_months * 30 * 24 * 3600 + $.time_add_hrs * 3600 + $.time_add_years * 365 * 24 * 3600));
 
-            //var t_now = new Time.Moment($.time_now.value());
+                var addTime_dur =new Time.Duration($.addTime_hrs*3600);
+                var t_now = Time.now();
 
-            //var local = Time.localMoment(where, $.time_now);
-            //var local = Time.localMoment(where, t_now.value());
+                var new_time_now = t_now.add(addTime_dur);
 
-            //var local_info = Time.Gregorian.info(local, Time.FORMAT_MEDIUM);
+                //deBug("tn", [t_now, $.time_now, t_now instanceof Time.Moment, $.time_now instanceof Time.Moment]);
 
-            var mySettings = System.getDeviceSettings();
-            var is24Hr = mySettings.is24Hour;
+                var new_now_info = Time.Gregorian.info(new_time_now, Time.FORMAT_SHORT);   
 
-            
-            var hr = $.now_info.hour.format("%02d");
-            var ampm = "";
 
-            if (!is24Hr) {
-                 hr = $.now_info.hour%12;
-                    if (hr == 0) {hr = 12;}
-                    ampm = "am";
-                    if ($.now_info.hour >=12) {
-                        ampm = "pm";
-                    }
-            }
+                //deBug("tn", [$.time_now, $.time_now instanceof Time.Moment]);
+                
+                var med_info = Time.Gregorian.info(new_time_now, Time.FORMAT_MEDIUM);
 
-            var ti = hr +":" + $.now_info.min.format("%02d") + ampm;
+                //var t_now = new Time.Moment($.time_now.value());
 
-            dc.drawText(
-                xc, 
-                yc + 1*textHeight,
-                dateFont, 
-                ti, 
-                Graphics.TEXT_JUSTIFY_CENTER
-            );
+                //var local = Time.localMoment(where, $.time_now);
+                //var local = Time.localMoment(where, t_now.value());
 
-            //dc.drawText(xc, yc + 1*textHeight,font, local_info.day.format("%02d") + " " + local_info.month + " " + local_info.year,Graphics.TEXT_JUSTIFY_CENTER);
-            dc.drawText(
-                xc, 
-                yc + 0*textHeight,
-                dateFont, 
-                $.now_info.day.format("%02d") + " " + med_info.month + " " + $.now_info.year,Graphics.TEXT_JUSTIFY_CENTER
-            );
+                //var local_info = Time.Gregorian.info(local, Time.FORMAT_MEDIUM);
+
+                var mySettings = System.getDeviceSettings();
+                var is24Hr = mySettings.is24Hour;
+
+                
+                var hr = new_now_info.hour.format("%02d");
+                var ampm = "";
+
+                if (!is24Hr) {
+                    hr = new_now_info.hour%12;
+                        if (hr == 0) {hr = 12;}
+                        ampm = "am";
+                        if (new_now_info.hour >=12) {
+                            ampm = "pm";
+                        }
+                }
+
+                var ti = hr +":" + new_now_info.min.format("%02d") + ampm;
+
+                dc.drawText(
+                    xc, 
+                    yc + 1*textHeight,
+                    dateFont, 
+                    ti, 
+                    Graphics.TEXT_JUSTIFY_CENTER
+                );
+
+                //dc.drawText(xc, yc + 1*textHeight,font, local_info.day.format("%02d") + " " + local_info.month + " " + local_info.year,Graphics.TEXT_JUSTIFY_CENTER);
+                dc.drawText(
+                    xc, 
+                    yc + 0*textHeight,
+                    dateFont, 
+                    new_now_info.day.format("%02d") + " " + med_info.month + " " + new_now_info.year,
+                    Graphics.TEXT_JUSTIFY_CENTER
+                );
+             } else {
+                // ##### DATE JULIAN VERSION FOR MANY YEARS PAST/FUTURE ####
+                //var j2 = j2000Date (new_date_info.year, new_date_info.month, new_date_info.day, new_date_info.hour, new_date_info.min, 0, 0);
+
+                var targDate_days = j2000Date ($.now_info.year, $.now_info.month, $.now_info.day,$.now_info.hour, $.now_info.min,$.now.timeZoneOffset/3600, $.now.dst) + $.addTime_hrs/24.0; //So GREGORIAN malfunctions around 2100 or 2110 and similarly in the past; so we transition to using TODAY'S DATE together with the addTime.HRS instead, as Julian, around 2105 (& similarly in the past)
+
+                //var targDate_days = j2000Date (new_date_info.year, new_date_info.month, new_date_info.day, new_date_info.hour, new_date_info.min, 0, 0); //don't need to include addTime_hrs as it is already included in new_date_info.
+                var targDate_years = (targDate_days/365.25d + 2000d).toFloat(); 
+
+
+                dc.drawText(
+                    xc, 
+                    yc + 0*textHeight,
+                    dateFont, 
+                    targDate_years.format("%.2f"), 
+                    Graphics.TEXT_JUSTIFY_CENTER
+                );
+
+                //below is a trumped  up way of getting the time of 
+                //day by figuring the fraction of the day from JD
+                //and then adding it to current day's midnight, along 
+                //with DST & TZ corrections, in order to get
+                // a time of day
+                var targDate_time_days = mod(targDate_days,1) + 0.5;
+
+                var new_now_time_dur = new Time.Duration(targDate_time_days*24* 3600 + $.now.timeZoneOffset + $.now.dst*3600);
+
+                var t_now = Time.today(); //midnight today
+
+                var new_time_now = t_now.add(new_now_time_dur);
+
+                var new_now_info = Time.Gregorian.info(new_time_now, Time.FORMAT_SHORT);   
+
+
+                //deBug("tn", [$.time_now, $.time_now instanceof Time.Moment]);
+                
+                var med_info = Time.Gregorian.info(new_time_now, Time.FORMAT_MEDIUM);
+
+                var mySettings = System.getDeviceSettings();
+                var is24Hr = mySettings.is24Hour;
+
+                
+                var hr = new_now_info.hour.format("%02d");
+                var ampm = "";
+
+                if (!is24Hr) {
+                    hr = new_now_info.hour%12;
+                        if (hr == 0) {hr = 12;}
+                        ampm = "am";
+                        if (new_now_info.hour >=12) {
+                            ampm = "pm";
+                        }
+                }
+
+                var ti = hr +":" + new_now_info.min.format("%02d") + ampm;
+
+                                dc.drawText(
+                    xc, 
+                    yc + 1*textHeight,
+                    dateFont, 
+                    ti, 
+                    Graphics.TEXT_JUSTIFY_CENTER
+                );
+
+             }
         }
         //dc.drawText(0, 0, "THE");
         //dc.drawText(0, 0, "STARS");
@@ -1935,9 +2015,9 @@ class SolarSystemBaseView extends WatchUi.View {
 
             var whh = toArray(WatchUi.loadResource($.Rez.Strings.planets_Options2) as String,  "|", 0);
 
-            planets = planetCoord($.now_info, $.now.timeZoneOffset, $.now.dst,0, :ecliptic_latlon, whh);
+            planets = planetCoord($.now_info, $.now.timeZoneOffset, $.now.dst,$.addTime_hrs, :ecliptic_latlon, whh);
 
-            moon_info3 = eclipticPos_moon_best ($.now_info, $.now.timeZoneOffset, $.now.dst, 0);
+            moon_info3 = eclipticPos_moon_best ($.now_info, $.now.timeZoneOffset, $.now.dst, $.addTime_hrs);
 
             planets.put("Moon",[moon_info3[0], moon_info3[1]]); 
             moon_age_deg = normalize ((planets["Moon"][0]) - (planets["Sun"][0])); //0-360 with 0 being new moon, 90 1st q, 180 full, 270 last q

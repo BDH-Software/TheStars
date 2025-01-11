@@ -110,7 +110,7 @@ function processStars_init(){
     const_finished = false;
     started = false;
 
-    var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour, now_info.min, $.now.timeZoneOffset/3600f, $.now.dst);
+    var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour + $.addTime_hrs, now_info.min, $.now.timeZoneOffset/3600f, $.now.dst);
 
     $.gmst_deg = Math.toDegrees(greenwichMeanSiderealTime(jd_ut));
 

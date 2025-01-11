@@ -167,14 +167,18 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
         if (changeTime) {
             $.time_just_changed = true;
 
-            var addTime =new Time.Duration($.time_add_direction * ($.time_add_days * 24 * 3600 + $.time_add_months * 30 * 24 * 3600 + $.time_add_hrs * 3600 + $.time_add_years * 365 * 24 * 3600));
-            var t_now = Time.now();
+            //var addTime =new Time.Duration($.time_add_direction * ($.time_add_days * 24 * 3600 + $.time_add_months * 30 * 24 * 3600 + $.time_add_hrs * 3600 + $.time_add_years * 365 * 24 * 3600));
+            //var t_now = Time.now();
 
-            $.time_now = t_now.add(addTime);
+            $.addTime_hrs  =$.time_add_direction * ($.time_add_days * 24 + $.time_add_months * 30 * 24 + $.time_add_hrs + $.time_add_years * 365 * 24);
+
+            deBug("addTime_hrs", [ $.addTime_hrs, $.addTime_hrs/24.0/365.0]);
+
+            //$.time_now = t_now.add(addTime);
 
             //deBug("tn", [t_now, $.time_now, t_now instanceof Time.Moment, $.time_now instanceof Time.Moment]);
 
-            $.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);            
+            //$.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);            
 
         } 
         

@@ -281,7 +281,7 @@ import Toybox.Lang;
     }
 
 
-
+/*
     function Planet_Sun(M, e, a, N, w, i) {
         /*
         Helper Function. From planet's trajectory elements to position around sun
@@ -291,6 +291,7 @@ import Toybox.Lang;
             tuple: position elements
             
         */
+        /*
 
         var M2=Math.toRadians(M);
         var E0=M + (180/Math.PI)*e*Math.sin(M2)*(1+e*Math.cos(M2));
@@ -317,6 +318,7 @@ import Toybox.Lang;
         return [xeclip,yeclip,zeclip,long2,lat2,r];
 
     }
+    */
 
 /*
 
@@ -411,7 +413,7 @@ function dist (xy1, xy2){
 
 //}
 
-
+/*
 ////insertionSort works fine but we're not using it right now. Quicksort is (maybe) a tad quickers.
 //given a dict with keys =kyss & values an array [1,2,3,4,5...]
 //and separate send the keys kys (or perhaps they are a separate array...)
@@ -438,6 +440,7 @@ function insertionSort(kys) {
 
     return kys;
 }
+*/
 
 
 /*
@@ -485,6 +488,7 @@ function countingSort(kys, dict, n, min_z, max_z) {
 // Given a dict with keys = kys & values an array [1,2,3,4,5...]
 // and separate send the keys kys (or perhaps they are a separate array...)
 // will return an array with the keys sorted ascending on the nth value of the array
+/*
 var dict_qs, kys_qs;
 
     // Helper function to perform the partitioning
@@ -534,6 +538,7 @@ function quickSort(kys, dict, n) {
     //kys_qs = null;
     
 }
+*/
 
 //isNumber: 0 string, 1 Number, 2 Float
 function toArray(text, delimiter, isNumber)
