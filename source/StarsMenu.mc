@@ -19,6 +19,8 @@ enum {
     ADDYEARS,
     ADDDECADES,
     ADDCENTURIES,
+    CONSTNAMEHELP0,
+    CONSTNAMEHELP1,
     lastLoc_enum =10,
 }
 
@@ -83,11 +85,18 @@ deBug("menu4", null);
         Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeForward) as String), time_add_centuries.toString() + " centuries", ADDCENTURIES, null)); 
         var dir = $.time_add_direction == 1 ? "Forward" : "Backward";
         Menu2.addItem(new WatchUi.MenuItem((WatchUi.loadResource($.Rez.Strings.timeDirection) as String), dir, TIMEDIRECTION, null)); 
-        
-        deBug("menu5", null);
 
+        var cA = getConstellationAbbreviation(0);
+        //constellationAbbreviation_index = pA[1];
+        //deBug("menu2", [cA, cA[0], cA[1], CONSTNAMEHELP]);
+        Menu2.addItem(new WatchUi.MenuItem(cA[0], cA[1], CONSTNAMEHELP0, null));
+
+        cA = getConstellationAbbreviation(1);
+        //constellationAbbreviation_index = pA[1];
         
-      
+        Menu2.addItem(new WatchUi.MenuItem(cA[0], cA[1], CONSTNAMEHELP1, null));
+        
+        deBug("menu5", null);              
 
     }
 }
@@ -177,7 +186,16 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
                 menuItem.setSubLabel(dir);       
                 $.time_changed = true;                       
                 
+            }   else if(ret != null && ret.equals(CONSTNAMEHELP0)) {            
+                    var cA = getConstellationAbbreviation(0);            
+                    menuItem.setLabel(cA[0]);
+                    menuItem.setSubLabel(cA[1]);
             } 
+              else if(ret != null && ret.equals(CONSTNAMEHELP1)) {            
+                    var cA = getConstellationAbbreviation(1);            
+                    menuItem.setLabel(cA[0]);
+                    menuItem.setSubLabel(cA[1]);
+            }
 
         }
 
@@ -234,3 +252,23 @@ function readStorageValues(){
     $.Options_Dict[REVERSECOLORS] = temp != null ? (temp == true) : false; //last one is the default
     Storage.setValue(REVERSECOLORS,$.Options_Dict[REVERSECOLORS]);
 }
+
+var constellationAbbreviation_index = [0,0];
+
+// Function to generate planet abbreviation and name
+function getConstellationAbbreviation(which) {
+       var const_json = [$.Rez.JsonData.constellation_1, $.Rez.JsonData.constellation_2];
+    //loadPlanetsOpt();
+        var cnsts = WatchUi.loadResource( const_json[which]) as Array;                
+        
+        var a = cnsts[constellationAbbreviation_index[which]];
+
+        constellationAbbreviation_index[which] = (constellationAbbreviation_index[which] + 1)%cnsts.size();
+
+        var b = cnsts[constellationAbbreviation_index[which]];
+        
+        constellationAbbreviation_index[which] = (constellationAbbreviation_index[which] + 1)%cnsts.size();
+
+        return [a,b];            
+}
+
