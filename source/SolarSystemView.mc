@@ -2108,7 +2108,10 @@ class SolarSystemBaseView extends WatchUi.View {
 
                 if (k_save != null && $.Options_Dict[CONSTNAMES]) {
                     dc.setColor(constColor,Graphics.COLOR_TRANSPARENT);
-                    putText(dc,key, starFont,  Graphics.TEXT_JUSTIFY_CENTER, 
+                    var nm = key;
+                    var sf = starFont;
+                    if (Math.rand()%5==0) {nm = getConstellationFull(key); sf -= 1;}
+                    putText(dc,nm, sf,  Graphics.TEXT_JUSTIFY_CENTER, 
                     [pp_az[k_save],pp_alt[k_save],xc/12.0, yc/12.0]);
                 
                 }

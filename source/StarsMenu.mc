@@ -272,3 +272,24 @@ function getConstellationAbbreviation(which) {
         return [a,b];            
 }
 
+function getConstellationFull(abbr) {
+    var const_json = [$.Rez.JsonData.constellation_1, $.Rez.JsonData.constellation_2];
+    //loadPlanetsOpt();
+    var res = "";
+    for (var i = 0; i < const_json.size(); i++) {
+        var cnsts = WatchUi.loadResource( const_json[i]) as Array;                
+        for (var j = 1; j < cnsts.size(); j++) {
+            deBug("cnsts1", [cnsts[j].substring(0,3), cnsts[j].substring(4,null)]);
+            if (cnsts[j].substring(0,3).equals(abbr)) {
+                deBug("@@!!!!!!!!!cnsts1", [cnsts[j].substring(0,3), cnsts[j].substring(4,null), abbr]);
+                res = cnsts[j].substring(4,null);
+                return res;
+            }
+        }
+    }
+    return res;
+}
+        
+
+        
+
