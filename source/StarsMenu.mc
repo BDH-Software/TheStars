@@ -21,6 +21,7 @@ enum {
     ADDCENTURIES,
     CONSTNAMEHELP0,
     CONSTNAMEHELP1,
+    LONGNAMES,
     GPSOPTION= 115, //giving these new numbers so they won't read anything old in the storage
     LATOPTION= 116, // "
     LONOPTION= 117, // "
@@ -81,6 +82,8 @@ class StarsMenu extends WatchUi.Menu2 {
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.constLines) as String, null, CONSTLINES, $.Options_Dict[CONSTLINES], null));   
 
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.constNames) as String, null, CONSTNAMES, $.Options_Dict[CONSTNAMES], null));   
+
+        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.longNames) as String, null, LONGNAMES, $.Options_Dict[LONGNAMES], null));   
 
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.allBolder) as String, null, ALLBOLDER, $.Options_Dict[ALLBOLDER], null));  
 
@@ -283,7 +286,7 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
    
     function onBack() {
         if (_updatePositionNeeded) {
-            $.setPosition();
+            $.setPosition(null);
             $.pos_just_changed = true;
         }
         /*
@@ -335,6 +338,10 @@ function readStorageValues(){
     $.Options_Dict[CONSTNAMES] = temp != null ? (temp == true) : true; //last one is the default
     Storage.setValue(CONSTNAMES,$.Options_Dict[CONSTNAMES]);
 
+    temp = Storage.getValue(LONGNAMES);
+    $.Options_Dict[LONGNAMES] = temp != null ? (temp == true) : true; //last one is the default
+    Storage.setValue(LONGNAMES,$.Options_Dict[LONGNAMES]);
+
     temp = Storage.getValue(ALLBOLDER);
     $.Options_Dict[ALLBOLDER] = temp != null ? (temp == true) : false; //last one is the default
     Storage.setValue(ALLBOLDER,$.Options_Dict[ALLBOLDER]);
@@ -344,14 +351,14 @@ function readStorageValues(){
     Storage.setValue(REVERSECOLORS,$.Options_Dict[REVERSECOLORS]);
 
     temp = Storage.getValue(LATOPTION);
-    $.Options_Dict[LATOPTION] = (temp != null && temp instanceof Number) ? (temp) : 0; //last one is the default
+    $.Options_Dict[LATOPTION] = (temp != null && temp instanceof Number) ? (temp) : 90; //last one is the default
     Storage.setValue(LATOPTION,$.Options_Dict[LATOPTION]);
 
     temp = Storage.getValue(LONOPTION);
-    $.Options_Dict[LONOPTION] = (temp != null && temp instanceof Number) ? (temp) : 0; //last one is the default
+    $.Options_Dict[LONOPTION] = (temp != null && temp instanceof Number) ? (temp) : 180; //last one is the default
     Storage.setValue(LONOPTION,$.Options_Dict[LONOPTION]);
 
-    $.Options_Dict[gpsOption_enum]= true;
+    $.Options_Dict[GPSOPTION]= true;
 
     $.latlonOption_value= [$.Options_Dict[LATOPTION], $.Options_Dict[LONOPTION]]; 
 }

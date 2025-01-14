@@ -53,6 +53,8 @@
 
 <string id = "constNames">Constellation &amp; Planet Names?</string>
 
+<string id = "longNames">Mostly Short OR All Long Names?</string>
+
 <string id = "allBolder">Everything Bolder?</string>
 
 <string id = "reverseColors">Reverse Colors?</string>
