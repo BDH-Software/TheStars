@@ -42,8 +42,8 @@ function cleanUpSettingsOpt(){
 */
 
 var Options_Dict = {};
-var _updatePositionNeeded = false;
-var _rereadGPSNeeded = false;
+//var _updatePositionNeeded = false;
+//var _rereadGPSNeeded = false;
 
 var latOption_size = 181;  //ranges 0 to 180; lat is value-90
 var latOption_default = 90;
@@ -84,9 +84,7 @@ class StarsMenu extends WatchUi.Menu2 {
 
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.allBolder) as String, null, ALLBOLDER, $.Options_Dict[ALLBOLDER], null));  
 
-        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.reverseColors) as String, null, REVERSECOLORS, $.Options_Dict[REVERSECOLORS], null));   
-
-        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.uagp) as String, null, GPSOPTION, $.Options_Dict[GPSOPTION], null));
+        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.reverseColors) as String, null, REVERSECOLORS, $.Options_Dict[REVERSECOLORS], null));         
 
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.uagp) as String, null, GPSOPTION, $.Options_Dict[GPSOPTION], null));       
                 
@@ -285,7 +283,7 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
    
     function onBack() {
         if (_updatePositionNeeded) {
-            $.setInitPosition();
+            $.setPosition();
             $.pos_just_changed = true;
         }
         /*
@@ -353,7 +351,9 @@ function readStorageValues(){
     $.Options_Dict[LONOPTION] = (temp != null && temp instanceof Number) ? (temp) : 0; //last one is the default
     Storage.setValue(LONOPTION,$.Options_Dict[LONOPTION]);
 
-    $.latlonOption_value= [$.Options_Dict[latOption_enum], $.Options_Dict[lonOption_enum]]; 
+    $.Options_Dict[gpsOption_enum]= true;
+
+    $.latlonOption_value= [$.Options_Dict[LATOPTION], $.Options_Dict[LONOPTION]]; 
 }
 
 var constellationAbbreviation_index = [0,0];
