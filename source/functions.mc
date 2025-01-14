@@ -411,7 +411,7 @@ function dist (xy1, xy2){
 }
 
 function equal_fp (x,y) {
-    return Math.abs(x-y) < 1e-4; //1.000005
+    return (x-y).abs() < 1e-4; //1.000005
 }
 
 

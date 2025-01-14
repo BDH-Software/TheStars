@@ -48,6 +48,7 @@ class SolarSystemBaseView extends WatchUi.View {
     
     public var xc, yc, min_c, max_c, screenHeight, screenWidth, targetDc, screenShape, thisSys;
     private var ssbv_init_count;
+    public var Pitch_deg;
     
     
     
@@ -744,10 +745,13 @@ class SolarSystemBaseView extends WatchUi.View {
         //deBug("TNV", [$.time_now.value(), $.last_compass_time]);
 
         //$.now = System.getClockTime(); //for testing
-        if ( $.heading_from_watch || 
+        /*if ( $.heading_from_watch || 
                 ( !$.started && $.Options_Dict[COMPASSMOVE] 
-                && $.time_now.value() - $.last_compass_time > 5)
-            ) 
+                && $.time_now.value() - $.last_compass_time > 1)
+                */
+            //) 
+
+            if ( $.heading_from_watch )
             {
             var sensorInfo = Sensor.getInfo();
             if (sensorInfo has :heading && sensorInfo.heading != null) {
@@ -759,6 +763,25 @@ class SolarSystemBaseView extends WatchUi.View {
                     $.last_compass_time = $.time_now.value();
                     started = true;
                 }
+                /*
+
+                if (sensorInfo has :accel && sensorInfo.accel != null )
+                {
+                    var accel = sensorInfo.accel;
+                    var xAccel = accel[0];
+                    var yAccel = accel[1];
+                    var zAccel = accel[2];
+                    deBug("accel", [accel, xAccel, yAccel, zAccel]);
+
+
+                    //Roll_deg = Math.toDegrees(Math.atan2(yAccel,zAccel));
+                    Pitch_deg = Math.toDegrees(Math.atan2( xAccel, Math.sqrt( yAccel * yAccel + zAccel * zAccel)));
+                    deBug("accel", [Pitch_deg, accel, xAccel, yAccel, zAccel]);
+                    addy = 0;
+                    if (Pitch_deg>40) {addy = 45;}
+                }
+                */
+                
 
                 //deBug("sensor", [moveAz_deg, heading_rad]);
             
