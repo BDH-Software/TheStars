@@ -16,7 +16,7 @@ import Toybox.Activity;
 
 var view_mode;
 var lastLoc;
-var hz = 10f;
+var hz = 20f;
 var gps_read = false;
 
 
@@ -389,10 +389,10 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
 }
 
 */
-/*
-  function setPositionFromManual() as Boolean {
+
+    function setPositionFromManual() as Boolean {
         //deBug("SIP 2", null);
-        if ($.Options_Dict[gpsOption_enum]) { return false;}
+        if ($.Options_Dict[GPSOPTION]) { return false;}
         if ($.latlonOption_value[0] < 0) {$.latlonOption_value[0] = 0;}
         if ($.latlonOption_value[0] > 180) {$.latlonOption_value[0] = 180;}
         if ($.latlonOption_value[1] < 0) {$.latlonOption_value[1] = 0;}
@@ -402,7 +402,7 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         //deBug("SIP 4", lastLoc);
         return true;       
     }
-    */
+    
 
    
     //fills in the variable lastLoc with current location and/or
@@ -426,7 +426,7 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         //return;
 
         //in case MANUAL POSITION set in settings
-        //var man_set = setPositionFromManual(); //will be TRUE if the position is set manually
+        var man_set = setPositionFromManual(); //will be TRUE if the position is set manually
         //We still go ahead & try to determine the actual GPS position & save it in options_dict & storage
         //for future use
 
@@ -562,7 +562,7 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
             Storage.setValue(lastLoc_enum, new_lastLoc);
         }
         
-        $.lastLoc = new_lastLoc; //if man_set is true, then we don't want to update self.lastLoc with the new value, we want to keep the value that was set by the user.
+        if (!man_set) { $.lastLoc = new_lastLoc; } //if man_set is true, then we don't want to update self.lastLoc with the new value, we want to keep the value that was set by the user.
         //System.println ("setPosition10");
         if ($.lastLoc!=null && save_lastLoc !=null &&
         $.lastLoc[0] != null && $.lastLoc[1] != null&& save_lastLoc != null &&

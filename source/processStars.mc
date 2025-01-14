@@ -46,6 +46,7 @@ var pp_inConst = [];
 var pp_hipp = [];
 var cc_name = [];
 var cc_stars = [];
+var cc_fullname = [];
 
 var temp_PPIndex = [{},{},{},{},{},{},{},{},{},{},{},{},{},]; //same as # of hipparcos thingers
 var pp_count as Lang.Number = 0;
@@ -55,6 +56,7 @@ var hipp_proc = 0;
 var const_proc = 0;
 var hipp_finished = false;
 var const_finished = false;
+var names_finished = false;
 var gmst_deg=0;
 //var byteConv = 256/360.0;
 
@@ -100,14 +102,18 @@ function processStars_init(){
     pp_hipp = [];    
     cc_name = [];
     cc_stars = [];
+    cc_fullname = [];
     temp_PPIndex = [{},{},{},{},{},{},{},{},{},{},{},{},{},];
     pp_count = 0;
+
+    pp_inConst = null; //new Array <Boolean> [pp_hipp.size()];
 
     hippconst_finished = false;
     hipp_proc = 0;
     const_proc = 0;
     hipp_finished = false;
     const_finished = false;
+    names_finished = false;
     started = false;
 
     var jd_ut = julianDate (now_info.year, now_info.month, now_info.day,now_info.hour + $.addTime_hrs, now_info.min, $.now.timeZoneOffset/3600f, $.now.dst);
@@ -202,10 +208,14 @@ function processStars(){
         
     if (hipp_proc >= pprez.size()) { 
         
-        pp_inConst = new Array <Boolean> [pp_hipp.size()];
+        if (pp_inConst == null ) {
+          pp_inConst = new Array <Boolean> [pp_hipp.size()];
+        }
         
         hipp_finished = true;
 
+    } else { 
+        return;
     }
         /*
         var keys = $.pp1.keys();
@@ -306,7 +316,7 @@ function processStars(){
                     //if (tal*100/cnst.size()>50 && himag < 45) {
                     //deBug("const444", [key, cnst, tal, himag, cnstKs]);
                     if (tal*100/cnst.size()>5) {
-                        //deBug("adding", [key, tal, himag, cnst.size()]);
+                        deBug("adding", [key, tal, himag, cnst.size()]);
                         //$.cc.put(key,cnst);
                         cc_name.add(key);
                         cc_stars.add(cnstKs);
@@ -333,8 +343,33 @@ function processStars(){
 
     
     
-    if (const_proc >= pprez.size()) { const_finished = true;}
-    if (hipp_finished && const_finished) {
+    if (const_proc >= pprez.size()) { const_finished = true;} 
+    else {return;}
+
+    if (hipp_finished && const_finished && !names_finished) {
+         pp_orig = WatchUi.loadResource( $.Rez.JsonData.constellation_names) as Dictionary;
+                //var kys = pp_orig.keys();
+
+                for (var i = 0; i<cc_name.size(); i++) {
+                    if (pp_orig.hasKey(cc_name[i])) {
+                        deBug("NM", cc_name[i]);
+                        cc_fullname.add(pp_orig[cc_name[i]]);
+                    } else {
+                        deBug("NM not", cc_name[i]);
+                        cc_fullname.add(cc_name[i]);
+                    }
+
+                }
+                /*deBug("cc_name", [cc_name.size(), cc_name]);
+                for (var i = 0; i<cc_name.size(); i++) {
+                    deBug("NM", cc_name[i]);
+                }*/
+                names_finished = true;
+
+    }
+
+
+    if (hipp_finished && const_finished && names_finished) {
         //deBug("hippconst_finished", const_finished);
         temp_PPIndex = [{},{},{},{},{},{},{},{},{},{},{},{},{},];
         $.hippconst_finished = true;

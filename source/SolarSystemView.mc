@@ -2110,7 +2110,11 @@ class SolarSystemBaseView extends WatchUi.View {
                     dc.setColor(constColor,Graphics.COLOR_TRANSPARENT);
                     var nm = key;
                     var sf = starFont;
-                    if (Math.rand()%5==0) {nm = getConstellationFull(key); sf -= 1;}
+                    if (Math.rand()%5==0) //{nm = getConstellationFull(key); sf -= 1;}
+                        {
+                            nm = cc_fullname[i]; 
+                            sf -= 1; //make font a notch smaller since const name is SMALL
+                        }
                     putText(dc,nm, sf,  Graphics.TEXT_JUSTIFY_CENTER, 
                     [pp_az[k_save],pp_alt[k_save],xc/12.0, yc/12.0]);
                 

@@ -21,6 +21,9 @@ enum {
     ADDCENTURIES,
     CONSTNAMEHELP0,
     CONSTNAMEHELP1,
+    GPSOPTION= 115, //giving these new numbers so they won't read anything old in the storage
+    LATOPTION= 116, // "
+    LONOPTION= 117, // "
     lastLoc_enum =10,
 }
 
@@ -39,7 +42,16 @@ function cleanUpSettingsOpt(){
 */
 
 var Options_Dict = {};
+var _updatePositionNeeded = false;
+var _rereadGPSNeeded = false;
 
+var latOption_size = 181;  //ranges 0 to 180; lat is value-90
+var latOption_default = 90;
+
+var lonOption_size = 362;  //ranges 0 to 360; lat is value-180
+var lonOption_default = 180;
+
+var latlonOption_value= [90,180];    
 
 //! The app settings menu
 class StarsMenu extends WatchUi.Menu2 {
@@ -73,6 +85,18 @@ class StarsMenu extends WatchUi.Menu2 {
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.allBolder) as String, null, ALLBOLDER, $.Options_Dict[ALLBOLDER], null));  
 
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.reverseColors) as String, null, REVERSECOLORS, $.Options_Dict[REVERSECOLORS], null));   
+
+        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.uagp) as String, null, GPSOPTION, $.Options_Dict[GPSOPTION], null));
+
+        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.uagp) as String, null, GPSOPTION, $.Options_Dict[GPSOPTION], null));       
+                
+        if ($.Options_Dict[LATOPTION] == null) { $.Options_Dict[LATOPTION] = $.latOption_default; }
+        var val = ($.Options_Dict[LATOPTION] - 90);        
+        Menu2.addItem(new WatchUi.MenuItem(WatchUi.loadResource($.Rez.Strings.mlat) as String, val.toString(),LATOPTION,{})); 
+            
+        if ($.Options_Dict[LONOPTION] == null) { $.Options_Dict[LONOPTION] = $.lonOption_default; }
+        val = $.Options_Dict[LONOPTION] - 180;            
+        Menu2.addItem(new WatchUi.MenuItem(WatchUi.loadResource($.Rez.Strings.mlon) as String,val.toString(),LONOPTION,{}));
 
 deBug("menu4", null);
            
@@ -118,10 +142,44 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
         
         
 
-            var ret = menuItem.getId() as String;
+        var ret = menuItem.getId() as String;
         
             
         if (menuItem instanceof ToggleMenuItem) {
+
+                if (ret != null && ret.equals(GPSOPTION)) {
+                
+                /* 
+                $.time_add_hrs = 0;
+                $.started=false;
+                $.reset_date_stop = true;
+                $.run_oneTime = true;
+                $.LORR_show_horizon_line = true;
+                */
+                //NOT going to store this, so that autoGPS is
+                //enabled whenever the program starts.  They can
+                //manually switch to their set GPS coordinates if they want.
+                //Storage.setValue(ret, menuItem.isEnabled());
+                $.Options_Dict[ret] = menuItem.isEnabled();
+                //$.solarSystemView_class.setInitPosition();
+                //$.jumpToGPS = true;                
+                //WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
+                
+                //instead of just doing this here, we wait until the MENU
+                //has closed, thus saving memory.  Also only read GPS
+                //again if really needed.
+                //We were having memory faults here when reading GPS with menu open
+                //GPS/position is inited in onupdate view, only when these flags are set
+                _updatePositionNeeded = true;
+                if (menuItem.isEnabled) {_rereadGPSNeeded = true;}
+                
+
+                //var settings_view = new $.SolarSystemSettingsView();
+                //var settings_delegate = new $.SolarSystemSettingsDelegate();
+        
+                //pushView(settings_view, settings_delegate, WatchUi.SLIDE_IMMEDIATE);
+                
+            } 
             if (ret != null){
                           
                 Storage.setValue(ret, menuItem.isEnabled());
@@ -196,6 +254,29 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
                     menuItem.setLabel(cA[0]);
                     menuItem.setSubLabel(cA[1]);
             }
+            else if (ret != null && ret.equals(LATOPTION)) {
+                $.Options_Dict[ret]=($.Options_Dict[ret]+2)%latOption_size;
+                menuItem.setSubLabel(($.Options_Dict[ret]-90).toString());
+                //else {menuItem.setSubLabel("GPS");}
+
+                Storage.setValue(ret as String, $.Options_Dict[ret]); 
+                //[ "5hz", "4hz", "3hz", "2hz", "1hz", "2/3hz", "1/2hz"];
+                $.latlonOption_value[0] = $.Options_Dict[ret];     
+                //$.solarSystemView_class.setInitPosition();       
+                _updatePositionNeeded = true;
+            }
+
+            if(ret != null && ret.equals(LONOPTION)) {
+                $.Options_Dict[ret]=($.Options_Dict[ret]+5)%lonOption_size;
+                menuItem.setSubLabel(($.Options_Dict[ret]-180).toString());
+                //else {menuItem.setSubLabel("GPS");}
+
+                Storage.setValue(ret as String, $.Options_Dict[ret]); 
+                //[ "5hz", "4hz", "3hz", "2hz", "1hz", "2/3hz", "1/2hz"];
+                $.latlonOption_value[1] = $.Options_Dict[ret];  
+                //$.solarSystemView_class.setInitPosition();          
+                _updatePositionNeeded = true;
+            }
 
         }
 
@@ -203,6 +284,18 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
    
     function onBack() {
+        if (_updatePositionNeeded) {
+            $.setInitPosition();
+            $.pos_just_changed = true;
+        }
+        /*
+        if (_rereadGPSNeeded ) {
+            Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:setPosition));
+            $.pos_just_changed
+        }
+        */
+        _updatePositionNeeded = false; 
+        _rereadGPSNeeded = false;
 
         
         //$.cleanUpSettingsOpt();
@@ -251,6 +344,16 @@ function readStorageValues(){
     temp = Storage.getValue(REVERSECOLORS);
     $.Options_Dict[REVERSECOLORS] = temp != null ? (temp == true) : false; //last one is the default
     Storage.setValue(REVERSECOLORS,$.Options_Dict[REVERSECOLORS]);
+
+    temp = Storage.getValue(LATOPTION);
+    $.Options_Dict[LATOPTION] = (temp != null && temp instanceof Number) ? (temp) : 0; //last one is the default
+    Storage.setValue(LATOPTION,$.Options_Dict[LATOPTION]);
+
+    temp = Storage.getValue(LONOPTION);
+    $.Options_Dict[LONOPTION] = (temp != null && temp instanceof Number) ? (temp) : 0; //last one is the default
+    Storage.setValue(LONOPTION,$.Options_Dict[LONOPTION]);
+
+    $.latlonOption_value= [$.Options_Dict[latOption_enum], $.Options_Dict[lonOption_enum]]; 
 }
 
 var constellationAbbreviation_index = [0,0];
@@ -272,6 +375,7 @@ function getConstellationAbbreviation(which) {
         return [a,b];            
 }
 
+/*
 function getConstellationFull(abbr) {
     var const_json = [$.Rez.JsonData.constellation_1, $.Rez.JsonData.constellation_2];
     //loadPlanetsOpt();
@@ -288,7 +392,7 @@ function getConstellationFull(abbr) {
         }
     }
     return res;
-}
+}*/
         
 
         

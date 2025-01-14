@@ -58,6 +58,9 @@
 <string id = "reverseColors">Reverse Colors?</string>
 
 <string id = "timeForward">Move Time by:</string>
+<string id = "uagp">Use auto GPS Position?</string>
+<string id = "mlat">Manual Latitude:</string>
+<string id = "mlon">Manual Longitude:</string>
 
 <string id = "timeDirection">Direction to move time?</string>
 <string id = "timeDirection">Direction to move time?</string>
