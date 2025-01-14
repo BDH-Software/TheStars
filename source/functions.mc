@@ -410,6 +410,10 @@ function dist (xy1, xy2){
     (xy1[1]-xy2[1]) * (xy1[1]-xy2[1]) );
 }
 
+function equal_fp (x,y) {
+    return Math.abs(x-y) < 1e-4; //1.000005
+}
+
 
 //}
 

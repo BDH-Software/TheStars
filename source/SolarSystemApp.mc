@@ -76,6 +76,8 @@ var time_add_direction as Lang.Number = 1;
 var time_changed = false;
 var time_just_changed = false;
 var pos_just_changed = false;
+var heading_from_watch = true;
+var last_compass_time = 0;
 
 var show_intvl = 0; //whether or not to show current SPEED on display
 var animSinceModeChange = 0; //used to tell when to blank screen etc.
@@ -131,8 +133,10 @@ class SolarSystemBaseApp extends Application.AppBase {
         
         $.now = System.getClockTime();
         $.time_now = Time.now();
+        $.last_compass_time = $.time_now.value();
         $.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);
         $.start_time_sec = $.time_now.value(); //start time of app in unix seconds
+        $.heading_from_watch = true;
 
         //do this AFTER getting time & reading init storage values
         //_solarSystemView = new $.SolarSystemBaseView();
@@ -142,6 +146,8 @@ class SolarSystemBaseApp extends Application.AppBase {
 
         //These  2 must be done AFTER View class is inited
         //readStorageValues();
+
+        readStorageValues();
         
 
         $.goodGPS = setPosition(null);
@@ -154,7 +160,7 @@ class SolarSystemBaseApp extends Application.AppBase {
 
         //System.println("ARR" + toArray("HI|THERE FRED|M<SYUEIJFJ |FIEJKDF:LKJF|SKDJFF|SDLKJSDFLKJ|THIESNEK|FJIEKJF","|",0));
 
-        readStorageValues();
+        
                         
 
     }

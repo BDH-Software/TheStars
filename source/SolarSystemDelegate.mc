@@ -81,8 +81,8 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //if (buttonPresses == 1) {return;} //1st buttonpress just gets out of intro titles
         nextPrev_pressed = true;
         $.time_changed = false;
-        if (type ==:next) {moveAz -=22.5;}
-        else {moveAz +=22.5;}
+        if (type ==:next) {moveAz_deg -=22.5;}
+        else {moveAz_deg +=22.5;}
 
       
 

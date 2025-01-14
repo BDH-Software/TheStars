@@ -47,7 +47,9 @@
 <string id = "srr">Screen Refresh Rate?</string>
 <string id = "pa">Planet Abbreviations</string> -->
 
-<string id = "settingstitle">Settings</string>
+<string id = "settingsTitle">Settings</string>
+
+<string id = "compassMove">Auto-move (compass)?</string>
 
 <string id = "constLines">Constellation Lines?</string>
 

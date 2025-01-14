@@ -22,6 +22,7 @@ enum {
     CONSTNAMEHELP0,
     CONSTNAMEHELP1,
     LONGNAMES,
+    COMPASSMOVE,
     GPSOPTION= 115, //giving these new numbers so they won't read anything old in the storage
     LATOPTION= 116, // "
     LONOPTION= 117, // "
@@ -70,14 +71,16 @@ class StarsMenu extends WatchUi.Menu2 {
 
         
         //loadSettingsOpt();
+        _updatePositionNeeded = false;
 
 
 
        deBug("menu3", null);
 
 
-        Menu2.initialize({:title=>WatchUi.loadResource($.Rez.Strings.settingstitle) as String});
-       
+        Menu2.initialize({:title=>WatchUi.loadResource($.Rez.Strings.settingsTitle) as String});
+        
+        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.compassMove) as String, null, COMPASSMOVE, $.Options_Dict[COMPASSMOVE], null));   
 
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.constLines) as String, null, CONSTLINES, $.Options_Dict[CONSTLINES], null));   
 
@@ -130,11 +133,13 @@ deBug("menu4", null);
 class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
     var changeTime = false;
+    
 
     var mainView;
     //! Constructor
     public function initialize() {
         Menu2InputDelegate.initialize();
+        
     }
 
         //! Handle a menu item being selected
@@ -172,7 +177,7 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
                 //We were having memory faults here when reading GPS with menu open
                 //GPS/position is inited in onupdate view, only when these flags are set
                 _updatePositionNeeded = true;
-                if (menuItem.isEnabled) {_rereadGPSNeeded = true;}
+                //if (menuItem.isEnabled) {_rereadGPSNeeded = true;}
                 
 
                 //var settings_view = new $.SolarSystemSettingsView();
@@ -180,8 +185,7 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
         
                 //pushView(settings_view, settings_delegate, WatchUi.SLIDE_IMMEDIATE);
                 
-            } 
-            if (ret != null){
+            } else if (ret != null){
                           
                 Storage.setValue(ret, menuItem.isEnabled());
                 $.Options_Dict[ret] = menuItem.isEnabled();                        
@@ -255,20 +259,21 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
                     menuItem.setLabel(cA[0]);
                     menuItem.setSubLabel(cA[1]);
             }
-            else if (ret != null && ret.equals(LATOPTION)) {
-                $.Options_Dict[ret]=($.Options_Dict[ret]+2)%latOption_size;
+            else if (ret != null && ret.equals(LATOPTION)) 
+            {
+                $.Options_Dict[ret]=($.Options_Dict[ret]+5)%latOption_size;
                 menuItem.setSubLabel(($.Options_Dict[ret]-90).toString());
                 //else {menuItem.setSubLabel("GPS");}
 
                 Storage.setValue(ret as String, $.Options_Dict[ret]); 
-                //[ "5hz", "4hz", "3hz", "2hz", "1hz", "2/3hz", "1/2hz"];
+                
                 $.latlonOption_value[0] = $.Options_Dict[ret];     
                 //$.solarSystemView_class.setInitPosition();       
                 _updatePositionNeeded = true;
-            }
-
-            if(ret != null && ret.equals(LONOPTION)) {
-                $.Options_Dict[ret]=($.Options_Dict[ret]+5)%lonOption_size;
+            
+            } else if(ret != null && ret.equals(LONOPTION))             
+            {
+                $.Options_Dict[ret]=($.Options_Dict[ret]+10)%lonOption_size;
                 menuItem.setSubLabel(($.Options_Dict[ret]-180).toString());
                 //else {menuItem.setSubLabel("GPS");}
 
@@ -317,6 +322,7 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
             //$.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);            
 
         } 
+        $.heading_from_watch = true;
         
         WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
         WatchUi.requestUpdate();
@@ -329,8 +335,11 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
 
 function readStorageValues(){
+    var temp = Storage.getValue(COMPASSMOVE);
+    $.Options_Dict[COMPASSMOVE] = temp != null ? (temp == true) : true; //last one is the default
+    Storage.setValue(COMPASSMOVE,$.Options_Dict[COMPASSMOVE]);
 
-    var temp = Storage.getValue(CONSTLINES);
+    temp = Storage.getValue(CONSTLINES);
     $.Options_Dict[CONSTLINES] = temp != null ? (temp == true) : true; //last one is the default
     Storage.setValue(CONSTLINES,$.Options_Dict[CONSTLINES]);
     

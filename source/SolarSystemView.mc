@@ -2,6 +2,7 @@
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.Position;
+import Toybox.Sensor;
 import Toybox.WatchUi;
 import Toybox.Math;
 import Toybox.System;
@@ -32,7 +33,7 @@ var save_local_animation_count;
 //var ssbv_init_count_global = 0;
 
 //var small_whh, /*full_whh,*/ zoomy_whh, whh0, whh1;
-var moveAz = 0;
+var moveAz_deg = 0;
 var moveY = 0;
 var _updatePositionNeeded = true;
 var _rereadGPSNeeded = true;
@@ -738,10 +739,32 @@ class SolarSystemBaseView extends WatchUi.View {
 
 
         //$.count++;
+        $.time_now = Time.now();
 
-        
+        //deBug("TNV", [$.time_now.value(), $.last_compass_time]);
 
         //$.now = System.getClockTime(); //for testing
+        if ( $.heading_from_watch || 
+                ( !$.started && $.Options_Dict[COMPASSMOVE] 
+                && $.time_now.value() - $.last_compass_time > 5)
+            ) 
+            {
+            var sensorInfo = Sensor.getInfo();
+            if (sensorInfo has :heading && sensorInfo.heading != null) {
+                var heading_rad = sensorInfo.heading; //true north heading referenced in RADIANS
+                var heading_deg = 90.0 - Math.toDegrees(heading_rad);
+                heading_deg = Math.round( heading_deg/22.5) * 22.5; //quantize to nearest 1/16 direction, ie NNE
+                if (!equal_fp(heading_deg, moveAz_deg)) {
+                    moveAz_deg = heading_deg;
+                    $.last_compass_time = $.time_now.value();
+                    started = true;
+                }
+
+                //deBug("sensor", [moveAz_deg, heading_rad]);
+            
+            }
+        }
+        $.heading_from_watch = false;
 
         if ($.time_just_changed || $.pos_just_changed){
             processStars_init();
@@ -1494,7 +1517,15 @@ class SolarSystemBaseView extends WatchUi.View {
             //deBug("PPPPQ3", [key, az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
             dc.setColor(starColor,Graphics.COLOR_TRANSPARENT);
             if ($.Options_Dict[CONSTNAMES]) {
-                dc.drawText(xy[0] + xc/8.0 , xy[1] + yc/8.0,starFont,name.substring(0,2),Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+                
+                var nm=name;
+                
+                if ($.Options_Dict[LONGNAMES]) //$.Options_Dict[LONGNAMES] == TRUE means use the short name; kind of confusing
+                {
+                    nm=name.substring(0,2);
+                }
+                
+                dc.drawText(xy[0] + xc/8.0 , xy[1] + yc/8.0,starFont,nm,Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
             }
     }
 
@@ -1788,7 +1819,7 @@ class SolarSystemBaseView extends WatchUi.View {
     var tally2_finished = false;
     var tally3_finished = false;
     var last_started = false;
-    var save_moveAz = 0;
+    var save_moveAz_deg = 0;
     var planets;
     //var gmst_deg = 0;
     var sizex =  90f;
@@ -1914,8 +1945,8 @@ class SolarSystemBaseView extends WatchUi.View {
         dc.setColor(starColor,starBackgroundColor);
         
         
-        //moveAz 0 == east, 90 = south, 180 = west, 270 = north
-        addAz = 0 + moveAz;
+        //moveAz_deg 0 == east, 90 = south, 180 = west, 270 = north
+        addAz = 0 + moveAz_deg;
         //kys = pp.keys();
         //var kys = ppKeys();
         if (menu_pressed || nextPrev_pressed) {
@@ -1931,7 +1962,7 @@ class SolarSystemBaseView extends WatchUi.View {
             tally2_finished = false;
             tally_finished = false;
             tally3_finished = false;
-            //save_moveAz = moveAz;
+            //save_moveAz_deg = moveAz_deg;
         }
 
 
@@ -2007,7 +2038,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 //save_keys = [];
                 
                 placeDirections(dc, [sizex,sizey,addAz,addy]);
-                save_moveAz = moveAz;
+                save_moveAz_deg = moveAz_deg;
                 
             //}
 

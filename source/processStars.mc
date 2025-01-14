@@ -316,7 +316,7 @@ function processStars(){
                     //if (tal*100/cnst.size()>50 && himag < 45) {
                     //deBug("const444", [key, cnst, tal, himag, cnstKs]);
                     if (tal*100/cnst.size()>5) {
-                        deBug("adding", [key, tal, himag, cnst.size()]);
+                        //deBug("adding", [key, tal, himag, cnst.size()]);
                         //$.cc.put(key,cnst);
                         cc_name.add(key);
                         cc_stars.add(cnstKs);
@@ -352,10 +352,10 @@ function processStars(){
 
                 for (var i = 0; i<cc_name.size(); i++) {
                     if (pp_orig.hasKey(cc_name[i])) {
-                        deBug("NM", cc_name[i]);
+                        //deBug("NM", cc_name[i]);
                         cc_fullname.add(pp_orig[cc_name[i]]);
                     } else {
-                        deBug("NM not", cc_name[i]);
+                        //deBug("NM not", cc_name[i]);
                         cc_fullname.add(cc_name[i]);
                     }
 
