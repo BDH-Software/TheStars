@@ -92,8 +92,12 @@ import Toybox.WatchUi;
     // Source
     // https://celestialprogramming.com/lowprecisionmoonposition.html
     //Input: Julian Date
-    //Output: Ecliptical Long, Lat in degrees
-    // (rem-ed out portion converts this to geocentric RA & Decl)
+
+    //** FIRST PART****
+    //Output (first portion): Ecliptical Long, Lat in degrees
+    // (last portion converts this to geocentric RA & Decl)
+    //***FINAL OUTPUT******
+    //OUTPUT: RA, DEC in degrees
 
     function getGeocentricMoonPos(jd){
 	var T = ((jd-2451545)/36525).toFloat();
@@ -116,6 +120,8 @@ import Toybox.WatchUi;
 	var ra=Math.atan2(m,l);
 	if(ra<0){ra+=2*Math.PI;}
 	var dec=Math.asin(n);
+
+    //convert to degrees & return
 	return [Math.toDegrees(ra).toFloat(),Math.toDegrees(dec).toFloat()];
     
     }
