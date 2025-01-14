@@ -103,15 +103,15 @@ import Toybox.WatchUi;
 	var T = ((jd-2451545)/36525).toFloat();
 	var L = 218.32f + 481267.881f*T + 6.29f*sind(135.0f + 477198.87f*T) - 1.27f*sind(259.3 - 413335.36f*T) + 0.66f*sind(235.7f + 890534.22f*T) + 0.21f*sind(269.9f + 954397.74f*T) - 0.19f*sind(357.5f + 35999.05f*T) - 0.11f*sind(186.5f + 966404.03f*T);
 	var B = 5.13f*sind( 93.3f + 483202.02f*T) + 0.28f*sind(228.2f + 960400.89f*T) - 0.28f*sind(318.3f + 6003.15f*T) - 0.17f*sind(217.6f - 407332.21f*T);
-	var P = 0.9508 + 0.0518*cosd(135.0 + 477198.87*T) + 0.0095*cosd(259.3 - 413335.36*T) + 0.0078*cosd(235.7 + 890534.22*T) + 0.0028*cosd(269.9 + 954397.74*T);
+	//var P = 0.9508 + 0.0518*cosd(135.0 + 477198.87*T) + 0.0095*cosd(259.3 - 413335.36*T) + 0.0078*cosd(235.7 + 890534.22*T) + 0.0028*cosd(269.9 + 954397.74*T);
     //var ret = [(normalize(L)).toFloat(),(normalize(B)).toFloat()];
     //deBug("moonret: ", [jd]);
     //return ret;
 
     
     //convert to geocentric ra & decl
-	var SD=0.2724*P;
-	var r=1/sind(P);
+	//var SD=0.2724*P;
+	//var r=1/sind(P);
 
 	var l = cosd(B) * cosd(L);
 	var m = 0.9175*cosd(B)*sind(L) - 0.3978*sind(B);
