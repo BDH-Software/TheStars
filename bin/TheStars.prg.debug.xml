@@ -206,7 +206,7 @@
 <entry filename="E:\\Data-Brent\\Garmin-App-Development\\SDK-examples\\TheStars\\TheStars\\source\\planetsEclipticVSOP87a-pico.mc" id="29" lineNum="773" parent="globals" pc="268439353" symbol="getPluto"/>
 <entry filename="E:\\Data-Brent\\Garmin-App-Development\\SDK-examples\\TheStars\\TheStars\\source\\planetsEclipticVSOP87a-pico.mc" id="29" lineNum="774" parent="globals" pc="268439390" symbol="getPluto"/>
 <entry filename="E:\\Data-Brent\\Garmin-App-Development\\SDK-examples\\TheStars\\TheStars\\source\\planetsEclipticVSOP87a-pico.mc" id="29" lineNum="776" parent="globals" pc="268439427" symbol="getPluto"/>
-<entry filename="e:\\Data-Brent\\Garmin-App-Development\\SDK-examples\\TheStars\\TheStars\\bin\\gen\\006-B4315-00\\source\\Rez.mcgen" id="30" lineNum="7" parent="globals/Rez" pc="268439447" symbol="&lt;init&gt;"/>
+<entry filename="e:\\Data-Brent\\Garmin-App-Development\\SDK-examples\\TheStars\\TheStars\\bin\\gen\\006-B4260-00\\source\\Rez.mcgen" id="30" lineNum="7" parent="globals/Rez" pc="268439447" symbol="&lt;init&gt;"/>
 <entry filename="E:\\Data-Brent\\Garmin-App-Development\\SDK-examples\\TheStars\\TheStars\\source\\processStars.mc" id="31" lineNum="390" parent="globals" pc="268439467" symbol="ppReturnKey"/>
 <entry filename="E:\\Data-Brent\\Garmin-App-Development\\SDK-examples\\TheStars\\TheStars\\source\\processStars.mc" id="31" lineNum="394" parent="globals" pc="268439478" symbol="ppReturnKey"/>
 <entry filename="E:\\Data-Brent\\Garmin-App-Development\\SDK-examples\\TheStars\\TheStars\\source\\processStars.mc" id="31" lineNum="396" parent="globals" pc="268439481" symbol="ppReturnKey"/>
@@ -2481,7 +2481,7 @@
 <entry endPc="268464924" name="cA" stackId="4" startPc="268464883"/>
 <entry endPc="268464991" name="cA" stackId="5" startPc="268464949"/>
 </localVars>
-<deviceInfo deviceVersion="4866e5192c0c99025597cd8e6e841f3d774b64f7" partNumber="006-B4315-00"/>
+<deviceInfo deviceVersion="35026752466eceaff46011f2f33580ace85b3091" partNumber="006-B4260-00"/>
 <annotations>
 <annotationEntry annotation="initialized" class="JsonData" module="globals/Rez" symbol="constellation_2"/>
 <annotationEntry annotation="initialized" class="JsonData" module="globals/Rez" symbol="constellation_1"/>
