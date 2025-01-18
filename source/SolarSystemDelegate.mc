@@ -32,7 +32,8 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.exiting_back_button_firstpress=false;
         //if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
 
-        //$.started = !$.started;   
+        //$.started = !$.started;  
+        //$.compassStarted = !$.compassStarted; // toggle compass movement on/off
         $.started = true;
         select_pressed = true;
         $.time_changed = false;
@@ -81,8 +82,19 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //if (buttonPresses == 1) {return;} //1st buttonpress just gets out of intro titles
         nextPrev_pressed = true;
         $.time_changed = false;
-        if (type ==:next) {moveAz_deg -=22.5;}
-        else {moveAz_deg +=22.5;}
+
+        //Moves left/right (non compass mode)
+        //zooms in/out (compass mode)
+
+        if ($.Options_Dict[COMPASSMOVE] && $.compassStarted ){
+            if (type ==:next) {zoom_level = 0; }
+            else { zoom_level = 1; } 
+        
+            
+        } else {
+            if (type ==:next) {moveAz_deg -=22.5;}
+            else {moveAz_deg +=22.5;}                             
+        }
 
       
 

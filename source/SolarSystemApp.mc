@@ -78,6 +78,7 @@ var time_just_changed = false;
 var pos_just_changed = false;
 var heading_from_watch = true;
 var last_compass_time = 0;
+var compassStarted = true;
 
 var show_intvl = 0; //whether or not to show current SPEED on display
 var animSinceModeChange = 0; //used to tell when to blank screen etc.
