@@ -1858,7 +1858,7 @@ class SolarSystemBaseView extends WatchUi.View {
     var starFont = 1;
     var skipConst = false;
     var compassHeading_deg = 0;
-    var TESTINGHEADING=true;
+    var TESTINGHEADING=false;
     var testDir_deg = 0;
     var saveCompassHeading = null;
 
