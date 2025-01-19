@@ -9,14 +9,16 @@ import Toybox.System;
 import Toybox.Sensor;
 import Toybox.Math;
 
+var ciH_ret = 10;
+
     //pitch = rotation about watch 9-3 axis, ie, rotating forearm
     //roll = rotation about wathc 12-6 axis, ie, moving forearm up-down from elbow or shoulder
     //inclination= overall slope of watchface, combination of pitch & roll towards "up" and "down" wherever that happens to be oriented on the watch right now
     
     //RETURNS [inclination, pitch, roll]
     //or NULL if not data (or test data if DEBUG==true)
-    function calculateInclinationHeading() {
-        var DEBUG=false;
+    function calculateInclinationHeading(DEBUG) {
+        //var DEBUG=false;
         var pitch, roll, inclination;
         var xAccel, yAccel, zAccel;
 
@@ -45,7 +47,12 @@ import Toybox.Math;
         roll = normalize180(Math.toDegrees(rollRad));
         
         inclination = normalize180(Math.toDegrees(inclinationRad));
+        deBug("inclination", [inclination, pitch, roll, ciH_ret]);
         if (!DEBUG && noData) { return null;}
+        //if (DEBUG && noData) { return [Math.rand()%180-90, Math.rand()%180-90, Math.rand()%180-90]; }
+        ciH_ret +=2;
+        ciH_ret = ciH_ret%90;
+        if (DEBUG && noData) { return [ciH_ret, Math.rand()%180-90, Math.rand()%180-90]; }
         return [inclination, pitch, roll];
     }
 

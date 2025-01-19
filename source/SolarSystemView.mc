@@ -311,8 +311,9 @@ class SolarSystemBaseView extends WatchUi.View {
         //timeWasAdded = true;
         //settings_view = null;
         //settings_delegate = null;
-        started = true;
+        $.started = true;
         onshow = true; //forces dc.clear / redraw
+        $.heading_from_watch = true;
         startAnimationTimer($.hz);
         WatchUi.requestUpdate();
 
@@ -812,8 +813,8 @@ class SolarSystemBaseView extends WatchUi.View {
         var col = starColor;
         fillcol = starBackgroundColor;
         b_size = base_size/def_size*min_c;
-        min_size = 4.0/def_size*min_c;
-        var max_size = 1.7*min_size;
+        min_size = 6.5/def_size*min_c; //was 4.0
+        var max_size = 1.2*min_size;  //was 1.7 ; 4*1.7 = 6.8
         size = b_size;
 
         
@@ -1042,7 +1043,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
         */
 
-        if (zoom_level>0) {size*=1.4;}
+        if ($.zoom_level>0) {size*=1.4;}
         if ($.Options_Dict[ALLBOLDER]) {size*=1.5;}
 
         var pen = Math.round(size/10.0).toNumber();
@@ -1415,7 +1416,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
 
             mag = (40 - proc(mag))/10; //ranges from about 52 to 0
-            if (zoom_level>0) {mag *= 1.5;}
+            if ($.zoom_level>0) {mag *= 1.5;}
             if ($.Options_Dict[ALLBOLDER] ) {mag *= 2;}
             //mag = mag*mag/700;
             if (mag<1) {mag =1;}
@@ -1460,7 +1461,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
             //mag = (40 - proc(mag))/10; //ranges from about 52 to 0
             mag = (40 - mag)/10; //ranges from about 52 to 0
-            if (zoom_level>0) {mag *= 1.5;}
+            if ($.zoom_level>0) {mag *= 1.5;}
             if ($.Options_Dict[ALLBOLDER] ) {mag *= 2;}
             //mag = mag*mag/700;
             if (mag<1) {mag =1;}
@@ -1581,7 +1582,7 @@ class SolarSystemBaseView extends WatchUi.View {
             }
             
             //dc.drawLine(x,y,x2,y2);
-            if (zoom_level > 0) { //const lines a little thicker & darker
+            if ($.zoom_level > 0) { //const lines a little thicker & darker
                 
                 drawDashedLine (dc,xy[0], xy[1], xy2[0], xy2[1], dot + 1,3, thick + 1, null);
 
@@ -1609,7 +1610,7 @@ class SolarSystemBaseView extends WatchUi.View {
             }
             
             //dc.drawLine(x,y,x2,y2);
-            if (zoom_level > 0) { //const lines a little thicker & darker
+            if ($.zoom_level > 0) { //const lines a little thicker & darker
                 
                 drawDashedLine (dc,xy[0], xy[1], xy2[0], xy2[1], dot + 1,3, thick + 1, null);
 
@@ -1631,7 +1632,7 @@ class SolarSystemBaseView extends WatchUi.View {
 */
 
     public function putText (dc,text,font, justify, jughead){
-        if (Math.rand()%3!=0 && zoom_level == 0 ) {return;}
+        if (Math.rand()%3!=0 && $.zoom_level == 0 ) {return;}
             //var ra = jughead[0]  * byteDeg;
             var az = jughead[0];
 
@@ -1692,35 +1693,50 @@ class SolarSystemBaseView extends WatchUi.View {
         var offset = 5;
         var bottom = 0;
         var addtxt = "";
-        var fakeZoom = zoom_level;
-        if (zoom_level>4) {fakeZoom = 8-zoom_level;}
+        var fakeZoom = $.zoom_level;
+        if ($.zoom_level>4) {fakeZoom = 8-$.zoom_level;}
 
         if (fakeZoom > 0 && fakeZoom < 4) {
             offset = 5;
             //bottom = (fakeZoom - 1) *; //make it like the opposite side, once we're over the top...
-            //bottom = (zoom_level -1) * 65f/3.0 - 35f;
+            //bottom = ($.zoom_level -1) * 65f/3.0 - 35f;
             bottom = (fakeZoom - 1) * 65f/3.0 - 5;
             
-        } else if (zoom_level == 4) {
+        } else if ($.zoom_level == 4) {
             offset = 5;
             //bottom = (5 - 1) * 18;
             bottom =  90 - 60/2.0; // center on zenith
         }
+        // #555555
+        if (!$.Options_Dict[REVERSECOLORS]) {
+            dc.setColor(0x999999, Graphics.COLOR_TRANSPARENT);
+        } else {
+            dc.setColor(0x555555, Graphics.COLOR_TRANSPARENT);
+        }
 
         var sFontHeight = dc.getFontHeight(1);
         var dirFont = starFont;
-        if (zoom_level > 0 || ( $.Options_Dict[COMPASSMOVE] && $.compassStarted)) {
+        if ($.zoom_level > 0 || ( $.Options_Dict[COMPASSMOVE])) {
           //var sFontHeight = dc.getFontHeight(1);
           dirFont = 1; //smallest
-          var addTxt = "";
-          if (zoom_level > 0) {addtxt = " (Z" + zoom_level + ") ";}
-          if  ($.Options_Dict[COMPASSMOVE] && $.compassStarted) {addtxt = " (COMPASS)";}
-          dc.drawText(xc - 2*sFontHeight, 0.5*sFontHeight,dirFont,addtxt,Graphics.TEXT_JUSTIFY_CENTER);
+          //addtxt = " (";
+          if  ($.Options_Dict[COMPASSMOVE]) {
+            //addtxt += "C+" + $.incline_zero_deg.format("%0.0f");
+            addtxt += "C";// + $.incline_zero_deg.format("%0.0f");
+          }
+          //if  ($.Options_Dict[COMPASSMOVE] && $.zoom_level > 0){
+          //      addtxt += " ";
+          //}
+          if ($.zoom_level > 0) {addtxt += "Z"; }
+          if ($.zoom_level > 0 && !$.Options_Dict[COMPASSMOVE]) {addtxt += $.zoom_level; }
+          
+          //addtxt += ") ";
+          dc.drawText(xc - 1*sFontHeight, 0.5*sFontHeight,dirFont,addtxt,Graphics.TEXT_JUSTIFY_CENTER);
 
         }
         var inc = 45;
 
-        if (zoom_level > 0 && zoom_level!=5) {
+        if ($.zoom_level > 0 && $.zoom_level!=5) {
             inc = 22.5;
             dirs = ["N",
                     "NNE",   
@@ -1761,7 +1777,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 (normalize(((i+addAz)- 270)).abs() < inc/2.0) )
                 {dir += " (C)";}
 
-            if (zoom_level == 4 && mod(i,90).abs() >0.001) {continue;}
+            if ($.zoom_level == 4 && mod(i,90).abs() >0.001) {continue;}
             var x = Math.cos(Math.toRadians(i + addAz)) * (90.0 - offset - bottom); 
             var y = Math.sin (Math.toRadians(i +addAz)) * (90.0 - offset - bottom);
 
@@ -1786,20 +1802,20 @@ class SolarSystemBaseView extends WatchUi.View {
             if (i == 360) {
                 //dc.setColor(0xe1a75c, Graphics.COLOR_TRANSPARENT);
                 // #922fcc // #39d8f7 #175877 
-                dc.setColor(0x39d8f7, Graphics.COLOR_TRANSPARENT);
-                if (!$.Options_Dict[REVERSECOLORS]) {
+                //dc.setColor(0x39d8f7, Graphics.COLOR_TRANSPARENT);
+                /*if (!$.Options_Dict[REVERSECOLORS]) {
                    dc.setColor(0x39d8f7, Graphics.COLOR_TRANSPARENT);
                 } else {
                    dc.setColor(0x175877, Graphics.COLOR_TRANSPARENT);
-                }
-
+                }*/
+                dc.setPenWidth(max_c/40.0);
                 dc.drawCircle(x,y,yc/25); //draw a small circle at zenith
-
+                /*
                 if (!$.Options_Dict[REVERSECOLORS]) {
                    dc.setColor(0xa26fcc, Graphics.COLOR_TRANSPARENT);
                 } else {
                    dc.setColor(0x620f67, Graphics.COLOR_TRANSPARENT);
-                }
+                }*/
             }
         }
     }
@@ -1826,6 +1842,9 @@ class SolarSystemBaseView extends WatchUi.View {
     var starBackgroundColor = Graphics.COLOR_WHITE;
     var starFont = 1;
     var skipConst = false;
+    var compassHeading_deg = 0;
+    var TESTINGHEADING=true;
+    var testDir_deg = 0;
 
     //var cc;
     public function starField(dc) {
@@ -1838,16 +1857,24 @@ class SolarSystemBaseView extends WatchUi.View {
         //deBug("pp", [$.pp]);
         
         $.time_now = Time.now();
-
+        
+        var moveFromCompass = false;
         //compassStarted is turned on/off by the SELECT button.  It 
         //determines whether the starfield movement is updated continually
         //every 1 sec from compass & gyro input.  
-        if ($.select_pressed && $.Options_Dict[COMPASSMOVE]) {    
+        if (($.select_pressed ||  $.nextPrev_pressed ) && $.Options_Dict[COMPASSMOVE]) {    
                 $.compassStarted = !$.compassStarted; // toggle compass movement on/off
+                moveFromCompass = true;
         }
 
-        var moveFromCompass = ( !$.started && $.compassStarted && $.Options_Dict[COMPASSMOVE] 
-                && $.time_now.value() - $.last_compass_time > 1) ;
+        //var moveFromCompass = ( !$.started && $.compassStarted && $.Options_Dict[COMPASSMOVE] 
+        //        && $.time_now.value() - $.last_compass_time > 2) ;
+
+        //deBug ("timenow", [$.time_now.value() - $.last_compass_time, $.time_now.value(), $.last_compass_time]);                
+
+        //moveFromCompass = moveFromCompass || ($.Options_Dict[COMPASSMOVE] && $.compassStarted && $.nextPrev_pressed);
+
+        //moveFromCompass = moveFromCompass && !$.started;
 
         //$.started is the main switch that turns on when starting to draw
         //a new starfield and then turns off when the drawing is complete
@@ -1872,7 +1899,10 @@ class SolarSystemBaseView extends WatchUi.View {
         }
 
         //set up starting or re-starting for the first time
-        if ((!last_started && !select_pressed && !nextPrev_pressed && !back_pressed) || $.menu_pressed || onshow)      {
+        //if ((!last_started && !select_pressed && !nextPrev_pressed && !back_pressed) || $.menu_pressed || onshow)      {
+        //reset everything for very first display (either at program start or
+        //i.e. returning from menu)
+        if ( $.menu_pressed || onshow)      {
             //deBug("1",null);
             $.started = true;
             $.menu_pressed = false;
@@ -1889,8 +1919,8 @@ class SolarSystemBaseView extends WatchUi.View {
             sizey = 92f;
                     
             addy = 0f;
-            zoom_level = 0;
-            //deBug("restarting", null);
+            $.zoom_level = 0;
+            //deBug("restarting from scratch", null);
         }
 
         
@@ -1905,69 +1935,94 @@ class SolarSystemBaseView extends WatchUi.View {
             //deBug("2",null);
             var startStarField = true;
 
-            if ($.Options_Dict[COMPASSMOVE] && $.select_pressed) {
-                $.compassStarted = !$.compassStarted; // toggle compass movement on/off
-            } else {
+            //Select & Back do zoom/move view up when NOT 
+            //in compassmove mode
+            if (!$.Options_Dict[COMPASSMOVE] && $.select_pressed) 
+                {$.zoom_level += 1; }
 
-                if ($.select_pressed) {zoom_level += 1; }
-                else { zoom_level -= 1; }
-                zoom_level = zoom_level%5;
-            }
+            if (!$.Options_Dict[COMPASSMOVE] && $.back_pressed)     
+                { $.zoom_level -= 1; }
+            $.zoom_level = $.zoom_level%5;
 
+            $.last_compass_time = $.time_now.value();
+            
+            var compassNull = false;
 
+            //set VIEW DIRECTION from COMPASS
+            //only if that mode is on OR on the first view, first 
+            //after menu or other interruption, etc
+            if (moveFromCompass || $.heading_from_watch) {
+                //deBug("MFC0", null);
 
-            if (moveFromCompass) {
+                //deBug("moveFromCompass || $.heading_from_watch", null);
                 startStarField = false;
 
                 var sensorInfo = Sensor.getInfo();
                 
                 //var TESTINGHEADING = null;
-                var TESTINGHEADING=true;
+                
 
-                var heading_deg = 275;
+                if (TESTINGHEADING){ 
+                    //compassHeading_deg += Math.rand()%70 - 35;
+                    testDir_deg += 2;
+                    compassHeading_deg = testDir_deg;
+                }
 
                 if ((sensorInfo has :heading && sensorInfo.heading != null) || TESTINGHEADING) {
                     
-                    if (!TESTINGHEADING ) {heading_deg = 90 - Math.toDegrees(sensorInfo.heading);}
-                    heading_deg = Math.round( heading_deg/22.5) * 22.5; //quantize to nearest 1/16 direction, ie NNE
-                    if (!equal_fp(heading_deg, moveAz_deg)) {
-                        moveAz_deg = heading_deg;
-                        $.last_compass_time = $.time_now.value();
+                    if (!TESTINGHEADING ) {compassHeading_deg  = 90 - Math.toDegrees(sensorInfo.heading);}
+                    //deBug("moveFromCompass || $.heading_from_watch", [compassHeading_deg, sensorInfo.heading, moveAz_deg]);
+                    compassHeading_deg = Math.round( compassHeading_deg /22.5) * 22.5; //quantize to nearest 1/16 direction, ie NNE
+                    if (!equal_fp(compassHeading_deg, moveAz_deg)) {
+                        moveAz_deg = compassHeading_deg;
+                        
                         startStarField = true;
                     }
+                    //deBug("moveFromCompass || $.heading_from_watch", [compassHeading_deg, sensorInfo.heading, moveAz_deg]);
+                } else {
+                    compassNull = true;
                 }
+            }
             
-            
-            //set INCLINATION from compass
-               
+            var inclNull = false;
+            //set INCLINATION from compass - only if that mode is turned on
+            if (moveFromCompass) {
+                //deBug("MFC1", null);   
 
-                    var incl = calculateInclinationHeading();
+                    var incl = calculateInclinationHeading(TESTINGHEADING);
                     if (incl != null) 
                     {
-                        deBug("accel", incl);
+                        //deBug("accel", incl);
 
                         var old_addy = addy;
 
                         addy = 0;
-                        if (incl[0]>40) {
-                            if (zoom_level == 0) {
-                                addy = Math.round(( incl[0] - 40 )/22.5)*22.5;
+                        //if (incl[0]>$.incline_zero_deg) {
+                            if ($.zoom_level == 0) {
+                                addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/10)*10;
+                                //deBug("accel2", [old_addy, addy, $.incline_zero_deg]);
                                 if (addy<0) {addy = 0;}
-                                if (addy<45) {addy = 45;}
+                                if (addy>67.5) {addy = 67.5;}
                             } else {
-                                var fact = 65f/3.0;
-                                addy = Math.round(( incl[0] - 40 )/fact)*fact - 35f;
+                                //var fact = 65f/3.0;
+                                var fact = 7.0;
+                                addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/fact)*fact - 35f;
+                                //deBug("accel3", [old_addy, addy, $.incline_zero_deg]);
                                 if (addy<-35) {addy = -35;}
-                                if (addy>30) {addy = 30;}
+                                if (addy>45) {addy = 45;}
 
                             }
                         
-                        }
+                        //}
+
+                        //deBug("accel", [old_addy, addy, $.incline_zero_deg, Math.round(( incl[0] + $.incline_zero_deg - 40 )/22.5)*22.5, Math.round(( incl[0] + $.incline_zero_deg - 40 )/(65f/3.0))*(65f/3.0) - 35f ]);
 
                         if (old_addy != addy) {
                             startStarField = true;
-                            $.last_compass_time = $.time_now.value();
+                            //$.last_compass_time = $.time_now.value();
                         }
+                    } else {
+                        inclNull = true;
                     }
                     
 
@@ -1976,10 +2031,30 @@ class SolarSystemBaseView extends WatchUi.View {
                 
             }
 
+            if ($.nextPrev_pressed) {
+                startStarField = true;
+            }
+
+            //If we're not getting any readings from the watch compass
+            //we just 'press Stop'
+            if ((moveFromCompass || $.heading_from_watch) && 
+                (
+                    compassNull && inclNull
+                )
+            ){
+                //deBug ("no input from compass or accel, stopping autocompas", null);
+                $.compassStarted = false;
+                startStarField = true;
+            }
+
+            if (moveFromCompass && !startStarField && $.compassStarted) {
+                return;
+            }
+
             var fontAdd = 0;
             if ($.Options_Dict[ALLBOLDER]){ fontAdd =1;}
 
-            if (zoom_level == 0) {
+            if ($.zoom_level == 0) {
                 
                     starFont = Graphics.FONT_SMALL + fontAdd;
                     sizex =  92f;
@@ -1993,14 +2068,15 @@ class SolarSystemBaseView extends WatchUi.View {
                     sizex = 60f;
                     sizey = 60f;
                     if (!moveFromCompass ) 
-                        {addy = (zoom_level -1) * 65f/3.0 - 35f;
+                        {addy = ($.zoom_level -1) * 65f/3.0 - 35f;
                     }
                     starFont = Graphics.FONT_MEDIUM + fontAdd;
                     
    
             }
 
-            if (startStarField) {$.started = true;}
+            if (startStarField) {$.started = true;} 
+            //else {$.started = false;}
             $.nextPrev_pressed = false;
             $.select_pressed = false;
             $.back_pressed = false;
@@ -2043,7 +2119,7 @@ class SolarSystemBaseView extends WatchUi.View {
             started = true;
             last_started = true;
             tally2 = 0;
-            ppNextStar(true, null);
+            ppNextStar(true, null);  //resets the routine that steps through the star DB
             tally = 0;
             
             tally2_finished = false;
@@ -2051,6 +2127,11 @@ class SolarSystemBaseView extends WatchUi.View {
             tally3_finished = false;
             //save_moveAz_deg = moveAz_deg;
         }
+
+        /*if ($.started ) {
+            deBug("NOT STARTED!",null);
+            
+            return;} */
 
 
         
@@ -2179,7 +2260,7 @@ class SolarSystemBaseView extends WatchUi.View {
             }
 
 
-            var increment = 25;
+            var increment = 22;
             var first = tally;
             var last = tally + increment;
             if (last >= cc_name.size()) {

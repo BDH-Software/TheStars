@@ -6,6 +6,7 @@ import Toybox.System;
 var select_pressed = false;
 var back_pressed = false;
 var zoom_level=0;
+var incline_zero_deg as Lang.Float = 45;
 var nextPrev_pressed = false;
 var menu_pressed = false;
 
@@ -32,6 +33,14 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.exiting_back_button_firstpress=false;
         //if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
 
+        if ($.Options_Dict[COMPASSMOVE] ){
+
+                //$.zoom_level = 0;
+
+                $.incline_zero_deg = 45; 
+        } 
+        
+
         //$.started = !$.started;  
         //$.compassStarted = !$.compassStarted; // toggle compass movement on/off
         $.started = true;
@@ -52,7 +61,7 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.exiting_back_button_firstpress=false;
         //if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
 
-        if (zoom_level == 0) { return false; } //when back to ZOOM 0 one more back exits
+        if ($.zoom_level == 0) { return false; } //when back to ZOOM 0 one more back exits
 
         //$.started = !$.started;   
         $.started = true;
@@ -80,15 +89,20 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         
         $.run_oneTime = true; //in case we're stopped, it will run just once
         //if (buttonPresses == 1) {return;} //1st buttonpress just gets out of intro titles
-        nextPrev_pressed = true;
+        $.nextPrev_pressed = true;
         $.time_changed = false;
 
         //Moves left/right (non compass mode)
         //zooms in/out (compass mode)
 
-        if ($.Options_Dict[COMPASSMOVE] && $.compassStarted ){
-            if (type ==:next) {zoom_level = 0; }
-            else { zoom_level = 1; } 
+        if ($.Options_Dict[COMPASSMOVE]){
+            if (type ==:next) {
+                if ($.zoom_level == 0) {$.zoom_level = 1;}
+                else {$.zoom_level = 0;}
+            }
+            else { 
+                $.incline_zero_deg = mod($.incline_zero_deg +22.5,112.5); 
+            } 
         
             
         } else {
