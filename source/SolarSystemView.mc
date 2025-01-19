@@ -1707,6 +1707,18 @@ class SolarSystemBaseView extends WatchUi.View {
             //bottom = (5 - 1) * 18;
             bottom =  90 - 60/2.0; // center on zenith
         }
+
+        if ($.Options_Dict[COMPASSMOVE]) {
+            bottom = $.incline_zero_deg;
+            bottom = addy;
+            if (addy> 45)
+            {bottom = 90 - addy;}
+            if (zoom_level > 0 ) {
+                bottom = addy + 30;
+                if (addy> 30)  {bottom = 90 - addy;}
+            }
+        }
+        deBug("addy", [addy, bottom, addAz]);
         // #555555
         if (!$.Options_Dict[REVERSECOLORS]) {
             dc.setColor(0x999999, Graphics.COLOR_TRANSPARENT);
@@ -1716,13 +1728,15 @@ class SolarSystemBaseView extends WatchUi.View {
 
         var sFontHeight = dc.getFontHeight(1);
         var dirFont = starFont;
-        if ($.zoom_level > 0 || ( $.Options_Dict[COMPASSMOVE])) {
+        //if ($.zoom_level > 0 || ( $.Options_Dict[COMPASSMOVE])) {
           //var sFontHeight = dc.getFontHeight(1);
           dirFont = 1; //smallest
           //addtxt = " (";
           if  ($.Options_Dict[COMPASSMOVE]) {
             //addtxt += "C+" + $.incline_zero_deg.format("%0.0f");
-            addtxt += "C";// + $.incline_zero_deg.format("%0.0f");
+            addtxt += "C" + $.incline_zero_deg.format("%0.0f");
+          } else {
+            addtxt += "M";
           }
           //if  ($.Options_Dict[COMPASSMOVE] && $.zoom_level > 0){
           //      addtxt += " ";
@@ -1731,12 +1745,13 @@ class SolarSystemBaseView extends WatchUi.View {
           if ($.zoom_level > 0 && !$.Options_Dict[COMPASSMOVE]) {addtxt += $.zoom_level; }
           
           //addtxt += ") ";
-          dc.drawText(xc - 1*sFontHeight, 0.5*sFontHeight,dirFont,addtxt,Graphics.TEXT_JUSTIFY_CENTER);
+          dc.drawText(xc - 1*sFontHeight, 0.1*sFontHeight,dirFont,addtxt,Graphics.TEXT_JUSTIFY_CENTER);
 
-        }
+        //}
         var inc = 45;
 
-        if ($.zoom_level > 0 && $.zoom_level!=5) {
+        if (($.zoom_level > 0 && $.zoom_level!=5 && 
+          !$.Options_Dict[COMPASSMOVE]) || ($.Options_Dict[COMPASSMOVE] && $.mod(addAz,45) > 1)) {
             inc = 22.5;
             dirs = ["N",
                     "NNE",   
@@ -1845,6 +1860,7 @@ class SolarSystemBaseView extends WatchUi.View {
     var compassHeading_deg = 0;
     var TESTINGHEADING=true;
     var testDir_deg = 0;
+    var saveCompassHeading = null;
 
     //var cc;
     public function starField(dc) {
@@ -1863,7 +1879,7 @@ class SolarSystemBaseView extends WatchUi.View {
         //determines whether the starfield movement is updated continually
         //every 1 sec from compass & gyro input.  
         if (($.select_pressed ||  $.nextPrev_pressed ) && $.Options_Dict[COMPASSMOVE]) {    
-                $.compassStarted = !$.compassStarted; // toggle compass movement on/off
+                //$.compassStarted = !$.compassStarted; // toggle compass movement on/off
                 moveFromCompass = true;
         }
 
@@ -1968,9 +1984,13 @@ class SolarSystemBaseView extends WatchUi.View {
                     compassHeading_deg = testDir_deg;
                 }
 
-                if ((sensorInfo has :heading && sensorInfo.heading != null) || TESTINGHEADING) {
+                if (sensorInfo has :heading && sensorInfo.heading != null) {
+                    saveCompassHeading = sensorInfo.heading;
+                }
+
+                if ( TESTINGHEADING || saveCompassHeading != null) {
                     
-                    if (!TESTINGHEADING ) {compassHeading_deg  = 90 - Math.toDegrees(sensorInfo.heading);}
+                    if (!TESTINGHEADING ) {compassHeading_deg  = 90 - Math.toDegrees(saveCompassHeading);}
                     //deBug("moveFromCompass || $.heading_from_watch", [compassHeading_deg, sensorInfo.heading, moveAz_deg]);
                     compassHeading_deg = Math.round( compassHeading_deg /22.5) * 22.5; //quantize to nearest 1/16 direction, ie NNE
                     if (!equal_fp(compassHeading_deg, moveAz_deg)) {
@@ -2000,7 +2020,16 @@ class SolarSystemBaseView extends WatchUi.View {
                         //if (incl[0]>$.incline_zero_deg) {
                             if ($.zoom_level == 0) {
                                 addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/10)*10;
-                                //deBug("accel2", [old_addy, addy, $.incline_zero_deg]);
+                                deBug("accel2", [old_addy, addy, $.incline_zero_deg]);
+                                if (addy < 0) {
+                                    $.incline_zero_deg += (Math.ceil(addy.abs()/22.5)*22.5);
+                                    addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/10)*10;
+
+                                }
+                                if ($.incline_zero_deg == 0 && addy> 0) {
+                                    $.incline_zero_deg = -addy;
+                                    addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/10)*10;
+                                }
                                 if (addy<0) {addy = 0;}
                                 if (addy>67.5) {addy = 67.5;}
                             } else {
@@ -2008,6 +2037,12 @@ class SolarSystemBaseView extends WatchUi.View {
                                 var fact = 7.0;
                                 addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/fact)*fact - 35f;
                                 //deBug("accel3", [old_addy, addy, $.incline_zero_deg]);
+                                if ($.incline_zero_deg == 0 && addy> -35) {
+                                    $.incline_zero_deg = -addy;
+                                    addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/fact)*fact - 35f;
+                                }
+
+
                                 if (addy<-35) {addy = -35;}
                                 if (addy>45) {addy = 45;}
 
@@ -2043,13 +2078,13 @@ class SolarSystemBaseView extends WatchUi.View {
                 )
             ){
                 //deBug ("no input from compass or accel, stopping autocompas", null);
-                $.compassStarted = false;
+                //$.compassStarted = false;
                 startStarField = true;
             }
 
-            if (moveFromCompass && !startStarField && $.compassStarted) {
+            /*if (moveFromCompass && !startStarField && $.compassStarted) {
                 return;
-            }
+            }*/
 
             var fontAdd = 0;
             if ($.Options_Dict[ALLBOLDER]){ fontAdd =1;}

@@ -6,7 +6,7 @@ import Toybox.System;
 var select_pressed = false;
 var back_pressed = false;
 var zoom_level=0;
-var incline_zero_deg as Lang.Float = 45;
+var incline_zero_deg as Lang.Float = 0;
 var nextPrev_pressed = false;
 var menu_pressed = false;
 
@@ -34,10 +34,11 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
 
         if ($.Options_Dict[COMPASSMOVE] ){
+              System.println("compass move + incline+");
 
                 //$.zoom_level = 0;
 
-                $.incline_zero_deg = 45; 
+                $.incline_zero_deg = 0; 
         } 
         
 
@@ -96,12 +97,15 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //zooms in/out (compass mode)
 
         if ($.Options_Dict[COMPASSMOVE]){
-            if (type ==:next) {
+            if (type == :next) {
                 if ($.zoom_level == 0) {$.zoom_level = 1;}
                 else {$.zoom_level = 0;}
             }
             else { 
+                //System.println("prev button0 + incline+" + $.incline_zero_deg);
                 $.incline_zero_deg = mod($.incline_zero_deg +22.5,112.5); 
+
+                //System.println("prev button + incline+" + $.incline_zero_deg);
             } 
         
             

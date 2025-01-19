@@ -8,7 +8,7 @@ import Toybox.Application;
 import Toybox.System;
 import Toybox.Sensor;
 import Toybox.Math;
-
+var save_incl = null;
 var ciH_ret = 10;
 
     //pitch = rotation about watch 9-3 axis, ie, rotating forearm
@@ -32,6 +32,12 @@ var ciH_ret = 10;
             xAccel = accel[0];
             yAccel = accel[1];
             zAccel = accel[2];
+            save_incl = [xAccel,yAccel,zAccel ];
+        }  else if (save_incl != null) {
+            noData = false;
+            xAccel = save_incl[0];
+            yAccel = save_incl[1];
+            zAccel = save_incl[2];
         }
         else{
             noData = true;
