@@ -1751,7 +1751,11 @@ class SolarSystemBaseView extends WatchUi.View {
         var inc = 45;
 
         if (($.zoom_level > 0 && $.zoom_level!=5 && 
-          !$.Options_Dict[COMPASSMOVE]) || ($.Options_Dict[COMPASSMOVE] && $.mod(addAz,45) > 1)) {
+          !$.Options_Dict[COMPASSMOVE]) || ($.Options_Dict[COMPASSMOVE] && $.mod(addAz,45) > 1 && 
+            !($.zoom_level == 0 && (addy >= 38 && addy <= 52) ) &&
+            !($.zoom_level > 0 && addy>=22 && addy <= 38)) 
+          
+          ) {
             inc = 22.5;
             dirs = ["N",
                     "NNE",   
@@ -1788,9 +1792,11 @@ class SolarSystemBaseView extends WatchUi.View {
         for (var i = 0; i <= 360; i += inc) {
             var dir = dirs[Math.round(i/inc).toNumber()];
             
+            /*
             if (( $.Options_Dict[COMPASSMOVE] && $.compassStarted) &&
                 (normalize(((i+addAz)- 270)).abs() < inc/2.0) )
                 {dir += " (C)";}
+                */
 
             if ($.zoom_level == 4 && mod(i,90).abs() >0.001) {continue;}
             var x = Math.cos(Math.toRadians(i + addAz)) * (90.0 - offset - bottom); 
@@ -2026,7 +2032,7 @@ class SolarSystemBaseView extends WatchUi.View {
                                     addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/10)*10;
 
                                 }
-                                if ($.incline_zero_deg == 0 && addy> 0) {
+                                if ($.incline_zero_deg < 22.5 && addy> 0) {
                                     $.incline_zero_deg = -addy;
                                     addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/10)*10;
                                 }
@@ -2037,7 +2043,7 @@ class SolarSystemBaseView extends WatchUi.View {
                                 var fact = 7.0;
                                 addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/fact)*fact - 35f;
                                 //deBug("accel3", [old_addy, addy, $.incline_zero_deg]);
-                                if ($.incline_zero_deg == 0 && addy> -35) {
+                                if ($.incline_zero_deg <  22.5 && addy< -35) {
                                     $.incline_zero_deg = -addy;
                                     addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/fact)*fact - 35f;
                                 }
