@@ -930,7 +930,7 @@
 ]
 </jsonData>
 
-<jsonData id ="constellation_names">
+<jsonData id ="constellation_names_1">
 {
 "And" : "Andromeda",
 "Ant" : "Antlia",
@@ -971,7 +971,12 @@
 "For" : "Fornax",
 "Gem" : "Gemini",
 "Gru" : "Grus",
-"Her" : "Hercules",
+"Her" : "Hercules"
+}
+</jsonData>
+
+<jsonData id ="constellation_names_2">
+{
 "Hor" : "Horologium",
 "Hya" : "Hydra",
 "Hyi" : "Hydrus",

@@ -865,7 +865,9 @@ class SolarSystemBaseView extends WatchUi.View {
                 if ($.Options_Dict[REVERSECOLORS]) {
                     col = 0x500e62 ;
                     // #500e62  #200030 
-                    fillcol = 0x200030;
+                    // #a00ef2
+                    //fillcol = 0x200030;
+                    fillcol = 0xa00ef2;
                 }
                 break;
             case "Jupiter":
@@ -1169,7 +1171,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 if ($.Options_Dict[REVERSECOLORS] ) {
                     dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);   
                 }
-                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
+                //dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
                 y1 = y + size/12.0;             //
                 dc.drawLine(x, y1+3*size/5.5, x, y1-3*size/4);
                 drawARC (dc, 18, 6, x, y1 - 1*size/2.0, size*2/3.0, pen, null);
@@ -1718,7 +1720,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 if (addy> 30)  {bottom = 90 - addy;}
             }
         }
-        deBug("addy", [addy, bottom, addAz]);
+        //deBug("addy", [addy, bottom, addAz]);
         // #555555
         if (!$.Options_Dict[REVERSECOLORS]) {
             dc.setColor(0x999999, Graphics.COLOR_TRANSPARENT);
@@ -1864,7 +1866,10 @@ class SolarSystemBaseView extends WatchUi.View {
     var starFont = 1;
     var skipConst = false;
     var compassHeading_deg = 0;
+    (:release)
     var TESTINGHEADING=false;
+    (:debug)
+    var TESTINGHEADING=true;
     var testDir_deg = 0;
     var saveCompassHeading = null;
 
@@ -1994,6 +1999,11 @@ class SolarSystemBaseView extends WatchUi.View {
                     saveCompassHeading = sensorInfo.heading;
                 }
 
+                if (initialCompassHeading_deg != null) {
+                    saveCompassHeading = initialCompassHeading_deg;
+                    initialCompassHeading_deg = null;
+                }
+
                 if ( TESTINGHEADING || saveCompassHeading != null) {
                     
                     if (!TESTINGHEADING ) {compassHeading_deg  = 90 - Math.toDegrees(saveCompassHeading);}
@@ -2013,9 +2023,19 @@ class SolarSystemBaseView extends WatchUi.View {
             var inclNull = false;
             //set INCLINATION from compass - only if that mode is turned on
             if (moveFromCompass) {
-                //deBug("MFC1", null);   
+                //deBug("MFC1", null);
 
-                    var incl = calculateInclinationHeading(TESTINGHEADING);
+                     
+
+                    var incl = null;
+
+                    if (initialIncl != null) {
+                        incl = initialIncl;
+                        initialIncl = null;
+                    } else {
+                        incl = calculateInclinationHeading(TESTINGHEADING, dc);
+                    }
+
                     if (incl != null) 
                     {
                         //deBug("accel", incl);
@@ -2025,14 +2045,16 @@ class SolarSystemBaseView extends WatchUi.View {
                         addy = 0;
                         //if (incl[0]>$.incline_zero_deg) {
                             if ($.zoom_level == 0) {
-                                addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/10)*10;
-                                deBug("accel2", [old_addy, addy, $.incline_zero_deg]);
+                                addy = Math.round(( incl[1] + ($.incline_zero_deg-45 - 22.5)  )/10)*10;
+                                //deBug("accel2", [old_addy, addy, $.incline_zero_deg]);
                                 if (addy < 0) {
                                     $.incline_zero_deg += (Math.ceil(addy.abs()/22.5)*22.5);
                                     addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/10)*10;
 
+                                } else if (addy> 67.5) {
+                                    $.incline_zero_deg = 90;
                                 }
-                                if ($.incline_zero_deg < 22.5 && addy> 0) {
+                                if ($.incline_zero_deg < 22.5 && addy< 0) {
                                     $.incline_zero_deg = -addy;
                                     addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/10)*10;
                                 }
@@ -2041,11 +2063,13 @@ class SolarSystemBaseView extends WatchUi.View {
                             } else {
                                 //var fact = 65f/3.0;
                                 var fact = 7.0;
-                                addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/fact)*fact - 35f;
+                                addy = Math.round(( incl[1] + ($.incline_zero_deg-30 - 22.5)  )/fact)*fact - 35f;
                                 //deBug("accel3", [old_addy, addy, $.incline_zero_deg]);
                                 if ($.incline_zero_deg <  22.5 && addy< -35) {
                                     $.incline_zero_deg = -addy;
                                     addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/fact)*fact - 35f;
+                                } else if (addy> 45) {
+                                    $.incline_zero_deg = 90;
                                 }
 
 
@@ -2127,7 +2151,7 @@ class SolarSystemBaseView extends WatchUi.View {
             tally3_finished = false;
             tally = 0;
             tally2 = 0;
-            ppNextStar(true, null);
+            ppNextStar(true, null); //resets the star counter
 
 
         }
@@ -2298,6 +2322,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 dc.setColor(starColor,starBackgroundColor);
 
                 dc.clear();
+                //calculateInclinationHeading(false, dc);
             }
 
 

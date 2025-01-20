@@ -79,6 +79,8 @@ var pos_just_changed = false;
 var heading_from_watch = true;
 var last_compass_time = 0;
 var compassStarted = true;
+var initialCompassHeading_deg = null;
+var initialIncl = null;
 
 var show_intvl = 0; //whether or not to show current SPEED on display
 var animSinceModeChange = 0; //used to tell when to blank screen etc.
@@ -152,6 +154,16 @@ class SolarSystemBaseApp extends Application.AppBase {
         
 
         $.goodGPS = setPosition(null);
+
+        var sensorInfo = Sensor.getInfo();
+                
+
+
+        if (sensorInfo has :heading && sensorInfo.heading != null) {
+                    initialCompassHeading_deg = sensorInfo.heading;
+        }
+
+        initialIncl = calculateInclinationHeading(false, null);         
 
         //sunrise_cache = new sunRiseSet_cache2();        //works fine but not using it now..
         //System.println("inited...");

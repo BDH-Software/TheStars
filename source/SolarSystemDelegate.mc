@@ -38,7 +38,7 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
 
                 //$.zoom_level = 0;
 
-                $.incline_zero_deg = 0; 
+                $.incline_zero_deg = 22.5; 
         } 
         
 

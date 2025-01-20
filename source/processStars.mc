@@ -347,7 +347,13 @@ function processStars(){
     else {return;}
 
     if (hipp_finished && const_finished && !names_finished) {
-         pp_orig = WatchUi.loadResource( $.Rez.JsonData.constellation_names) as Dictionary;
+         pprez = [$.Rez.JsonData.constellation_names_1,
+            $.Rez.JsonData.constellation_names_2,                        
+            ];
+
+        for (var h=0; h < pprez.size(); h++) {
+         //pp_orig = WatchUi.loadResource( $.Rez.JsonData.constellation_names) as Dictionary;
+                pp_orig = WatchUi.loadResource( pprez[h]) as Dictionary;
                 //var kys = pp_orig.keys();
 
                 for (var i = 0; i<cc_name.size(); i++) {
@@ -364,6 +370,7 @@ function processStars(){
                 for (var i = 0; i<cc_name.size(); i++) {
                     deBug("NM", cc_name[i]);
                 }*/
+        }
                 names_finished = true;
 
     }
