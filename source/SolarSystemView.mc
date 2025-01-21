@@ -890,8 +890,13 @@ class SolarSystemBaseView extends WatchUi.View {
                 break;
             case "Uranus":
                 size =b_size *jup_size * 0.3627755289f;
-                col = Graphics.COLOR_BLUE;
-                fillcol = Graphics.COLOR_GREEN;
+                //col = Graphics.COLOR_BLUE;
+                //col = #1199ff
+                col = 0x1199ff;
+                //col = #77ff77
+                //fillcol = Graphics.COLOR_GREEN;
+                fillcol = 0x77ff77;
+
                 break;
          
             case "Moon":
@@ -1179,7 +1184,10 @@ class SolarSystemBaseView extends WatchUi.View {
             case "Uranus" :
                 
                 //dc.drawLine(x, y+4*size/5, x, y-4*size/5);
-                dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);                //
+                //col = #1199ff
+                //col = #0066cc
+                //dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);                
+                dc.setColor(0x0066cc, Graphics.COLOR_TRANSPARENT);                //
                 dc.fillCircle (x, y, size/3);  
                 if (size>4) {drawARC (dc, 0, 24, x, y,3*size/4.0, pen, null);}
                 break;

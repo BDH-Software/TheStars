@@ -56,7 +56,7 @@ var ciH_ret = 10;
         //tan theta = y/z, but then let's correct for the fact the gravity points
         //down but we want our elevation angle to be 0 when level and to to positive 90 at the zenith, then on the 180 at the opposite horizon.
         //Thus -y/-z.
-        var pitch_rad = Math.atan2(-yAccel, -zAccel); //this is rotation about the X axis, so pitch.
+        var pitch_rad = Math.atan2(-yAccel, -zAccel); //this is rotation about the X axis, so pitch.  But like an airplane, relative to the XYZ of the device, not the earth, actual horizon, etc.
 
         var roll_rad  = Math.atan2 (-xAccel, -zAccel);
 
