@@ -80,12 +80,12 @@ var ciH_ret = 10;
 
 
         //var rollRad = Math.atan2(-xAccel, zAccel);
-        var X_toVertical_rad = Math.PI - Math.atan2(-xAccel, -Math.sqrt(yAccel*yAccel + zAccel*zAccel));
+        var X_toVertical_rad = Math.PI - Math.atan2(xAccel, Math.sqrt(yAccel*yAccel + zAccel*zAccel));
         if (zAccel > 0) {X_toVertical_rad = (Math.PI - X_toVertical_rad);}
   
         //var inclinationRad = Math.atan(-Math.sqrt(Math.pow(Math.tan(Y_toVertical_rad), 2) + Math.pow(Math.tan(X_toVertical_rad), 2)));
 
-         var Z_toVertical_rad = Math.PI - Math.atan2(-zAccel, -Math.sqrt(xAccel*xAccel + yAccel*yAccel));
+         var Z_toVertical_rad = -Math.atan2(-zAccel, -Math.sqrt(xAccel*xAccel + yAccel*yAccel));
         if (yAccel > 0 || yAccel > 0 ) {Z_toVertical_rad = (Math.PI - Z_toVertical_rad);}
 
 
