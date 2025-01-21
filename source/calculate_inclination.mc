@@ -44,8 +44,8 @@ var ciH_ret = 10;
         else{
             noData = true;
             //test inputs
-            yAccel = Math.rand()%100-50;
-            xAccel = Math.rand()%1000-1000;
+            yAccel = Math.rand()%1000-500;
+            xAccel = Math.rand()%100-50;
             zAccel = Math.rand()%1500-1000;
         }
         //Axes: If watch is flat, face up, X is left-right (9oclock->3oclock positive direction), Y is forward-backward (6oclock-12oclock positive direction), Z is up-down (up positive direction)
@@ -64,35 +64,46 @@ var ciH_ret = 10;
         //This formula might needs some signs changed etc depending on the orientation you want ot consider "up" or level/0.
         //var inclination_rad = Math.atan2 (zAccel, Math.sqrt(xAccel*xAccel + yAccel*yAccel));
 
-        //var pitch_deg = normalize180(Math.toDegrees(pitch_rad));
-        //var roll_deg = normalize180(Math.toDegrees(roll_rad));
+        //var Y_toVertical_deg= normalize180(Math.toDegrees(pitch_rad));
+        //var X_toVertical_deg = normalize180(Math.toDegrees(roll_rad));
         
         //var inclination_deg = normalize180(Math.toDegrees(inclination_rad));
 
-        //deBug("PITCH", [inclination_deg, pitch_deg, roll_deg]);
+        //deBug("PITCH", [inclination_deg, Y_toVertical_deg, X_toVertical_deg]);
 
 
         
-        var pitchRad = Math.PI - Math.atan2(-yAccel, -Math.sqrt(xAccel*xAccel + zAccel*zAccel));
-        if (zAccel > 0) {pitchRad = (Math.PI - pitchRad);}
+        var Y_toVertical_rad = Math.PI - Math.atan2(-yAccel, -Math.sqrt(xAccel*xAccel + zAccel*zAccel));
+        if (zAccel > 0) {Y_toVertical_rad = (Math.PI - Y_toVertical_rad);}
+
+        //var Y_toVertical2_rad =Math.asin(yAccel/Math.sqrt(xAccel*xAccel + zAccel*zAccel + yAccel*yAccel));  //This will work but needs some adjustment to convert to Decl degrees.  Gives same answer as atan2 method
+
+
         //var rollRad = Math.atan2(-xAccel, zAccel);
-        var rollRad = Math.PI - Math.atan2(-xAccel, -Math.sqrt(yAccel*yAccel + zAccel*zAccel));
-        if (zAccel > 0) {rollRad = (Math.PI - rollRad);}
+        var X_toVertical_rad = Math.PI - Math.atan2(-xAccel, -Math.sqrt(yAccel*yAccel + zAccel*zAccel));
+        if (zAccel > 0) {X_toVertical_rad = (Math.PI - X_toVertical_rad);}
   
-        var inclinationRad = Math.atan(-Math.sqrt(Math.pow(Math.tan(pitchRad), 2) + Math.pow(Math.tan(rollRad), 2)));
+        //var inclinationRad = Math.atan(-Math.sqrt(Math.pow(Math.tan(Y_toVertical_rad), 2) + Math.pow(Math.tan(X_toVertical_rad), 2)));
+
+         var Z_toVertical_rad = Math.PI - Math.atan2(-zAccel, -Math.sqrt(xAccel*xAccel + yAccel*yAccel));
+        if (yAccel > 0 || yAccel > 0 ) {Z_toVertical_rad = (Math.PI - Z_toVertical_rad);}
+
+
    
         
-        var pitch_deg = normalize180(Math.toDegrees(pitchRad));
-        var roll_deg = normalize180(Math.toDegrees(rollRad));
+        var Y_toVertical_deg= normalize180(Math.toDegrees(Y_toVertical_rad));
+        //var Y_toVertical2_deg= normalize180(Math.toDegrees(Y_toVertical2_rad));
+        var X_toVertical_deg = normalize180(Math.toDegrees(X_toVertical_rad));
+        var Z_toVertical_deg= normalize180(Math.toDegrees(Z_toVertical_rad));
         
-        var inclination_deg = normalize180(Math.toDegrees(inclinationRad));
+        //var inclination_deg = normalize180(Math.toDegrees(inclinationRad));
 
-/*
-        deBug("Accel", [xAccel, yAccel, zAccel]);
-        deBug("PITCH", [inclination_deg, pitch_deg, roll_deg]);
+
+        deBug("Accel", [xAccel, yAccel,  zAccel]); 
+        deBug("PITCH", [X_toVertical_deg, Y_toVertical_deg, Z_toVertical_deg, ]);
 
  
-        
+        /*        
         if (dc != null) {
             
             var xc = dc.getWidth() / 2;
@@ -101,7 +112,7 @@ var ciH_ret = 10;
             var font = Graphics.FONT_SYSTEM_MEDIUM;
             var textHeight = dc.getFontHeight(font);
 
-            var  txt1 = inclination_deg.format("%.0f") + " " + pitch_deg.format("%.0f") + " " + roll_deg.format("%.0f");
+            var  txt1 = inclination_deg.format("%.0f") + " " + Y_toVertical_deg.format("%.0f") + " " + X_toVertical_deg.format("%.0f");
 
                     dc.drawText(
                         xc, 
@@ -127,7 +138,7 @@ var ciH_ret = 10;
             );
             */
             /*
-            var txt3 = pitch_deg.format("%.0f") + " " + xAccel.format("%.0f") + " " + yAccel.format("%.0f") + " " + zAccel.format("%.0f");
+            var txt3 = Y_toVertical_deg.format("%.0f") + " " + xAccel.format("%.0f") + " " + yAccel.format("%.0f") + " " + zAccel.format("%.0f");
 
             dc.drawText(
                         xc, 
@@ -148,10 +159,10 @@ var ciH_ret = 10;
         //if (DEBUG) { return [0,6,0];}
         if (!DEBUG && noData) { return null;}
         //if (DEBUG && noData) { return [Math.rand()%180-90, Math.rand()%180-90, Math.rand()%180-90]; }
-        ciH_ret +=2;
-        ciH_ret = ciH_ret%180;
-        if (DEBUG && noData) { return [ciH_ret, Math.rand()%180-90, Math.rand()%180-90]; }
-        return [inclination_deg, pitch_deg, roll_deg];
+        //ciH_ret +=2;
+        //ciH_ret = ciH_ret%180;
+        //if (DEBUG && noData) { return [ciH_ret, Math.rand()%180-90, Math.rand()%180-90]; }
+        return [ Y_toVertical_deg, X_toVertical_deg, Z_toVertical_deg]; //the order they are listed in the MENU OPTION for COMPASSPOINT
         //return [pitch];
     }
 

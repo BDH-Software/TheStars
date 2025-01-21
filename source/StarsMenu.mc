@@ -84,7 +84,7 @@ class StarsMenu extends WatchUi.Menu2 {
         
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.compassMove) as String, null, COMPASSMOVE, $.Options_Dict[COMPASSMOVE], null));
 
-        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.compassPoint) as String, null, COMPASSPOINT, $.Options_Dict[COMPASSPOINT], null));   
+        Menu2.addItem(new WatchUi.MenuItem(WatchUi.loadResource($.Rez.Strings.compassPoint) as String,(WatchUi.loadResource($.Rez.JsonData.compassPoint_options) as Array)[ $.Options_Dict[COMPASSPOINT]], COMPASSPOINT, {}));   
         
 
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.constLines) as String, null, CONSTLINES, $.Options_Dict[CONSTLINES], null));   
@@ -200,7 +200,12 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
         } else 
 
         if (menuItem instanceof MenuItem) {    
-            
+            if (ret != null && ret.equals(COMPASSPOINT)) {
+
+                $.Options_Dict[COMPASSPOINT] = ($.Options_Dict[COMPASSPOINT]  + 1 ) %3;
+                menuItem.setSubLabel((WatchUi.loadResource($.Rez.JsonData.compassPoint_options) as Array)[ $.Options_Dict[COMPASSPOINT]]);           
+                
+            } else
 
             if (ret != null && ret.equals(ADDHOURS)) {
 
@@ -346,7 +351,7 @@ function readStorageValues(){
     Storage.setValue(COMPASSMOVE,$.Options_Dict[COMPASSMOVE]); 
 
     temp = Storage.getValue(COMPASSPOINT);
-    $.Options_Dict[COMPASSPOINT] = temp != null ? (temp == true) : false; //last one is the default
+    $.Options_Dict[COMPASSPOINT] = (temp != null && temp instanceof Number) ? (temp) : 0; //last one is the default
     Storage.setValue(COMPASSPOINT,$.Options_Dict[COMPASSPOINT]); 
 
     temp = Storage.getValue(CONSTLINES);

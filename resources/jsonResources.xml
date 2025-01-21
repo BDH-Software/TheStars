@@ -1028,4 +1028,13 @@
 }
 </jsonData>
 
+<jsonData id ="compassPoint_options">
+[
+ "6=&gt;12 axis",
+ "9=&gt;3 axis",
+ "Straight thru the display"
+
+]
+</jsonData>
+
 </jsonDataResources>

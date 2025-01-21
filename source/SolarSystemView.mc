@@ -2020,7 +2020,7 @@ class SolarSystemBaseView extends WatchUi.View {
                     
                     if (!TESTINGHEADING ) {
                         compassHeading_deg  = 90 - Math.toDegrees(saveCompassHeading);
-                        if ($.Options_Dict[COMPASSPOINT]) {compassHeading_deg -= 90;} //aim with  arm, like along 9=>3 clock axis on watch (X axis for pointer)
+                        if ($.Options_Dict[COMPASSPOINT] == 1) {compassHeading_deg -= 90;} //aim with  arm, like along 9=>3 clock axis on watch (X axis for pointer)
                     }
                     //deBug("moveFromCompass || $.heading_from_watch", [compassHeading_deg, sensorInfo.heading, moveAz_deg]);
                     if (!moveFromCompass) {compassHeading_deg = Math.round( compassHeading_deg /22.5) * 22.5; }//quantize to nearest 1/16 direction, ie NNE
@@ -2060,8 +2060,9 @@ class SolarSystemBaseView extends WatchUi.View {
 
                         addy = 0;
 
-                        var inc = incl[1];
-                        if ($.Options_Dict[COMPASSPOINT]) {inc = incl[2];}
+                        var inc = incl[0];
+                        if ($.Options_Dict[COMPASSPOINT] != null && $.Options_Dict[COMPASSPOINT] instanceof Number && $.Options_Dict[COMPASSPOINT] >=0 && $.Options_Dict[COMPASSPOINT] <3) {inc = incl[$.Options_Dict[COMPASSPOINT]];}
+                        deBug ("compaspt", [ $.Options_Dict[COMPASSPOINT], inc,incl]);
                         //if (incl[0]>$.incline_zero_deg) {
                             if ($.zoom_level == 0) {
                                 addy = ( inc + ($.incline_zero_deg-45 - 22.5)  );
