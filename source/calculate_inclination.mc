@@ -130,7 +130,7 @@ var ciH_ret = 10;
         */
         
 
-
+        if (DEBUG) { return [0,6,0];}
         if (!DEBUG && noData) { return null;}
         //if (DEBUG && noData) { return [Math.rand()%180-90, Math.rand()%180-90, Math.rand()%180-90]; }
         ciH_ret +=2;

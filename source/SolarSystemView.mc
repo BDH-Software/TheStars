@@ -1974,6 +1974,9 @@ class SolarSystemBaseView extends WatchUi.View {
             //in compassmove mode
             if (!$.Options_Dict[COMPASSMOVE] && $.select_pressed) 
                 {$.zoom_level += 1; }
+            else if ($.Options_Dict[COMPASSMOVE] && $.select_pressed)  {
+
+            }
 
             if (!$.Options_Dict[COMPASSMOVE] && $.back_pressed)     
                 { $.zoom_level -= 1; }
@@ -2000,7 +2003,8 @@ class SolarSystemBaseView extends WatchUi.View {
                 if (TESTINGHEADING){ 
                     //compassHeading_deg += Math.rand()%70 - 35;
                     testDir_deg += 2;
-                    compassHeading_deg = testDir_deg;
+                    //compassHeading_deg = testDir_deg;
+                    compassHeading_deg = -(355 - 90);
                 }
 
                 if (sensorInfo has :heading && sensorInfo.heading != null) {
@@ -2015,14 +2019,14 @@ class SolarSystemBaseView extends WatchUi.View {
                 if ( TESTINGHEADING || saveCompassHeading != null) {
                     
                     if (!TESTINGHEADING ) {compassHeading_deg  = 90 - Math.toDegrees(saveCompassHeading);}
-                    //deBug("moveFromCompass || $.heading_from_watch", [compassHeading_deg, sensorInfo.heading, moveAz_deg]);
-                    compassHeading_deg = Math.round( compassHeading_deg /22.5) * 22.5; //quantize to nearest 1/16 direction, ie NNE
+                    deBug("moveFromCompass || $.heading_from_watch", [compassHeading_deg, sensorInfo.heading, moveAz_deg]);
+                    if (!moveFromCompass) {compassHeading_deg = Math.round( compassHeading_deg /22.5) * 22.5; }//quantize to nearest 1/16 direction, ie NNE
                     if (!equal_fp(compassHeading_deg, moveAz_deg)) {
                         moveAz_deg = compassHeading_deg;
                         
                         startStarField = true;
                     }
-                    //deBug("moveFromCompass || $.heading_from_watch", [compassHeading_deg, sensorInfo.heading, moveAz_deg]);
+                    deBug("moveFromCompass || $.heading_from_watch", [compassHeading_deg, sensorInfo.heading, moveAz_deg]);
                 } else {
                     compassNull = true;
                 }
@@ -2034,6 +2038,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 //deBug("MFC1", null);
 
                      
+                    deBug("testingH", TESTINGHEADING);
 
                     var incl = null;
 
@@ -2046,15 +2051,19 @@ class SolarSystemBaseView extends WatchUi.View {
 
                     if (incl != null) 
                     {
-                        //deBug("accel", incl);
+                        deBug("accel", incl);
 
                         var old_addy = addy;
 
                         addy = 0;
                         //if (incl[0]>$.incline_zero_deg) {
                             if ($.zoom_level == 0) {
-                                addy = Math.round(( incl[1] + ($.incline_zero_deg-45 - 22.5)  )/10)*10;
-                                //deBug("accel2", [old_addy, addy, $.incline_zero_deg]);
+                                addy = ( incl[1] + ($.incline_zero_deg-45 - 22.5)  );
+                                if (!moveFromCompass) {
+                                    addy = Math.round(addy / 22.5) * 22.5;
+                                }
+                                deBug("accel2", [old_addy, addy, $.incline_zero_deg]);
+                                /*
                                 if (addy < 0) {
                                     $.incline_zero_deg += (Math.ceil(addy.abs()/22.5)*22.5);
                                     addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/10)*10;
@@ -2066,13 +2075,23 @@ class SolarSystemBaseView extends WatchUi.View {
                                     $.incline_zero_deg = -addy;
                                     addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/10)*10;
                                 }
-                                if (addy<0) {addy = 0;}
-                                if (addy>67.5) {addy = 67.5;}
+                                */
+                                if (moveFromCompass ) {
+                                    if (addy<-45) {addy = -45;}
+                                    if (addy>180) {addy = 180;}
+
+                                } else {
+                                    if (addy<0) {addy = 0;}
+                                    if (addy>67.5) {addy = 67.5;}
+                                }
                             } else {
                                 //var fact = 65f/3.0;
                                 var fact = 7.0;
-                                addy = Math.round(( incl[1] + ($.incline_zero_deg-30 - 22.5)  )/fact)*fact - 35f;
-                                //deBug("accel3", [old_addy, addy, $.incline_zero_deg]);
+                                addy = ( incl[1] + ($.incline_zero_deg-30 - 22.5)  ) - 30f;
+                                if (!moveFromCompass) {
+                                    addy = Math.round(addy/fact) * fact;
+                                }
+                                deBug("accel3", [old_addy, addy, $.incline_zero_deg]);
                                 if ($.incline_zero_deg <  22.5 && addy< -35) {
                                     $.incline_zero_deg = -addy;
                                     addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/fact)*fact - 35f;
@@ -2080,9 +2099,14 @@ class SolarSystemBaseView extends WatchUi.View {
                                     $.incline_zero_deg = 90;
                                 }
 
+                                if (moveFromCompass ) {
+                                    if (addy<-65) {addy = -65;}
+                                    if (addy>180) {addy = 180;}
 
-                                if (addy<-35) {addy = -35;}
-                                if (addy>45) {addy = 45;}
+                                } else {
+                                    if (addy<-35) {addy = -35;}
+                                    if (addy>45) {addy = 45;}
+                                }
 
                             }
                         
