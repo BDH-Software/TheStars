@@ -203,7 +203,8 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
             if (ret != null && ret.equals(COMPASSPOINT)) {
 
                 $.Options_Dict[COMPASSPOINT] = ($.Options_Dict[COMPASSPOINT]  + 1 ) %3;
-                menuItem.setSubLabel((WatchUi.loadResource($.Rez.JsonData.compassPoint_options) as Array)[ $.Options_Dict[COMPASSPOINT]]);           
+                menuItem.setSubLabel((WatchUi.loadResource($.Rez.JsonData.compassPoint_options) as Array)[ $.Options_Dict[COMPASSPOINT]]);
+                Storage.setValue(ret, $.Options_Dict[COMPASSPOINT]);
                 
             } else
 

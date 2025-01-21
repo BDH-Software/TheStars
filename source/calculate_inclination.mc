@@ -44,8 +44,8 @@ var ciH_ret = 10;
         else{
             noData = true;
             //test inputs
-            yAccel = Math.rand()%1000-500;
-            xAccel = Math.rand()%100-50;
+            yAccel = Math.rand()%100-50;
+            xAccel = Math.rand()%1500-1000;
             zAccel = Math.rand()%1500-1000;
         }
         //Axes: If watch is flat, face up, X is left-right (9oclock->3oclock positive direction), Y is forward-backward (6oclock-12oclock positive direction), Z is up-down (up positive direction)
@@ -80,7 +80,7 @@ var ciH_ret = 10;
 
 
         //var rollRad = Math.atan2(-xAccel, zAccel);
-        var X_toVertical_rad = Math.PI - Math.atan2(xAccel, Math.sqrt(yAccel*yAccel + zAccel*zAccel));
+        var X_toVertical_rad =   Math.atan2(Math.sqrt(yAccel*yAccel + zAccel*zAccel), xAccel) - Math.PI/2.0;
         if (zAccel > 0) {X_toVertical_rad = (Math.PI - X_toVertical_rad);}
   
         //var inclinationRad = Math.atan(-Math.sqrt(Math.pow(Math.tan(Y_toVertical_rad), 2) + Math.pow(Math.tan(X_toVertical_rad), 2)));
@@ -162,7 +162,8 @@ var ciH_ret = 10;
         //ciH_ret +=2;
         //ciH_ret = ciH_ret%180;
         //if (DEBUG && noData) { return [ciH_ret, Math.rand()%180-90, Math.rand()%180-90]; }
-        return [ Y_toVertical_deg, X_toVertical_deg, Z_toVertical_deg]; //the order they are listed in the MENU OPTION for COMPASSPOINT
+        //return [ Y_toVertical_deg, X_toVertical_deg, Z_toVertical_deg]; //the order they are listed in the MENU OPTION for COMPASSPOINT
+        return [ Y_toVertical_deg, X_toVertical_deg, Y_toVertical_deg - 90]; //the order they are listed in the MENU OPTION for COMPASSPOINT
         //return [pitch];
     }
 
