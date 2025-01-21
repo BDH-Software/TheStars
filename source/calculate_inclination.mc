@@ -44,9 +44,9 @@ var ciH_ret = 10;
         else{
             noData = true;
             //test inputs
-            xAccel = Math.rand()%2000-1000;
-            yAccel = Math.rand()%2000-1000;
-            zAccel = Math.rand()%2000-1000;
+            xAccel = Math.rand()%100-50;
+            yAccel = Math.rand()%1000-1000;
+            zAccel = Math.rand()%1500-1000;
         }
         //Axes: If watch is flat, face up, X is left-right (9oclock->3oclock positive direction), Y is forward-backward (6oclock-12oclock positive direction), Z is up-down (up positive direction)
         //No in absence of movement, accel will measure the gravitation vector, which is pointing straight down, so negative Z.  Unit is millig, so 1000g = earth gravity.  Since it is pointing down, with the watch face up, the Z component is  -1000 millig.
@@ -56,29 +56,42 @@ var ciH_ret = 10;
         //tan theta = y/z, but then let's correct for the fact the gravity points
         //down but we want our elevation angle to be 0 when level and to to positive 90 at the zenith, then on the 180 at the opposite horizon.
         //Thus -y/-z.
-        var pitch_rad = Math.atan2(-yAccel, -zAccel); //this is rotation about the X axis, so pitch.  But like an airplane, relative to the XYZ of the device, not the earth, actual horizon, etc.
+        //var pitch_rad = Math.atan2(-yAccel, -zAccel); //this is rotation about the X axis, so pitch.  But like an airplane, relative to the XYZ of the device, not the earth, actual horizon, etc.
 
-        var roll_rad  = Math.atan2 (-xAccel, -zAccel);
+        //var roll_rad  = Math.atan2 (-xAccel, -zAccel);
 
         //inclination is the overall slope of the watch face, highest point of the watch face to lowest point, and the angle that makes with the verticle.
         //This formula might needs some signs changed etc depending on the orientation you want ot consider "up" or level/0.
-        var inclination_rad = Math.atan2 (zAccel, Math.sqrt(xAccel*xAccel + yAccel*yAccel));
+        //var inclination_rad = Math.atan2 (zAccel, Math.sqrt(xAccel*xAccel + yAccel*yAccel));
 
-        var pitch_deg = normalize180(Math.toDegrees(pitch_rad));
-        var roll_deg = normalize180(Math.toDegrees(roll_rad));
+        //var pitch_deg = normalize180(Math.toDegrees(pitch_rad));
+        //var roll_deg = normalize180(Math.toDegrees(roll_rad));
         
-        var inclination_deg = normalize180(Math.toDegrees(inclination_rad));
+        //var inclination_deg = normalize180(Math.toDegrees(inclination_rad));
 
         //deBug("PITCH", [inclination_deg, pitch_deg, roll_deg]);
 
 
-        /*
-        var pitchRad = Math.atan2(yAccel, Math.sqrt(xAccel*xAccel + zAccel*zAccel));
-        var rollRad = Math.atan2(-xAccel, zAccel);
-        var inclinationRad = Math.atan(Math.sqrt(Math.pow(Math.tan(pitchRad), 2) + Math.pow(Math.tan(rollRad), 2)));
-        */
+        
+        var pitchRad = Math.PI - Math.atan2(-yAccel, -Math.sqrt(xAccel*xAccel + zAccel*zAccel));
+        if (zAccel > 0) {pitchRad = (Math.PI - pitchRad);}
+        //var rollRad = Math.atan2(-xAccel, zAccel);
+        var rollRad = Math.atan2(-xAccel, Math.sqrt(yAccel*yAccel + zAccel*zAccel));
+  
+        var inclinationRad = Math.atan(-Math.sqrt(Math.pow(Math.tan(pitchRad), 2) + Math.pow(Math.tan(rollRad), 2)));
+   
+        
+        var pitch_deg = normalize180(Math.toDegrees(pitchRad));
+        var roll_deg = normalize180(Math.toDegrees(rollRad));
+        
+        var inclination_deg = normalize180(Math.toDegrees(inclinationRad));
+
+/*
+        deBug("Accel", [xAccel, yAccel, zAccel]);
+        deBug("PITCH", [inclination_deg, pitch_deg, roll_deg]);
+
  
-        /*
+        
         if (dc != null) {
             
             var xc = dc.getWidth() / 2;
@@ -129,8 +142,9 @@ var ciH_ret = 10;
         }
         */
         
+        
 
-        if (DEBUG) { return [0,6,0];}
+        //if (DEBUG) { return [0,6,0];}
         if (!DEBUG && noData) { return null;}
         //if (DEBUG && noData) { return [Math.rand()%180-90, Math.rand()%180-90, Math.rand()%180-90]; }
         ciH_ret +=2;
