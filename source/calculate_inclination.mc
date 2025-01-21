@@ -44,8 +44,8 @@ var ciH_ret = 10;
         else{
             noData = true;
             //test inputs
-            xAccel = Math.rand()%100-50;
-            yAccel = Math.rand()%1000-1000;
+            yAccel = Math.rand()%100-50;
+            xAccel = Math.rand()%1000-1000;
             zAccel = Math.rand()%1500-1000;
         }
         //Axes: If watch is flat, face up, X is left-right (9oclock->3oclock positive direction), Y is forward-backward (6oclock-12oclock positive direction), Z is up-down (up positive direction)
@@ -76,7 +76,8 @@ var ciH_ret = 10;
         var pitchRad = Math.PI - Math.atan2(-yAccel, -Math.sqrt(xAccel*xAccel + zAccel*zAccel));
         if (zAccel > 0) {pitchRad = (Math.PI - pitchRad);}
         //var rollRad = Math.atan2(-xAccel, zAccel);
-        var rollRad = Math.atan2(-xAccel, Math.sqrt(yAccel*yAccel + zAccel*zAccel));
+        var rollRad = Math.PI - Math.atan2(-xAccel, -Math.sqrt(yAccel*yAccel + zAccel*zAccel));
+        if (zAccel > 0) {rollRad = (Math.PI - rollRad);}
   
         var inclinationRad = Math.atan(-Math.sqrt(Math.pow(Math.tan(pitchRad), 2) + Math.pow(Math.tan(rollRad), 2)));
    

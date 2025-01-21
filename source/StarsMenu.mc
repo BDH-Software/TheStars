@@ -23,6 +23,7 @@ enum {
     CONSTNAMEHELP1,
     LONGNAMES,
     COMPASSMOVE,
+    COMPASSPOINT,
     GPSOPTION= 115, //giving these new numbers so they won't read anything old in the storage
     LATOPTION= 116, // "
     LONOPTION= 117, // "
@@ -81,7 +82,9 @@ class StarsMenu extends WatchUi.Menu2 {
         Menu2.initialize({:title=>WatchUi.loadResource($.Rez.Strings.settingsTitle) as String});
         
         
-        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.compassMove) as String, null, COMPASSMOVE, $.Options_Dict[COMPASSMOVE], null));   
+        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.compassMove) as String, null, COMPASSMOVE, $.Options_Dict[COMPASSMOVE], null));
+
+        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.compassPoint) as String, null, COMPASSPOINT, $.Options_Dict[COMPASSPOINT], null));   
         
 
         Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.constLines) as String, null, CONSTLINES, $.Options_Dict[CONSTLINES], null));   
@@ -341,6 +344,10 @@ function readStorageValues(){
     var temp = Storage.getValue(COMPASSMOVE);
     $.Options_Dict[COMPASSMOVE] = temp != null ? (temp == true) : false; //last one is the default
     Storage.setValue(COMPASSMOVE,$.Options_Dict[COMPASSMOVE]); 
+
+    temp = Storage.getValue(COMPASSPOINT);
+    $.Options_Dict[COMPASSPOINT] = temp != null ? (temp == true) : false; //last one is the default
+    Storage.setValue(COMPASSPOINT,$.Options_Dict[COMPASSPOINT]); 
 
     temp = Storage.getValue(CONSTLINES);
     $.Options_Dict[CONSTLINES] = temp != null ? (temp == true) : true; //last one is the default

@@ -34,7 +34,7 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
 
         if ($.Options_Dict[COMPASSMOVE] ){
-              System.println("compass move + incline+");
+              //System.println("compass move + incline+");
 
                 //$.zoom_level = 0;
 
