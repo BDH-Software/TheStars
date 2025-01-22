@@ -45,6 +45,7 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.started = !$.started;  
         //$.compassStarted = !$.compassStarted; // toggle compass movement on/off
         $.started = true;
+        solarSystemView_class.startAnimationTimer($.hz);
         select_pressed = true;
         $.time_changed = false;
         return true;
@@ -62,10 +63,11 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.exiting_back_button_firstpress=false;
         //if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
 
-        if ($.zoom_level == 0) { return false; } //when back to ZOOM 0 one more back exits
+        if ($.zoom_level == 0 || $.Options_Dict[COMPASSPOINT] > 0) { return false; } //when back to ZOOM 0 one more back exits
 
         //$.started = !$.started;   
         $.started = true;
+        solarSystemView_class.startAnimationTimer($.hz);
         back_pressed = true;
         $.time_changed = false;
         return true;
@@ -78,8 +80,6 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.show_intvl = false;
         //_mainview.$.time_add_hrs -= _mainview.time_add_inc;
         //var mult = (type == :next) ? -1 : 1; //forward OR back dep on button
-
-        started = true;
 
         //System.println("onNextPage..." + mult + " " + type);
         $.buttonPresses++; 
@@ -114,8 +114,8 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
             else {moveAz_deg +=22.5;}                             
         }
 
-      
-
+        started = true;
+        solarSystemView_class.startAnimationTimer($.hz);
     }
         
 

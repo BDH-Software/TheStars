@@ -84,7 +84,7 @@ var initialIncl = null;
 
 var show_intvl = 0; //whether or not to show current SPEED on display
 var animSinceModeChange = 0; //used to tell when to blank screen etc.
-//var solarSystemView_class as SolarSystemBaseView?; //saved instance of main class 
+var solarSystemView_class as SolarSystemBaseView?; //saved instance of main class 
 //var solarSystemDelegate_class as SolarSystemBaseDelegate?; //saved instance of main class
 
 //var SolarSystemBaseApp_class as SolarSystemBaseApp?;
@@ -257,9 +257,11 @@ class SolarSystemBaseApp extends Application.AppBase {
         /*
         _solarSystemView = new $.SolarSystemBaseView();
         //solarSystemView_class = _solarSystemView;
+        
         _solarSystemDelegate = new $.SolarSystemBaseDelegate(_solarSystemView);
         */
-        return [new $.SolarSystemBaseView(), new $.SolarSystemBaseDelegate()];
+        solarSystemView_class = new $.SolarSystemBaseView();
+        return [solarSystemView_class, new $.SolarSystemBaseDelegate()];
         //return [_solarSystemView, _solarSystemDelegate];
         //_solarSystemDelegate = null;
         //_solarSystemView = null;

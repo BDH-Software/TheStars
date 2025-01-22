@@ -2015,7 +2015,9 @@ class SolarSystemBaseView extends WatchUi.View {
                     compassHeading_deg = -(355 - 90);
                 }
 
-                if (sensorInfo has :heading && sensorInfo.heading != null) {
+                if ($.nextPrev_pressed && save_incl != saveCompassHeading) {
+                    //we'll just used the saved compass heading
+                } else if (sensorInfo has :heading && sensorInfo.heading != null) {
                     saveCompassHeading = sensorInfo.heading;
                 }
 
@@ -2058,6 +2060,10 @@ class SolarSystemBaseView extends WatchUi.View {
                         initialIncl = null;
                     } else {
                         incl = calculateInclinationHeading(TESTINGHEADING, dc);
+                    }
+
+                    if ($.nextPrev_pressed && save_incl != null) {
+                        incl = save_incl; //if we are in next/prev mode, we don't change the view direction or elevation, just adjust upd/down or zoom
                     }
 
                     if (incl != null) 
@@ -2510,6 +2516,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
         if (tally2_finished && tally_finished && tally3_finished) {
             $.started = false;
+            stopAnimationTimer();
         }
 
         
