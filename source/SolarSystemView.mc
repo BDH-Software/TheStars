@@ -2061,7 +2061,11 @@ class SolarSystemBaseView extends WatchUi.View {
                         addy = 0;
 
                         var inc = incl[0];
-                        if ($.Options_Dict[COMPASSPOINT] != null && $.Options_Dict[COMPASSPOINT] instanceof Number && $.Options_Dict[COMPASSPOINT] >=0 && $.Options_Dict[COMPASSPOINT] <3) {inc = incl[$.Options_Dict[COMPASSPOINT]];}
+                        if ($.Options_Dict[COMPASSPOINT] != null && $.Options_Dict[COMPASSPOINT] instanceof Number && $.Options_Dict[COMPASSPOINT] >=0 && $.Options_Dict[COMPASSPOINT] <3) {
+                            inc = incl[$.Options_Dict[COMPASSPOINT]];
+
+                            if ($.Options_Dict[COMPASSPOINT] == 2) {inc += 15;} //slight "boost" to the angle for the straight-thru-the-screen option
+                        }
                         deBug ("compaspt", [ $.Options_Dict[COMPASSPOINT], inc,incl]);
                         //if (incl[0]>$.incline_zero_deg) {
                             if ($.zoom_level == 0) {

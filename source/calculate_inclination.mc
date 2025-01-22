@@ -162,8 +162,8 @@ var ciH_ret = 10;
         //ciH_ret +=2;
         //ciH_ret = ciH_ret%180;
         //if (DEBUG && noData) { return [ciH_ret, Math.rand()%180-90, Math.rand()%180-90]; }
-        //return [ Y_toVertical_deg, X_toVertical_deg, Z_toVertical_deg]; //the order they are listed in the MENU OPTION for COMPASSPOINT
-        return [ Y_toVertical_deg, X_toVertical_deg, Y_toVertical_deg - 90]; //the order they are listed in the MENU OPTION for COMPASSPOINT
+        return [ Y_toVertical_deg, X_toVertical_deg, Z_toVertical_deg]; //the order they are listed in the MENU OPTION for COMPASSPOINT
+        //return [ Y_toVertical_deg, X_toVertical_deg, Y_toVertical_deg - 90]; //the order they are listed in the MENU OPTION for COMPASSPOINT
         //return [pitch];
     }
 
