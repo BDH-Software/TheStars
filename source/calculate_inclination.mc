@@ -44,8 +44,9 @@ var ciH_ret = 10;
         else{
             noData = true;
             //test inputs
-            yAccel = Math.rand()%100-50;
-            xAccel = Math.rand()%1500-1000;
+            yAccel = Math.rand()%1500-1000;
+            xAccel = Math.rand()%500-250;
+            //xAccel = 0;
             zAccel = Math.rand()%1500-1000;
         }
         //Axes: If watch is flat, face up, X is left-right (9oclock->3oclock positive direction), Y is forward-backward (6oclock-12oclock positive direction), Z is up-down (up positive direction)
@@ -85,8 +86,14 @@ var ciH_ret = 10;
   
         //var inclinationRad = Math.atan(-Math.sqrt(Math.pow(Math.tan(Y_toVertical_rad), 2) + Math.pow(Math.tan(X_toVertical_rad), 2)));
 
-         var Z_toVertical_rad = -Math.atan2(-zAccel, -Math.sqrt(xAccel*xAccel + yAccel*yAccel));
-        if (yAccel > 0 || yAccel > 0 ) {Z_toVertical_rad = (Math.PI - Z_toVertical_rad);}
+         var Z_toVertical_rad = Math.asin(zAccel/Math.sqrt(xAccel*xAccel + yAccel*yAccel + zAccel*zAccel));
+        //if (yAccel > 0 || xAccel > 0 ) {Z_toVertical_rad = (Math.PI - Z_toVertical_rad);}
+        if (yAccel > 0 ) {Z_toVertical_rad = (Math.PI - Z_toVertical_rad);}
+        //once we pass alt=90/zenith, Y will flip from negative to positive
+        //so we want to continue Z_toVert 91, 92, 93, etc above that
+        //Z_toVert can also pass the zenith with X swaps from negative to
+        //positive, but that affects the AZIMUTH, not really the alt in the
+        //same way
 
 
    
@@ -100,7 +107,7 @@ var ciH_ret = 10;
 
 
         deBug("Accel", [xAccel, yAccel,  zAccel]); 
-        deBug("PITCH", [X_toVertical_deg, Y_toVertical_deg, Z_toVertical_deg, ]);
+        deBug("PITCH", [X_toVertical_deg, Y_toVertical_deg, Z_toVertical_deg, normalize180(Y_toVertical_deg - 90)]);
 
  
         /*        
@@ -163,6 +170,10 @@ var ciH_ret = 10;
         //ciH_ret = ciH_ret%180;
         //if (DEBUG && noData) { return [ciH_ret, Math.rand()%180-90, Math.rand()%180-90]; }
         return [ Y_toVertical_deg, X_toVertical_deg, Z_toVertical_deg]; //the order they are listed in the MENU OPTION for COMPASSPOINT
+
+        //Just returning Y_toVertical_deg - 90 instead the proper Z_toVertical _deg - 90 value is an approximation, but not quite the real value,
+        //unless xAccel == 0.  Any rotation on the X axis will mess up
+        // the YtoVert-90 scheme,and it won't quite be the right answer.
         //return [ Y_toVertical_deg, X_toVertical_deg, Y_toVertical_deg - 90]; //the order they are listed in the MENU OPTION for COMPASSPOINT
         //return [pitch];
     }
