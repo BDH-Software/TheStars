@@ -766,10 +766,15 @@ class SolarSystemBaseView extends WatchUi.View {
         if (!$.hippconst_finished || $.time_changed) {
             showingTitle = true;
             titleShows ++;
-            if (titleShows >60 && $.hippconst_finished && $.time_changed) {$.time_changed = false;} 
-            titlePage(dc);
-            return;
+            //delay to let people read the new date
+            if (titleShows >55 && $.hippconst_finished && $.time_changed) {
+                $.time_changed = false;
+            } else {
+                titlePage(dc);
+                return;
+            }
         }
+
         if (showingTitle) {
 
             showingTitle = false;

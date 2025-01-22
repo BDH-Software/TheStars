@@ -366,12 +366,15 @@ function processStars(){
                     }
 
                 }
+                var myStats = System.getSystemStats();
+                System.println("Memory4: " + myStats.totalMemory + " " + myStats.usedMemory + " " + myStats.freeMemory);
+                myStats = null;
                 /*deBug("cc_name", [cc_name.size(), cc_name]);
                 for (var i = 0; i<cc_name.size(); i++) {
                     deBug("NM", cc_name[i]);
                 }*/
         }
-                names_finished = true;
+        names_finished = true;
 
     }
 
