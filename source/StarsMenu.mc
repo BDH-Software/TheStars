@@ -8,22 +8,22 @@ import Toybox.Position;
 //var sssMenu_class; //to save the SolarSystemSettingsMenu class for access
 
 enum {
-    CONSTLINES,
-    CONSTNAMES,
-    ALLBOLDER,
-    REVERSECOLORS,
-    TIMEDIRECTION,
-    ADDHOURS,  
-    ADDDAYS,
-    ADDMONTHS,
-    ADDYEARS,
-    ADDDECADES,
-    ADDCENTURIES,
-    CONSTNAMEHELP0,
-    CONSTNAMEHELP1,
-    LONGNAMES,
-    COMPASSMOVE,
-    COMPASSPOINT,
+    CONSTLINES = 0,
+    CONSTNAMES = 1,
+    ALLBOLDER = 2,
+    REVERSECOLORS = 3,
+    TIMEDIRECTION = 4,
+    ADDHOURS = 5,  
+    ADDDAYS = 6,
+    ADDMONTHS = 7,
+    ADDYEARS = 8,
+    ADDDECADES = 9,
+    ADDCENTURIES = 10,
+    CONSTNAMEHELP0 =11,
+    CONSTNAMEHELP1 =12,
+    LONGNAMES =13,
+    //COMPASSMOVE =14,
+    COMPASSPOINT =15,
     GPSOPTION= 115, //giving these new numbers so they won't read anything old in the storage
     LATOPTION= 116, // "
     LONOPTION= 117, // "
@@ -82,7 +82,7 @@ class StarsMenu extends WatchUi.Menu2 {
         Menu2.initialize({:title=>WatchUi.loadResource($.Rez.Strings.settingsTitle) as String});
         
         
-        Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.compassMove) as String, null, COMPASSMOVE, $.Options_Dict[COMPASSMOVE], null));
+        /*Menu2.addItem(new WatchUi.ToggleMenuItem(WatchUi.loadResource($.Rez.Strings.compassMove) as String, null, COMPASSMOVE, $.Options_Dict[COMPASSMOVE], null)); */
 
         Menu2.addItem(new WatchUi.MenuItem(WatchUi.loadResource($.Rez.Strings.compassPoint) as String,(WatchUi.loadResource($.Rez.JsonData.compassPoint_options) as Array)[ $.Options_Dict[COMPASSPOINT]], COMPASSPOINT, {}));   
         
@@ -202,7 +202,7 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
         if (menuItem instanceof MenuItem) {    
             if (ret != null && ret.equals(COMPASSPOINT)) {
 
-                $.Options_Dict[COMPASSPOINT] = ($.Options_Dict[COMPASSPOINT]  + 1 ) %3;
+                $.Options_Dict[COMPASSPOINT] = ($.Options_Dict[COMPASSPOINT]  + 1 ) %4;
                 menuItem.setSubLabel((WatchUi.loadResource($.Rez.JsonData.compassPoint_options) as Array)[ $.Options_Dict[COMPASSPOINT]]);
                 Storage.setValue(ret, $.Options_Dict[COMPASSPOINT]);
                 
@@ -347,9 +347,12 @@ class StarsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
 
 function readStorageValues(){
+    /*
     var temp = Storage.getValue(COMPASSMOVE);
     $.Options_Dict[COMPASSMOVE] = temp != null ? (temp == true) : false; //last one is the default
     Storage.setValue(COMPASSMOVE,$.Options_Dict[COMPASSMOVE]); 
+    */
+    var temp;
 
     temp = Storage.getValue(COMPASSPOINT);
     $.Options_Dict[COMPASSPOINT] = (temp != null && temp instanceof Number) ? (temp) : 0; //last one is the default

@@ -33,7 +33,7 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //$.exiting_back_button_firstpress=false;
         //if (buttonPresses == 1) {return true;} //1st buttonpress just gets out of intro titles
 
-        if ($.Options_Dict[COMPASSMOVE] ){
+        if ($.Options_Dict[COMPASSPOINT] != 0){
               //System.println("compass move + incline+");
 
                 //$.zoom_level = 0;
@@ -96,7 +96,7 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
         //Moves left/right (non compass mode)
         //zooms in/out (compass mode)
 
-        if ($.Options_Dict[COMPASSMOVE]){
+        if ($.Options_Dict[COMPASSPOINT] != 0){
             if (type == :next) {
                 if ($.zoom_level == 0) {$.zoom_level = 1;}
                 else {$.zoom_level = 0;}

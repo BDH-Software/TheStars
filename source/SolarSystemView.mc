@@ -1186,10 +1186,18 @@ class SolarSystemBaseView extends WatchUi.View {
                 //dc.drawLine(x, y+4*size/5, x, y-4*size/5);
                 //col = #1199ff
                 //col = #0066cc
-                //dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);                
+                //dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);            
+                deBug("uranus", [size, size/3, 3*size/4.0]);   
                 dc.setColor(0x0066cc, Graphics.COLOR_TRANSPARENT);                //
-                dc.fillCircle (x, y, size/3);  
+                var savepen = pen;
+                if (size <=7) {
+                    pen = 1.0;
+                }
                 if (size>4) {drawARC (dc, 0, 24, x, y,3*size/4.0, pen, null);}
+                if (size <=7) {dc.fillCircle (x, y, size/4.0);  }
+                else {dc.fillCircle (x, y, size/3.0);  }
+                pen = savepen;
+                
                 break;
              case "Pluto" :
                 
@@ -1718,7 +1726,7 @@ class SolarSystemBaseView extends WatchUi.View {
             bottom =  90 - 60/2.0; // center on zenith
         }
 
-        if ($.Options_Dict[COMPASSMOVE]) {
+        if ($.Options_Dict[COMPASSPOINT] == 0) {
             bottom = $.incline_zero_deg;
             bottom = addy;
             if (addy> 45)
@@ -1742,7 +1750,7 @@ class SolarSystemBaseView extends WatchUi.View {
           //var sFontHeight = dc.getFontHeight(1);
           dirFont = 1; //smallest
           //addtxt = " (";
-          if  ($.Options_Dict[COMPASSMOVE]) {
+          if  ($.Options_Dict[COMPASSPOINT] != 0) {
             //addtxt += "C+" + $.incline_zero_deg.format("%0.0f");
             addtxt += "C" + $.incline_zero_deg.format("%0.0f");
           } else {
@@ -1752,7 +1760,7 @@ class SolarSystemBaseView extends WatchUi.View {
           //      addtxt += " ";
           //}
           if ($.zoom_level > 0) {addtxt += "Z"; }
-          if ($.zoom_level > 0 && !$.Options_Dict[COMPASSMOVE]) {addtxt += $.zoom_level; }
+          if ($.zoom_level > 0 && $.Options_Dict[COMPASSPOINT] == 0) {addtxt += $.zoom_level; }
           
           //addtxt += ") ";
           dc.drawText(xc - 1*sFontHeight, 0.1*sFontHeight,dirFont,addtxt,Graphics.TEXT_JUSTIFY_CENTER);
@@ -1761,7 +1769,7 @@ class SolarSystemBaseView extends WatchUi.View {
         var inc = 45;
 
         if (($.zoom_level > 0 && $.zoom_level!=5 && 
-          !$.Options_Dict[COMPASSMOVE]) || ($.Options_Dict[COMPASSMOVE] && $.mod(addAz,45) > 1 && 
+          $.Options_Dict[COMPASSPOINT] == 0) || ($.Options_Dict[COMPASSPOINT] != 0 && $.mod(addAz,45) > 1 && 
             !($.zoom_level == 0 && (addy >= 38 && addy <= 52) ) &&
             !($.zoom_level > 0 && addy>=22 && addy <= 38)) 
           
@@ -1897,7 +1905,7 @@ class SolarSystemBaseView extends WatchUi.View {
         //compassStarted is turned on/off by the SELECT button.  It 
         //determines whether the starfield movement is updated continually
         //every 1 sec from compass & gyro input.  
-        if (($.select_pressed ||  $.nextPrev_pressed ) && $.Options_Dict[COMPASSMOVE]) {    
+        if (($.select_pressed ||  $.nextPrev_pressed ) && $.Options_Dict[COMPASSPOINT] != 0) {    
                 //$.compassStarted = !$.compassStarted; // toggle compass movement on/off
                 moveFromCompass = true;
         }
@@ -1972,13 +1980,13 @@ class SolarSystemBaseView extends WatchUi.View {
 
             //Select & Back do zoom/move view up when NOT 
             //in compassmove mode
-            if (!$.Options_Dict[COMPASSMOVE] && $.select_pressed) 
+            if ($.Options_Dict[COMPASSPOINT] == 0 && $.select_pressed) 
                 {$.zoom_level += 1; }
-            else if ($.Options_Dict[COMPASSMOVE] && $.select_pressed)  {
+            else if ($.Options_Dict[COMPASSPOINT] != 0 && $.select_pressed)  {
 
             }
 
-            if (!$.Options_Dict[COMPASSMOVE] && $.back_pressed)     
+            if ($.Options_Dict[COMPASSPOINT] == 0 && $.back_pressed)     
                 { $.zoom_level -= 1; }
             $.zoom_level = $.zoom_level%5;
 
@@ -2020,7 +2028,7 @@ class SolarSystemBaseView extends WatchUi.View {
                     
                     if (!TESTINGHEADING ) {
                         compassHeading_deg  = 90 - Math.toDegrees(saveCompassHeading);
-                        if ($.Options_Dict[COMPASSPOINT] == 1) {compassHeading_deg -= 90;} //aim with  arm, like along 9=>3 clock axis on watch (X axis for pointer)
+                        if ($.Options_Dict[COMPASSPOINT] == 2) {compassHeading_deg -= 90;} //aim with  arm, like along 9=>3 clock axis on watch (X axis for pointer)
                     }
                     //deBug("moveFromCompass || $.heading_from_watch", [compassHeading_deg, sensorInfo.heading, moveAz_deg]);
                     if (!moveFromCompass) {compassHeading_deg = Math.round( compassHeading_deg /22.5) * 22.5; }//quantize to nearest 1/16 direction, ie NNE
@@ -2061,12 +2069,12 @@ class SolarSystemBaseView extends WatchUi.View {
                         addy = 0;
 
                         var inc = incl[0];
-                        if ($.Options_Dict[COMPASSPOINT] != null && $.Options_Dict[COMPASSPOINT] instanceof Number && $.Options_Dict[COMPASSPOINT] >=0 && $.Options_Dict[COMPASSPOINT] <3) {
-                            inc = incl[$.Options_Dict[COMPASSPOINT]];
+                        if ($.Options_Dict[COMPASSPOINT] != null && $.Options_Dict[COMPASSPOINT] instanceof Number && $.Options_Dict[COMPASSPOINT] >=1 && $.Options_Dict[COMPASSPOINT] <4) {
+                            inc = incl[$.Options_Dict[COMPASSPOINT]-1];
 
-                            if ($.Options_Dict[COMPASSPOINT] == 2) {inc += 15;} //slight "boost" to the angle for the straight-thru-the-screen option
+                            if ($.Options_Dict[COMPASSPOINT] == 3) {inc += 15;} //slight "boost" to the angle for the straight-thru-the-screen option
                         }
-                        deBug ("compaspt", [ $.Options_Dict[COMPASSPOINT], inc,incl]);
+                        deBug ("compaspt", [ $.Options_Dict[COMPASSPOINT]-1, inc,incl]);
                         //if (incl[0]>$.incline_zero_deg) {
                             if ($.zoom_level == 0) {
                                 addy = ( inc + ($.incline_zero_deg-45 - 22.5)  );

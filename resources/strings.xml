@@ -49,9 +49,9 @@
 
 <string id = "settingsTitle">Settings</string>
 
-<string id = "compassMove">Point watch for direction?</string>
+<!-- <string id = "compassMove">Point watch for direction?</string> -->
 
-<string id = "compassPoint">Axis for pointing:</string>
+<string id = "compassPoint">Axis for auto-pointing:</string>
 
 <string id = "constLines">Constellation Lines?</string>
 
