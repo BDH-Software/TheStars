@@ -6,7 +6,7 @@ import Toybox.System;
 var select_pressed = false;
 var back_pressed = false;
 var zoom_level=0;
-var incline_zero_deg as Lang.Float = 0;
+var incline_zero_deg as Lang.Float = 22.5;
 var nextPrev_pressed = false;
 var menu_pressed = false;
 
@@ -102,10 +102,12 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
                 else {$.zoom_level = 0;}
             }
             else { 
-                //System.println("prev button0 + incline+" + $.incline_zero_deg);
-                $.incline_zero_deg = mod($.incline_zero_deg +22.5,112.5); 
+                System.println("prev button0 + incline+" + $.incline_zero_deg);
+                var add_amt = 22.5;
+                if ($.zoom_level > 0) {add_amt = 2/3.0*22.5;}
+                $.incline_zero_deg = mod($.incline_zero_deg + add_amt,112.5); 
 
-                //System.println("prev button + incline+" + $.incline_zero_deg);
+                System.println("prev button + incline+" + $.incline_zero_deg);
             } 
         
             

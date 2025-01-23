@@ -1893,6 +1893,7 @@ class SolarSystemBaseView extends WatchUi.View {
     var TESTINGHEADING=true;
     var testDir_deg = 0;
     var saveCompassHeading = null;
+    var save_incl = null;
 
     //var cc;
     public function starField(dc) {
@@ -1987,9 +1988,9 @@ class SolarSystemBaseView extends WatchUi.View {
             //in compassmove mode
             if ($.Options_Dict[COMPASSPOINT] == 0 && $.select_pressed) 
                 {$.zoom_level += 1; }
-            else if ($.Options_Dict[COMPASSPOINT] != 0 && $.select_pressed)  {
+            //else if ($.Options_Dict[COMPASSPOINT] != 0 && $.select_pressed)  {
 
-            }
+            //}
 
             if ($.Options_Dict[COMPASSPOINT] == 0 && $.back_pressed)     
                 { $.zoom_level -= 1; }
@@ -2011,20 +2012,26 @@ class SolarSystemBaseView extends WatchUi.View {
                 var sensorInfo = Sensor.getInfo();
                 
                 //var TESTINGHEADING = null;
-                
+                             
 
-                if (TESTINGHEADING){ 
-                    //compassHeading_deg += Math.rand()%70 - 35;
-                    testDir_deg += 2;
-                    //compassHeading_deg = testDir_deg;
-                    compassHeading_deg = -(355 - 90);
-                }
+                deBug("saveComp", saveCompassHeading);
 
-                if ($.nextPrev_pressed && save_incl != saveCompassHeading) {
+                if ($.nextPrev_pressed && saveCompassHeading != null) {
                     //we'll just used the saved compass heading
-                } else if (sensorInfo has :heading && sensorInfo.heading != null) {
-                    saveCompassHeading = sensorInfo.heading;
+                } else {
+
+                    if (TESTINGHEADING){ 
+                        //compassHeading_deg += Math.rand()%70 - 35;
+                        testDir_deg += 2;
+                        compassHeading_deg = testDir_deg;
+                        //compassHeading_deg = -(355 - 90);
+                    }
+                
+                    if (sensorInfo has :heading && sensorInfo.heading != null) {
+                    saveCompassHeading = sensorInfo.heading; }
                 }
+
+                deBug("saveComp2", saveCompassHeading);
 
                 if (initialCompassHeading_deg != null) {
                     saveCompassHeading = initialCompassHeading_deg;
@@ -2067,9 +2074,16 @@ class SolarSystemBaseView extends WatchUi.View {
                         incl = calculateInclinationHeading(TESTINGHEADING, dc);
                     }
 
+                    deBug("save_incl", save_incl);
+
                     if ($.nextPrev_pressed && save_incl != null) {
                         incl = save_incl; //if we are in next/prev mode, we don't change the view direction or elevation, just adjust upd/down or zoom
                     }
+
+                    save_incl =  incl;
+
+                    deBug("save_incl2", [incl, save_incl]);
+
 
                     if (incl != null) 
                     {
@@ -2088,6 +2102,10 @@ class SolarSystemBaseView extends WatchUi.View {
                         deBug ("compaspt", [ $.Options_Dict[COMPASSPOINT]-1, inc,incl]);
                         //if (incl[0]>$.incline_zero_deg) {
                             if ($.zoom_level == 0) {
+
+                                var temp = ( inc + $.incline_zero_deg  );
+                                if (temp < 0) {$.incline_zero_deg = -inc;}
+
                                 addy = ( inc + ($.incline_zero_deg-45 - 22.5)  );
                                 if (!moveFromCompass) {
                                     addy = Math.round(addy / 22.5) * 22.5;
@@ -2117,17 +2135,32 @@ class SolarSystemBaseView extends WatchUi.View {
                             } else {
                                 //var fact = 65f/3.0;
                                 var fact = 7.0;
+
+                                var temp =  inc + $.incline_zero_deg;
+                                if (temp < 0) {$.incline_zero_deg = -inc;}
+
                                 addy = ( inc + ($.incline_zero_deg-30 - 22.5)  ) - 30f;
                                 if (!moveFromCompass) {
                                     addy = Math.round(addy/fact) * fact;
                                 }
                                 deBug("accel3", [old_addy, addy, $.incline_zero_deg]);
-                                if ($.incline_zero_deg <  22.5 && addy< -35) {
+                                /*
+                                var min = -35;
+                                var max = 45;
+                                if (moveFromCompass) {
+                                    min = -65;
+                                    max = 180;
+                                }
+                                if ($.incline_zero_deg <  22.5 && addy< min) {
                                     $.incline_zero_deg = -addy;
-                                    addy = Math.round(( incl[0] + ($.incline_zero_deg-45)  )/fact)*fact - 35f;
-                                } else if (addy> 45) {
+                                    addy = ( inc + ($.incline_zero_deg-30 - 22.5)  ) - 30f;
+                                if (!moveFromCompass) {
+                                    addy = Math.round(addy/fact) * fact;
+                                }
+                                } else if (addy> max) {
                                     $.incline_zero_deg = 90;
                                 }
+                                */
 
                                 if (moveFromCompass ) {
                                     if (addy<-65) {addy = -65;}
