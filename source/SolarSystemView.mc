@@ -1192,7 +1192,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 //col = #1199ff
                 //col = #0066cc
                 //dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);            
-                deBug("uranus", [size, size/3, 3*size/4.0]);   
+                //deBug("uranus", [size, size/3, 3*size/4.0]);   
                 dc.setColor(0x0066cc, Graphics.COLOR_TRANSPARENT);                //
                 var savepen = pen;
                 if (size <=7) {
@@ -1402,14 +1402,23 @@ class SolarSystemBaseView extends WatchUi.View {
 
     public function drawHorizon(dc){
         var xy = XY_nosqueeze(0, 90);
-        var xy2 = XY_nosqueeze(0, 0);
+        var xy2 = XY_nosqueeze(-addAz + 90, 0);
+        var xy3 = XY_nosqueeze(-addAz - 90, 0);
         //dc.setColor(0xe1a75c,starBackgroundColor);
         //dc.drawCircle(xy[0], xy[1],dist (xy, xy2));
         // #e1a75c #71462c
+        //deBug("drawH", [xy, xy2, xy3]);
+
+        var start = -6;
+        var end = 6;
+        if (xy3[0] > 0 && xy3[0] < screenWidth && xy3[1] > 0 && xy3[1]< screenHeight ) {
+            start = 6;
+            end = 18;
+        }
         var d = dist (xy, xy2) + 1;
         var col = 0xe1a75c;
         if ($.Options_Dict[REVERSECOLORS]) {col = 0x71462c;}
-        drawARC (dc, -6, 6, xy[0], xy[1], d + d/70.0, d/35.0, col);
+        drawARC (dc, start, end, xy[0], xy[1], d + d/70.0, d/35.0, col);
 
     }
 
@@ -2014,7 +2023,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 //var TESTINGHEADING = null;
                              
 
-                deBug("saveComp", saveCompassHeading);
+                //deBug("saveComp", saveCompassHeading);
 
                 if ($.nextPrev_pressed && saveCompassHeading != null) {
                     //we'll just used the saved compass heading
@@ -2031,7 +2040,7 @@ class SolarSystemBaseView extends WatchUi.View {
                     saveCompassHeading = sensorInfo.heading; }
                 }
 
-                deBug("saveComp2", saveCompassHeading);
+                //deBug("saveComp2", saveCompassHeading);
 
                 if (initialCompassHeading_deg != null) {
                     saveCompassHeading = initialCompassHeading_deg;
@@ -2074,7 +2083,7 @@ class SolarSystemBaseView extends WatchUi.View {
                         incl = calculateInclinationHeading(TESTINGHEADING, dc);
                     }
 
-                    deBug("save_incl", save_incl);
+                    //deBug("save_incl", save_incl);
 
                     if ($.nextPrev_pressed && save_incl != null) {
                         incl = save_incl; //if we are in next/prev mode, we don't change the view direction or elevation, just adjust upd/down or zoom
@@ -2082,7 +2091,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
                     save_incl =  incl;
 
-                    deBug("save_incl2", [incl, save_incl]);
+                    //deBug("save_incl2", [incl, save_incl]);
 
 
                     if (incl != null) 
@@ -2099,7 +2108,7 @@ class SolarSystemBaseView extends WatchUi.View {
 
                             if ($.Options_Dict[COMPASSPOINT] == 3) {inc += 15;} //slight "boost" to the angle for the straight-thru-the-screen option
                         }
-                        deBug ("compaspt", [ $.Options_Dict[COMPASSPOINT]-1, inc,incl]);
+                        //deBug ("compaspt", [ $.Options_Dict[COMPASSPOINT]-1, inc,incl]);
                         //if (incl[0]>$.incline_zero_deg) {
                             if ($.zoom_level == 0) {
 
@@ -2143,7 +2152,7 @@ class SolarSystemBaseView extends WatchUi.View {
                                 if (!moveFromCompass) {
                                     addy = Math.round(addy/fact) * fact;
                                 }
-                                deBug("accel3", [old_addy, addy, $.incline_zero_deg]);
+                                //deBug("accel3", [old_addy, addy, $.incline_zero_deg]);
                                 /*
                                 var min = -35;
                                 var max = 45;
