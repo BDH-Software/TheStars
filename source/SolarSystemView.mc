@@ -1751,7 +1751,7 @@ class SolarSystemBaseView extends WatchUi.View {
             }
             if (bottom<-13 ) {bottom = -13;}
         }
-        deBug("addy", [addy, bottom, addAz]);
+        //deBug("addy", [addy, bottom, addAz]);
         // #555555
         if (!$.Options_Dict[REVERSECOLORS]) {
             dc.setColor(0x999999, Graphics.COLOR_TRANSPARENT);
@@ -1783,7 +1783,7 @@ class SolarSystemBaseView extends WatchUi.View {
         //}
         var inc = 45;
         var md = mod(addAz, 45.0f);
-        deBug("md", [md, addAz, inc]);
+        //deBug("md", [md, addAz, inc]);
 
         if (($.zoom_level > 0 && $.zoom_level!=5 && 
           $.Options_Dict[COMPASSPOINT] == 0) || ($.Options_Dict[COMPASSPOINT] != 0 && md > 10 && md < 35 &&

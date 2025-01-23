@@ -106,8 +106,8 @@ var ciH_ret = 10;
         //var inclination_deg = normalize180(Math.toDegrees(inclinationRad));
 
 
-        deBug("Accel", [xAccel, yAccel,  zAccel]); 
-        deBug("PITCH", [X_toVertical_deg, Y_toVertical_deg, Z_toVertical_deg, normalize180(Y_toVertical_deg - 90)]);
+        //deBug("Accel", [xAccel, yAccel,  zAccel]); 
+        //deBug("PITCH", [X_toVertical_deg, Y_toVertical_deg, Z_toVertical_deg, normalize180(Y_toVertical_deg - 90)]);
 
  
         /*        
