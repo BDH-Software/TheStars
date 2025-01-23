@@ -102,12 +102,12 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
                 else {$.zoom_level = 0;}
             }
             else { 
-                System.println("prev button0 + incline+" + $.incline_zero_deg);
+                //System.println("prev button0 + incline+" + $.incline_zero_deg);
                 var add_amt = 22.5;
                 if ($.zoom_level > 0) {add_amt = 2/3.0*22.5;}
                 $.incline_zero_deg = mod($.incline_zero_deg + add_amt,112.5); 
 
-                System.println("prev button + incline+" + $.incline_zero_deg);
+                //System.println("prev button + incline+" + $.incline_zero_deg);
             } 
         
             
@@ -149,14 +149,14 @@ class SolarSystemBaseDelegate extends WatchUi.BehaviorDelegate {
 
             //menu_pressed = true;
             //$.started = true;
-            deBug("menu0", null);
+            //deBug("menu0", null);
             //if the device can handle MENU2...
             if ((WatchUi has :Menu2)) {
-                deBug("menu1", null);
+                //deBug("menu1", null);
                 var menu = new $.StarsMenu();
 
                 WatchUi.pushView(menu, new $.StarsMenuDelegate(), WatchUi.SLIDE_IMMEDIATE);
-                deBug("menu2", null);
+                //deBug("menu2", null);
                 return true;
 
             } else {  //For MENU2-less devices it is just a way to reset the view/escape zoom

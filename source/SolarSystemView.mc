@@ -1740,7 +1740,7 @@ class SolarSystemBaseView extends WatchUi.View {
             bottom =  90 - 60/2.0; // center on zenith
         }
 
-        if ($.Options_Dict[COMPASSPOINT] == 0) {
+        if ($.Options_Dict[COMPASSPOINT] != 0) {
             bottom = $.incline_zero_deg;
             bottom = addy;
             if (addy> 45)
@@ -1749,8 +1749,9 @@ class SolarSystemBaseView extends WatchUi.View {
                 bottom = addy + 30;
                 if (addy> 30)  {bottom = 90 - addy;}
             }
+            if (bottom<-13 ) {bottom = -13;}
         }
-        //deBug("addy", [addy, bottom, addAz]);
+        deBug("addy", [addy, bottom, addAz]);
         // #555555
         if (!$.Options_Dict[REVERSECOLORS]) {
             dc.setColor(0x999999, Graphics.COLOR_TRANSPARENT);
@@ -1781,9 +1782,11 @@ class SolarSystemBaseView extends WatchUi.View {
 
         //}
         var inc = 45;
+        var md = mod(addAz, 45.0f);
+        deBug("md", [md, addAz, inc]);
 
         if (($.zoom_level > 0 && $.zoom_level!=5 && 
-          $.Options_Dict[COMPASSPOINT] == 0) || ($.Options_Dict[COMPASSPOINT] != 0 && $.mod(addAz,45) > 1 && 
+          $.Options_Dict[COMPASSPOINT] == 0) || ($.Options_Dict[COMPASSPOINT] != 0 && md > 10 && md < 35 &&
             !($.zoom_level == 0 && (addy >= 38 && addy <= 52) ) &&
             !($.zoom_level > 0 && addy>=22 && addy <= 38)) 
           
