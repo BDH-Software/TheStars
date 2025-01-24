@@ -1129,13 +1129,20 @@ class SolarSystemBaseView extends WatchUi.View {
             case "Mars":
                 //dc.fillCircle(x, y, size);
                 //dc.setColor(0x734348, Graphics.COLOR_TRANSPARENT);        
-                      var x1 = x - size/12.0;
-                var y1 = y + size/12.0;
+                var x1 = x - size/8.0;
+                var y1 = y + size/8.0;
                 //drawARC (dc, 17, 7, x, y - size/2.5,size/2.3, 1, null);
-                drawARC (dc, 0, 24, x1, y1 ,size/2.0, pen, null);
+                deBug("msize",  [size, pen]);
+                var pn = pen;
+                if (size > 8 ) {pn ++;}
+                
+                drawARC (dc, 0, 24, x1, y1 ,size/2.2, pn, null);
+
+                dc.setPenWidth(pen+2);
+
           
-                dc.drawLine (x1 + size/4.0 + size/18.0 , y1 - size/2.0 - size/18.00,x1 + size/2.0+ size/18.0, y1 - size/2.0 - size/18.0);
-                dc.drawLine (x1 + size/2.0 + size/18.0, y1 - size/4.0- size/18.0,x1 + size/2.0+ size/18.0, y1 - size/2.0 - size/18.0);
+                dc.drawLine (x1 + size/4.0 + size/14.0 , y1 - size/2.0 - size/14.00,x1 + size/2.0+ size/14.0, y1 - size/2.0 - size/14.0);
+                dc.drawLine (x1 + size/2.0 + size/14.0, y1 - size/4.0- size/14.0,x1 + size/2.0+ size/14.0, y1 - size/2.0 - size/14.0);
 
                 //dc.drawLine (x-size/5.0, y + size/2.0, x+size/5.0, y + size/2.0);
 
@@ -2408,8 +2415,17 @@ class SolarSystemBaseView extends WatchUi.View {
             return;
         }
 
-        if (!$.Options_Dict[CONSTLINES] && !$.Options_Dict[CONSTNAMES]) {tally_finished = true;}
+        /*
 
+        if (!$.Options_Dict[CONSTLINES] && !$.Options_Dict[CONSTNAMES]) {
+            tally_finished = true;
+                dc.setColor(starColor,starBackgroundColor);
+                dc.clear();
+                //calculateInclinationHeading(false, dc);
+        } else 
+
+        */
+        
         if (!tally_finished) {
             //deBug("Tally", null);
             //var cckys = $.cc.keys();
