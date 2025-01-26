@@ -38,6 +38,7 @@ var moveY = 0;
 var _updatePositionNeeded = true;
 var _rereadGPSNeeded = true;
 var addTime_hrs = 0;
+var time_lastrun = 0;
 
 //! This view displays the position information
 class SolarSystemBaseView extends WatchUi.View {
@@ -229,6 +230,18 @@ class SolarSystemBaseView extends WatchUi.View {
         //    +  $.now.hour.format("%02d") + ":" +
         //    $.now.min.format("%02d") + ":" +
         //    $.now.sec.format("%02d"));
+
+        if (goodGPS) {
+            Position.enableLocationEvents(Position.LOCATION_DISABLE, null);
+            deBug("Stopping, closing GPS Position", null);
+        }
+
+        Sensor.setEnabledSensors([]); //turn off all sensors
+
+        Sensor.unregisterSensorDataListener(); // if using a data listener, unregister
+
+        Sensor.enableSensorEvents(null); // this is NOT in the CIQ api and is a Garmin bug.
+
 
         if (animationTimer != null) {
             try {
@@ -1132,7 +1145,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 var x1 = x - size/8.0;
                 var y1 = y + size/8.0;
                 //drawARC (dc, 17, 7, x, y - size/2.5,size/2.3, 1, null);
-                deBug("msize",  [size, pen]);
+                //deBug("msize",  [size, pen]);
                 var pn = pen;
                 if (size > 8 ) {pn ++;}
                 
@@ -1925,6 +1938,7 @@ class SolarSystemBaseView extends WatchUi.View {
         //deBug("pp", [$.pp]);
         
         $.time_now = Time.now();
+        $.time_lastrun = $.time_now;
         
         var moveFromCompass = false;
         //compassStarted is turned on/off by the SELECT button.  It 
@@ -2033,7 +2047,7 @@ class SolarSystemBaseView extends WatchUi.View {
                 //var TESTINGHEADING = null;
                              
 
-                //deBug("saveComp", saveCompassHeading);
+                deBug("saveComp", saveCompassHeading);
 
                 if ($.nextPrev_pressed && saveCompassHeading != null) {
                     //we'll just used the saved compass heading
@@ -2050,7 +2064,7 @@ class SolarSystemBaseView extends WatchUi.View {
                     saveCompassHeading = sensorInfo.heading; }
                 }
 
-                //deBug("saveComp2", saveCompassHeading);
+                deBug("saveComp2", saveCompassHeading);
 
                 if (initialCompassHeading_deg != null) {
                     saveCompassHeading = initialCompassHeading_deg;
@@ -2070,7 +2084,7 @@ class SolarSystemBaseView extends WatchUi.View {
                         
                         startStarField = true;
                     }
-                    //deBug("moveFromCompass || $.heading_from_watch", [compassHeading_deg, sensorInfo.heading, moveAz_deg]);
+                    deBug("moveFromCompass || $.heading_from_watch", [compassHeading_deg, sensorInfo.heading, moveAz_deg]);
                 } else {
                     compassNull = true;
                 }

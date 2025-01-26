@@ -123,6 +123,8 @@ class SolarSystemBaseApp extends Application.AppBase {
     //public var _solarSystemView as SolarSystemBaseView?;
     //public var _solarSystemDelegate as SolarSystemBaseDelegate?;
 
+    public var monitorTimer;
+
     //! Constructor
     public function initialize() {
         AppBase.initialize();
@@ -136,6 +138,7 @@ class SolarSystemBaseApp extends Application.AppBase {
         
         $.now = System.getClockTime();
         $.time_now = Time.now();
+        $.time_lastrun = $.time_now;
         $.last_compass_time = $.time_now.value();
         $.now_info = Time.Gregorian.info($.time_now, Time.FORMAT_SHORT);
         $.start_time_sec = $.time_now.value(); //start time of app in unix seconds
@@ -201,6 +204,12 @@ class SolarSystemBaseApp extends Application.AppBase {
         //if (_solarSystemView != null) {
             //_solarSystemView.startAnimationTimer($.hz);
         //}
+
+        //goodGPS = false; //testing
+
+        monitorTimer= new Timer.Timer();
+        
+        monitorTimer.start(method(:monitorTimer_callback), 1000 *30, true);
         
         
         //readStorageValues();
@@ -208,6 +217,7 @@ class SolarSystemBaseApp extends Application.AppBase {
         //from activities, direct query, or storage do we 
         //try to actually ACTIVATE GPS
         if (!goodGPS) {
+            System.println("onStart: trying to activate GPS");
             Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:setPosition));
         }
     }
@@ -222,8 +232,34 @@ class SolarSystemBaseApp extends Application.AppBase {
             $.now.sec.format("%02d"));
             */
         //_solarSystemView.stopAnimationTimer();
+        System.println ("onStop");
         started = false;
-        Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:setPosition));
+
+        Position.enableLocationEvents(Position.LOCATION_DISABLE, null);
+
+        Sensor.setEnabledSensors([]); //turn off all sensors
+
+        Position.enableLocationEvents(Position.LOCATION_DISABLE, null); //not in the api but good to do if using GPS
+
+        Sensor.unregisterSensorDataListener(); // if using a data listener, unregister
+
+        Sensor.enableSensorEvents(null); // this is NOT in the CIQ api and is a Garmin bug.
+
+        solarSystemView_class.stopAnimationTimer();
+
+        if (monitorTimer != null) {
+            try {
+                monitorTimer.stop();
+                monitorTimer = null;
+            } catch (e) {
+
+            }
+        }
+
+        System.println ("onStop routines complete");
+
+
+
         //_solarSystemView = null;
         //_solarSystemDelegate = null;
         //settings_view = null;
@@ -266,6 +302,17 @@ class SolarSystemBaseApp extends Application.AppBase {
         //_solarSystemDelegate = null;
         //_solarSystemView = null;
 
+    }
+
+    public function monitorTimer_callback(){
+        $.time_now = Time.now();
+        var val = $.time_now.value() - $.time_lastrun.value();
+        if (val > 120) {
+        //if (val > 10) { //testing
+            System.println("Exiting via monitorTimer, idle time: " + val + " " + $.time_now.value());
+            onStop(null);
+            System.exit();
+        }
     }
 }
     /*
@@ -423,6 +470,10 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         //deBug("SIP 4", lastLoc);
         return true;       
     }
+
+    function nothing (pinfo as Position.Info) {
+
+    }
     
 
    
@@ -436,7 +487,8 @@ class SolarSystemInputDelegate extends WatchUi.InputDelegate {
         var save_lastLoc = $.lastLoc;
 
         //We only need this ONCE, not continuously, so . . . 
-        //Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:setPosition));
+        //Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:nothing));
+        Position.enableLocationEvents(Position.LOCATION_DISABLE, null);
 
         //lastLoc = [0,0]; //for testing
         //lastLoc = [51.5, 0]; //for testing - Greenwich
