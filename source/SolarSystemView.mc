@@ -1513,14 +1513,22 @@ class SolarSystemBaseView extends WatchUi.View {
 
             //mag = (40 - proc(mag))/10; //ranges from about 52 to 0
             mag = (40 - mag)/10; //ranges from about 52 to 0
-            if ($.zoom_level>0) {mag *= 1.5;}
-            if ($.Options_Dict[ALLBOLDER] ) {mag *= 2;}
+            /* if ($.zoom_level>0) {mag *= 1.2;}
+            if ($.Options_Dict[ALLBOLDER] ) {mag *= 1.2;} */
+
+            if ($.zoom_level>0) {mag += 1;}
+            if ($.Options_Dict[ALLBOLDER] ) {mag += 1;}
+
             //mag = mag*mag/700;
-            if (mag<1) {mag =1;}
+            //if (($.Options_Dict[ALLBOLDER] && $.zoom_level>0) && mag < 3) {mag = 3;}
+            //else 
+            if (($.Options_Dict[ALLBOLDER] || $.zoom_level>0) && mag < 2) {mag = 2;}
+            else if (mag<1) {mag =1;}
+            
             //mag += 3;
             dc.setColor(starColor,Graphics.COLOR_TRANSPARENT);
             dc.fillCircle(xy[0],xy[1],mag);
-            //deBug("PPPPQ3", [az, alt, mag, ra, dec, ra  * byteDeg, proc(dec)]);
+            //deBug("PPPPQ3", [xy[0],xy[1],mag]);
             return xy;
     }
 

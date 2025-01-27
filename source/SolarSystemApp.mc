@@ -307,7 +307,7 @@ class SolarSystemBaseApp extends Application.AppBase {
     public function monitorTimer_callback(){
         $.time_now = Time.now();
         var val = $.time_now.value() - $.time_lastrun.value();
-        if (val > 120) {
+        if (val > 600) {
         //if (val > 10) { //testing
             System.println("Exiting via monitorTimer, idle time: " + val + " " + $.time_now.value());
             onStop(null);
